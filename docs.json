@@ -2,6 +2,13 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "AutocleanEEG",
+  "background": {
+    "color": {
+      "dark": "#222831",
+      "light": "#EEEEEE"
+    },
+  "decoration": "windows"
+  },
   "colors": {
     "primary": "#6d45dc",
     "light": "#9f8ded",
