@@ -2,6 +2,7 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "AutocleanEEG",
+  "description": "Professional EEG Software",
   "background": {
     "color": {
       "dark": "#222831",
@@ -23,14 +24,18 @@
           {
             "group": "Getting started",
             "pages": [
+              "welcome",
+              "installation",
               "index",
               "quickstart",
+                "essentials/cli-introduction",
               "development"
             ]
           },
           {
             "group": "Customization",
             "pages": [
+              "customizations/cli-themes",
               "essentials/settings",
               "essentials/navigation"
             ]
@@ -79,17 +84,17 @@
       "anchors": [
         {
           "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
+          "href": "https://docs.autocleaneeg.org",
           "icon": "book-open-cover"
         },
         {
           "anchor": "Community",
-          "href": "https://mintlify.com/community",
+          "href": "https://github.com/cincibrainlab/autocleaneeg_pipeline/discussions",
           "icon": "slack"
         },
         {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
+          "anchor": "Issues",
+          "href": "https://github.com/cincibrainlab/autocleaneeg_pipeline/issues",
           "icon": "newspaper"
         }
       ]
@@ -100,16 +105,9 @@
     "dark": "/logo/dark.svg"
   },
   "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
     "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "href": "https://github.com/cincibrainlab/autoclean_pipeline",
+      "type": "github"
     }
   },
   "contextual": {
