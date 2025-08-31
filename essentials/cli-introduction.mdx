@@ -1,0 +1,48 @@
+---
+title: CLI Introduction
+icon: terminal
+---
+
+import { Asciinema } from '/snippets/asciinema-cast.jsx';
+
+## Overview
+
+`autocleaneeg-pipeline` is the main entry point for AutoClean EEG. It can set up your workspace, process EEG data, review results, and show available tasks. Everything starts from this single command.
+
+## Basic Invocation
+
+Run it with no arguments to see the startup header and a quick hint:
+
+```bash
+autocleaneeg-pipeline
+```
+
+<Asciinema src="/images/casts/cli-intro.cast" poster="npt:0:3" idle-time-limit="2" cols={80} rows={24} theme="monokai" speed={1} />
+
+{/* If you haven't added the screenshot image yet, place your PNG at docs/images/cli-intro.png */}
+
+## Help Flag
+
+Use `-h` (short) or `--help` (long) to display available commands and options:
+
+```bash
+autocleaneeg-pipeline -h
+```
+
+```bash
+autocleaneeg-pipeline --help
+```
+
+## Next Steps
+
+Ready to run real commands? See the command reference for processing data, listing tasks, reviewing outputs, and more:
+
+- Command reference: `essentials/cli-command-reference`
+
+Or explore themes: `customizations/cli-themes`.
+
+## Summary
+
+Start: `autocleaneeg-pipeline`  
+Discover: `autocleaneeg-pipeline --help`  
+Then dive into specific commands when you know what you want to do.
