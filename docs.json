@@ -28,7 +28,7 @@
               "installation",
               "index",
               "quickstart",
-                "essentials/cli-introduction",
+              "essentials/cli-introduction",
               "development"
             ]
           },
@@ -83,11 +83,6 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Documentation",
-          "href": "https://docs.autocleaneeg.org",
-          "icon": "book-open-cover"
-        },
-        {
           "anchor": "Community",
           "href": "https://github.com/cincibrainlab/autocleaneeg_pipeline/discussions",
           "icon": "slack"
@@ -124,9 +119,9 @@
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
+      "x": "https://x.com/cbrainlab",
       "github": "https://github.com/cincibrainlab/autoclean_pipeline",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "linkedin": "https://www.linkedin.com/in/erniepedapati"
     }
   }
 }
