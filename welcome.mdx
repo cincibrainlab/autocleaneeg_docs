@@ -1,0 +1,79 @@
+---
+title: "Welcome to AutocleanEEG Pipeline!"
+sidebarTitle: "Welcome!"
+description: Automated EEG Processing Software
+
+---
+
+**AutocleanEEG Pipeline** is an easy-to-use command line application for automated EEG processing. It is designed for **modular**, **reproducible**, and **audit-ready** processing of high-volume EEG data. Despite its automation focus, it provides highly visual outputs, intuitive data viewing, and extensive customization. **AutocleanEEG Pipeline** is built on a foundation of MNE-Python and other opensource tools.
+
+Cleaning an EEG file with a preprocessing pipeline in AutocleanEEG is simple and requires just a few steps after opening a terminal.
+
+### Install AutocleanEEG Pipeline
+
+
+<CodeGroup>
+```bash mac/linux
+
+uv tool install autocleaneeg-pipeline
+
+
+```
+
+```shell win
+# Install Python (https://github.com/astral-sh/uv)
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+uv tool install git+https://github.com/cincibrainlab/autoclean_pipeline.git
+```
+
+</CodeGroup>
+
+
+<CodeGroup>
+```bash mac/linux
+# Install Python (https://github.com/astral-sh/uv)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+uv tool install git+https://github.com/cincibrainlab/autoclean_pipeline.git
+```
+
+```shell win
+# Install Python (https://github.com/astral-sh/uv)
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+uv tool install git+https://github.com/cincibrainlab/autoclean_pipeline.git
+```
+
+</CodeGroup>
+
+
+```python {2, 6, 7}
+from fastapi import FastAPI
+from fastapi_mcp import FastApiMCP
+
+app = FastAPI()
+
+mcp = FastApiMCP(app)
+mcp.mount_http()
+```
+That's it! Your auto-generated MCP server is now available at `https://app.base.url/mcp`
+
+## Features
+
+- [**Authentication**](/advanced/auth) built in, using your existing FastAPI dependencies!
+
+- **FastAPI-native:** Not just another OpenAPI -> MCP converter
+
+- **Zero configuration** required - just point it at your FastAPI app and it works
+
+- **Preserving schemas** of your request models and response models
+
+- **Preserve documentation** of all your endpoints, just as it is in Swagger
+
+- [**Flexible deployment**](/advanced/deploy) - Mount your MCP server to the same app, or deploy separately
+
+- [**ASGI interface**](/advanced/asgi) - Uses FastAPI's ASGI interface directly for efficient internal communication
+
+## Hosted Solution
+
+If you prefer a managed hosted solution check out [tadata.com](https://tadata.com).

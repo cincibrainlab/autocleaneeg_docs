@@ -1,0 +1,44 @@
+---
+title: CLI Themes
+icon: palette
+---
+
+AutocleanEEG Pipeline lets you change how the command-line interface looks. You can pick a theme that works best for you, like dark, light, high-contrast, or monochrome.
+
+## Choosing a Theme
+
+You can set the theme when you run a command:
+
+```bash
+autocleaneeg-pipeline --theme dark list-tasks
+```
+
+Available themes:
+
+- `auto` (default)
+- `dark`
+- `light`
+- `hc` (high contrast)
+- `mono` (monochrome)
+
+## Environment Variables
+
+You can also set a theme and color options with environment variables:
+
+- `AUTOCLEAN_THEME` — set the theme (auto, dark, light, hc, mono)
+- `AUTOCLEAN_COLOR_DEPTH` — set color depth (auto, 8, 256, truecolor)
+- `NO_COLOR=1` — turn off all colors
+- `FORCE_COLOR=1` — force color output
+
+Example:
+
+```bash
+export AUTOCLEAN_THEME=light
+export NO_COLOR=1
+```
+
+## How It Works
+
+All commands use the same color and style settings. You don’t need to change anything else—just pick your theme and go!
+
+If you don’t set a theme, AutocleanEEG will try to pick one that matches your terminal.

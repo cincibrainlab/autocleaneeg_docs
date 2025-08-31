@@ -1,0 +1,81 @@
+---
+title: CLI Command Reference
+icon: list
+---
+
+# AutoClean EEG – CLI Command Reference
+
+This page lists the most common commands and what happens internally when you use the CLI.
+
+## 🚀 Common Commands
+
+* **Setup** your workspace (first-time use):
+
+  ```bash
+  autocleaneeg-pipeline setup
+  ```
+
+* **Process EEG data** with a specific task:
+
+  ```bash
+  autocleaneeg-pipeline process RestingEyesOpen data.raw
+  ```
+
+* **List all available tasks**:
+
+  ```bash
+  autocleaneeg-pipeline list-tasks
+  ```
+
+* **Review results** with the GUI:
+
+  ```bash
+  autocleaneeg-pipeline review --output ~/Autoclean-EEG/output
+  ```
+
+* **View an EEG file** in MNE-QT:
+
+  ```bash
+  autocleaneeg-pipeline view data.set
+  ```
+
+---
+
+## 🛠️ What Happens Internally
+
+When you run the CLI:
+
+1. **Header & Context**  
+   Shows your Python version, OS, current time, workspace path, and free disk space.
+2. **Parse Your Command**  
+   The CLI looks at the command (`process`, `setup`, `review`, etc.) and any options you provided.
+3. **Validate Inputs**  
+   It checks that required files/directories exist and that task names are correct.
+4. **Run the Command**
+   - `process`: Starts the EEG pipeline, running the chosen task on your file(s).
+   - `list-tasks`: Scans and lists built-in + custom tasks.
+   - `review`: Launches a GUI for reviewing results.
+   - `view`: Opens EEG files in a viewer.
+   - `setup`: Guides you through workspace or compliance configuration.
+5. **Output Messages**  
+   Messages are styled with clear tags (`info`, `success`, `error`, `warning`).
+
+---
+
+## 📚 Tips
+
+* You can always run:
+
+  ```bash
+  autocleaneeg-pipeline --help
+  ```
+
+  to see a summary of commands.
+
+* For detailed options on a specific command:
+
+  ```bash
+  autocleaneeg-pipeline process --help
+  ```
+
+* In **compliance mode**, additional commands like `login`, `logout`, and `whoami` become available.
