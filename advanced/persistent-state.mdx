@@ -1,0 +1,81 @@
+---
+title: "Advanced: Persistent State (setup.json)"
+sidebarTitle: "Persistent State"
+description: How AutocleanEEG saves your defaults across runs and where to find them.
+
+---
+
+# Persistent State: `setup.json`
+
+AutocleanEEG saves a few preferences between runs (for example, your active task and source) in a per-user JSON file called `setup.json`. This makes common workflows faster while remaining easy to reset.
+
+## Location
+
+Stored under your user profile in a standard OS location:
+
+- macOS: `~/Library/Application Support/autoclean/setup.json`
+- Windows: `%APPDATA%\autoclean\setup.json` (typically `C:\Users\<you>\AppData\Roaming\autoclean\setup.json`)
+- Linux: `$XDG_CONFIG_HOME/autoclean/setup.json` or `~/.config/autoclean/setup.json`
+
+Tip (macOS):
+
+```bash
+open "$HOME/Library/Application Support/autoclean"
+```
+
+## Contents
+
+Here’s a representative example of the file contents:
+
+```json
+{
+  "version": "1.0",
+  "setup_date": "2025-08-31T08:47:30.250928",
+  "config_directory": "/Users/ernie/Documents/Autoclean-EEG",
+  "active_task": "RestingState_EGI",
+  "active_source": "/Users/ernie/Documents/ExampleData 2/Resting/128_Rest_EyesOpen_D1004.raw"
+}
+```
+
+- `version`: internal format version of this file
+- `setup_date`: when the state file was first created
+- `config_directory`: your Autoclean Workspace directory (where `tasks/` and `output/` live)
+- `active_task`: the Task used when you don’t pass one on the CLI
+- `active_source`: default file or directory used when you don’t pass one on the CLI
+
+## How It’s Used
+
+- Loaded on startup to apply your saved defaults.
+- Updated by CLI commands (e.g., `task set`, `source set`).
+- Missing values fall back to prompts or sensible defaults.
+
+## Reset & Maintenance
+
+- To reset saved defaults, remove or rename `setup.json` (AutocleanEEG recreates it):
+
+```bash
+# macOS
+rm -i "$HOME/Library/Application Support/autoclean/setup.json"
+
+# Windows (PowerShell)
+Remove-Item "$env:APPDATA\autoclean\setup.json"
+
+# Linux
+rm -i "${XDG_CONFIG_HOME:-$HOME/.config}/autoclean/setup.json"
+```
+
+- Prefer using the CLI to change values rather than editing the file directly:
+
+```bash
+autocleaneeg-pipeline task set <TaskName>
+autocleaneeg-pipeline source set
+```
+
+For paths and defaults at a higher level, see the Basics section: Workspace, Tasks, Source, and Fallbacks.
+
+## Troubleshooting
+
+- Not seeing expected defaults? Check `autocleaneeg-pipeline task show` and `source show`.
+- Confirm the `setup.json` path for your OS and ensure it’s valid JSON.
+- If values look stale or the file is corrupted, delete it and re-run `task set` / `source set`.
+

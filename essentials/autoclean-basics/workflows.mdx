@@ -1,0 +1,46 @@
+---
+title: "AutoClean Basics: Workflows"
+sidebarTitle: "Workflows"
+description: Three real-world usage patterns to speed up daily work.
+
+---
+
+# Workflows
+
+## 1) Lazy but efficient
+
+```bash
+# One-time setup
+autocleaneeg-pipeline task set MyExperiment
+autocleaneeg-pipeline source set   # choose your data folder
+
+# Daily usage (minimal)
+autocleaneeg-pipeline process
+```
+
+## 2) Multiple studies
+
+```bash
+# Keep workspace flexible
+autocleaneeg-pipeline source set   # choose "No Default"
+
+# Explicit processing
+autocleaneeg-pipeline process RestingEyesOpen /data/study1/
+autocleaneeg-pipeline process ASSR /data/study2/ --recursive
+```
+
+## 3) Developing new tasks
+
+```bash
+# Edit task file
+vim ~/Documents/Autoclean-EEG/tasks/my_new_method.py
+
+# Test immediately (no restart needed)
+autocleaneeg-pipeline process MyNewMethod test_data.raw
+
+# Set as active for repeated testing
+autocleaneeg-pipeline task set MyNewMethod
+```
+
+→ [Next: Tips & Quick Start](/essentials/autoclean-basics/tips-quickstart)
+

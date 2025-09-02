@@ -1,0 +1,64 @@
+---
+title: "Advanced: Flagged Runs & Output Routing"
+sidebarTitle: "Flagged Outputs"
+description: Control whether flagged runs move into FLAGGED_* directories and whether final files are produced.
+
+---
+
+# Flagged Runs & Output Routing
+
+Use a task‑level config switch to control how flagged runs write files and whether they propagate to final outputs.
+
+## Current Behavior (default)
+
+- `save_raw_to_set` / `save_epochs_to_set` write into directories named `FLAGGED_<stage>` when the run is flagged.
+- During `_entrypoint`, post‑completion data is saved with `flagged` set to the task’s flagged status; final outputs are then skipped if the run is flagged.
+- `copy_final_files` ignores any post‑completion directories whose names start with `FLAGGED`, so flagged runs never appear in the `final_files` folder.
+
+## Make movement optional
+
+Introduce a boolean task config `move_flagged_files` (default: `True`).
+
+- When `True` (default): flagged runs are quarantined into `FLAGGED_*` directories and do not produce final files.
+- When `False`: flagged runs keep normal directory names and still produce final files. The run remains “flagged” for your tracking, but routing is not altered.
+
+### Configure in a task file
+
+```python
+config = {
+    # ... your existing settings ...
+    "move_flagged_files": False,  # keep normal names and still produce final files
+}
+```
+
+## Example outcomes
+
+With `move_flagged_files: True` (default):
+
+```text
+output/
+  FLAGGED_raw_set/
+  FLAGGED_epochs_set/
+final_files/
+  (no files copied from flagged run)
+```
+
+With `move_flagged_files: False`:
+
+```text
+output/
+  raw_set/
+  epochs_set/
+final_files/
+  (files copied as usual)
+```
+
+## Recommendations
+
+- Leave enabled for production QC to quarantine suspect outputs.
+- Consider disabling temporarily during development or controlled analyses where you must collect outputs regardless of flags.
+
+## Related
+
+- See Advanced → Task Variables for defining additional task‑specific controls: `/advanced/task-variables`
+

@@ -1,0 +1,43 @@
+---
+title: "AutoClean Basics: Source"
+sidebarTitle: "Source"
+description: Point Autoclean to a file, directory, or no default.
+
+---
+
+# Source: Your Data Map
+
+The Source tells Autoclean where to find EEG files when you don’t specify them.
+
+## Three Modes
+
+### 1) Specific file
+
+```bash
+autocleaneeg-pipeline source set
+# Choose: Select File
+# Enter: /path/to/important_recording.raw
+
+autocleaneeg-pipeline process   # uses that file
+```
+
+### 2) Directory
+
+```bash
+autocleaneeg-pipeline source set
+# Choose: Select Directory
+# Enter: /data/eeg_recordings/
+
+autocleaneeg-pipeline process --dir   # uses that directory
+```
+
+### 3) No Default
+
+```bash
+autocleaneeg-pipeline source set
+# Choose: No Default
+# Autoclean will always prompt
+```
+
+→ [Next: Defaults & Fallbacks](/essentials/autoclean-basics/fallbacks)
+

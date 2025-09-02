@@ -1,0 +1,282 @@
+---
+title: "Advanced: User‑Defined Variables in Tasks"
+sidebarTitle: "Task Variables"
+description: Define custom variables in your task config and access them safely via `self.settings`.
+
+---
+
+# User‑Defined Variables in Task Configuration
+
+AutocleanEEG lets you add your own variables to a task’s `config` dictionary. The Task base class loads these into `self.settings`, so you can reference them anywhere in your pipeline—without changing core code.
+
+## Overview
+
+- Add custom keys to the task‑local `config` dictionary
+- Access values with `self.settings.get("key", default)`
+- No extra setup; available since v2.0.0
+
+## Basic Usage
+
+1) Define variables in `config`:
+
+```python
+config = {
+    # Standard EEG settings
+    "resample_step": {"enabled": True, "value": 250},
+    "filtering": {"enabled": True, "value": {"l_freq": 1, "h_freq": 100}},
+
+    # Your custom variables
+    "stimulus_duration": 500,
+    "trial_count": 120,
+    "custom_threshold": 75.0,
+    "experiment_conditions": ["condition_A", "condition_B", "control"],
+}
+```
+
+2) Access variables in your Task:
+
+```python
+class MyTask(Task):
+    def run(self):
+        duration = self.settings.get("stimulus_duration", 250)
+        count = self.settings.get("trial_count", 100)
+        conditions = self.settings.get("experiment_conditions", ["default"]) 
+        self._configure_epochs(duration=duration, count=count)
+```
+
+## Variable Types
+
+Simple values:
+
+```python
+config = {
+    "stimulus_duration": 500,       # int
+    "response_threshold": 75.5,     # float
+    "participant_group": "adults", # str
+    "use_custom_filter": True,      # bool
+}
+```
+
+Collections:
+
+```python
+config = {
+    "target_frequencies": [10, 20, 40],                  # list
+    "condition_names": ["baseline", "task", "rest"],   # list
+    "channel_mapping": {"Fz": 1, "Cz": 2, "Pz": 3},   # dict
+}
+```
+
+Nested structures:
+
+```python
+config = {
+    "analysis_parameters": {
+        "window_size": 100,
+        "overlap": 50,
+        "method": "custom_algorithm",
+        "advanced_settings": {
+            "tolerance": 0.001,
+            "iterations": 1000,
+        },
+    }
+}
+```
+
+## Complete Example
+
+```python
+"""Custom task with user-defined variables."""
+from autoclean.core.task import Task
+
+config = {
+    # Standard EEG processing settings
+    "resample_step": {"enabled": True, "value": 250},
+    "filtering": {"enabled": True, "value": {"l_freq": 1, "h_freq": 100}},
+    "montage": {"enabled": True, "value": "GSN-HydroCel-129"},
+
+    # Custom experiment variables
+    "stimulus_duration": 500,
+    "trial_count": 120,
+    "response_window": 1000,
+    "baseline_period": [-200, 0],
+    "experiment_conditions": ["condition_A", "condition_B"],
+    "custom_analysis": {
+        "method": "custom_algorithm",
+        "threshold": 2.5,
+        "window_size": 50,
+    },
+}
+
+class MyExperiment(Task):
+    def run(self):
+        self.import_raw()
+
+        duration = self.settings.get("stimulus_duration", 250)
+        conditions = self.settings.get("experiment_conditions", [])
+        analysis = self.settings.get("custom_analysis", {})
+
+        print(f"Processing {len(conditions)} conditions")
+        print(f"Stimulus duration: {duration}ms")
+        print(f"Analysis method: {analysis.get('method', 'standard')}")
+
+        self._apply_custom_processing(duration, conditions, analysis)
+
+        # Continue with standard pipeline
+        self.resample_data()
+        self.filter_data()
+        self.run_ica()
+        self.create_regular_epochs()
+
+    def _apply_custom_processing(self, duration, conditions, analysis):
+        threshold = analysis.get("threshold", 1.0)
+        method = analysis.get("method", "standard")
+        print(f"Applying {method} with threshold {threshold}")
+        # ... your custom processing code ...
+```
+
+## Best Practices
+
+Use descriptive names:
+
+```python
+# Good
+"stimulus_duration_ms": 500
+"response_window_ms": 1000
+"artifact_rejection_threshold": 75.0
+
+# Avoid
+"dur": 500
+"win": 1000
+"thresh": 75.0
+```
+
+Provide defaults with `get`:
+
+```python
+duration = self.settings.get("stimulus_duration", 250)  # safe
+# duration = self.settings["stimulus_duration"]          # risky if missing
+```
+
+Group related variables:
+
+```python
+config = {
+    "epoch_parameters": {
+        "tmin": -0.5,
+        "tmax": 1.0,
+        "baseline": [-0.2, 0],
+        "reject_criteria": {"eeg": 100e-6},
+    },
+    "analysis_settings": {
+        "method": "custom",
+        "window_size": 100,
+        "overlap": 50,
+    },
+}
+```
+
+Document intent with comments:
+
+```python
+config = {
+    # Custom experiment parameters
+    "stimulus_duration": 500,      # ms per stimulus
+    "trial_count": 120,            # trials per condition
+    "response_window": 1000,       # ms for response detection
+    "baseline_period": [-200, 0],  # ms baseline correction window
+}
+```
+
+## Integrating With Your Pipeline
+
+Custom filtering:
+
+```python
+def run(self):
+    self.filter_data()
+    custom_freq = self.settings.get("custom_notch_frequency", 50)
+    if custom_freq:
+        self._apply_custom_notch_filter(custom_freq)
+```
+
+Custom epoching:
+
+```python
+def run(self):
+    epoch_params = self.settings.get("custom_epochs", {})
+    tmin = epoch_params.get("tmin", -0.5)
+    tmax = epoch_params.get("tmax", 1.0)
+    self._create_custom_epochs(tmin=tmin, tmax=tmax)
+```
+
+Conditional analysis:
+
+```python
+def run(self):
+    analysis_method = self.settings.get("analysis_method", "standard")
+    if analysis_method == "custom":
+        self._run_custom_analysis()
+    else:
+        self._run_standard_analysis()
+```
+
+## Validation & Error Handling
+
+Validate presence and ranges:
+
+```python
+def run(self):
+    required = ["stimulus_duration", "trial_count"]
+    for key in required:
+        if key not in self.settings:
+            raise ValueError(f"Missing required variable: {key}")
+
+    duration = self.settings.get("stimulus_duration", 0)
+    if duration <= 0:
+        raise ValueError(f"stimulus_duration must be positive, got {duration}")
+```
+
+Handle optional flags:
+
+```python
+def run(self):
+    use_advanced = self.settings.get("use_advanced_processing", False)
+    if use_advanced:
+        self._run_advanced_analysis()
+    else:
+        self._run_standard_analysis()
+```
+
+## Advanced Patterns
+
+Dynamic configuration:
+
+```python
+def run(self):
+    age = self.settings.get("participant_age", 25)
+    filt = self.settings.get("pediatric_filter" if age < 18 else "adult_filter", {})
+    self._apply_age_appropriate_filtering(filt)
+```
+
+Conditional pipelines:
+
+```python
+def run(self):
+    etype = self.settings.get("experiment_type", "standard")
+    if etype == "resting_state":
+        self._process_resting_state()
+    elif etype == "task_based":
+        self._process_task_based()
+    else:
+        self._process_standard()
+```
+
+## Summary
+
+- Simple: add variables to `config`
+- Accessible: use `self.settings.get("name", default)` anywhere
+- Flexible: numbers, strings, lists, dicts, nested structures
+- Safe: encourage defaults and validation
+- Integrated: works with all AutocleanEEG steps
+

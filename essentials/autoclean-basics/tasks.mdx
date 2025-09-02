@@ -1,0 +1,71 @@
+---
+title: "AutoClean Basics: Tasks"
+sidebarTitle: "Tasks"
+description: Choose built-in tasks or write your own and set an active default.
+
+---
+
+# Tasks: Your Analysis Recipe
+
+Tasks define how Autoclean processes your EEG data.
+
+## Built-in Tasks (ready to use)
+
+- `RestingEyesOpen` — resting state
+- `ASSR` — auditory steady-state response
+- `MMN` — mismatch negativity
+- `ChirpStim` — chirp stimulus
+
+Use any built-in task immediately:
+
+```bash
+autocleaneeg-pipeline process RestingEyesOpen data.raw
+```
+
+## Custom Tasks (your recipes)
+
+Create a Python file under `~/Documents/Autoclean-EEG/tasks/`:
+
+```python
+# ~/Documents/Autoclean-EEG/tasks/my_experiment.py
+class MyExperiment(Task):
+    def run(self):
+        self.import_raw()
+        self.filter_data()
+        self.run_ica()
+        self.create_epochs()
+
+config = {
+    "filtering": {"l_freq": 1, "h_freq": 100},
+    "epoch_settings": {"tmin": -0.5, "tmax": 1.0},
+}
+```
+
+## Active Task (your default)
+
+Set a favorite task so you don’t retype it:
+
+```bash
+autocleaneeg-pipeline task set MyExperiment
+autocleaneeg-pipeline process data.raw  # uses MyExperiment automatically
+```
+
+### Define task-specific variables
+
+Add custom variables to your task’s `config` and access them via `self.settings`. See: [Advanced → Task Variables](/advanced/task-variables)
+
+### Flagged output routing
+
+Control whether flagged runs move into `FLAGGED_*` directories and whether they produce final files:
+
+```python
+config = {
+    # ...
+    "move_flagged_files": False,  # keep normal names and still produce final files
+}
+```
+
+Learn more: [Advanced → Flagged Outputs](/advanced/flagged-outputs)
+
+→ [Next: Source](/essentials/autoclean-basics/source)
+

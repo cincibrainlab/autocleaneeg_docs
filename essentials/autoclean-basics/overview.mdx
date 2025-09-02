@@ -1,0 +1,34 @@
+---
+title: "AutoClean Basics: Overview"
+sidebarTitle: "Overview"
+description: Understand the three pillars and how they fit together.
+
+---
+
+# The Three Pillars
+
+Think of AutocleanEEG Pipeline as your personal EEG lab. Everything revolves around three simple concepts:
+
+- Workspace: where Autoclean keeps your tasks, outputs, and config
+- Task: what analysis to run (built-in or custom)
+- Source: where your EEG data lives
+
+These work together with smart defaults. If you don’t specify something, Autoclean uses your saved defaults or asks you.
+
+## What You’ll Learn
+
+- Set up your Workspace for “drop-and-go” usage
+- Pick or write a Task and make it active
+- Set a Source for files or directories
+- Rely on sensible defaults and fallbacks to move fast
+
+## Quick Mental Model
+
+- Task selection: CLI argument → active Task → prompt
+- File selection: CLI argument → task config → active Source → prompt
+- Output location: CLI argument → Workspace/output → current directory
+
+Next: set up your Workspace.
+
+→ [Continue to Workspace](/essentials/autoclean-basics/workspace)
+

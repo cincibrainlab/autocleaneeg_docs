@@ -1,0 +1,40 @@
+---
+title: "AutoClean Basics: Workspace"
+sidebarTitle: "Workspace"
+description: Your EEG command center where tasks, outputs, and configs live.
+
+---
+
+# Workspace: Your Command Center
+
+The Workspace is a dedicated folder where Autoclean keeps your custom tasks, outputs, and configuration.
+
+## Smart Setup
+
+- First run: Autoclean creates `~/Documents/Autoclean-EEG/` automatically
+- No manual config needed to get started
+
+### Structure
+
+```text
+Autoclean-EEG/
+├── tasks/           # Your custom Python task files
+├── tasks/builtin/   # Example tasks from Autoclean
+├── output/          # Processing results
+└── example_basic_usage.py
+```
+
+### “Drop-and-Go” Magic
+
+Drop a `.py` task file into `tasks/` and it’s instantly available.
+
+```bash
+# Copy your custom task
+cp my_mmn_experiment.py ~/Documents/Autoclean-EEG/tasks/
+
+# It’s immediately available
+autocleaneeg-pipeline process MyMmnExperiment data.raw
+```
+
+→ [Next: Tasks](/essentials/autoclean-basics/tasks)
+

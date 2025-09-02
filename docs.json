@@ -26,10 +26,30 @@
             "pages": [
               "welcome",
               "installation",
-              "index",
+              "index_backup",
               "quickstart",
               "essentials/cli-introduction",
               "development"
+            ]
+          },
+          {
+            "group": "AutoClean Basics",
+            "pages": [
+              "essentials/autoclean-basics/overview",
+              "essentials/autoclean-basics/workspace",
+              "essentials/autoclean-basics/tasks",
+              "essentials/autoclean-basics/source",
+              "essentials/autoclean-basics/fallbacks",
+              "essentials/autoclean-basics/workflows",
+              "essentials/autoclean-basics/tips-quickstart"
+            ]
+          },
+          {
+            "group": "Advanced",
+            "pages": [
+              "advanced/persistent-state",
+              "advanced/task-variables",
+              "advanced/flagged-outputs"
             ]
           },
           {

@@ -1,0 +1,50 @@
+---
+title: "AutoClean Basics: Tips & Quick Start"
+sidebarTitle: "Tips & Quick Start"
+description: Speed tips, status checks, resets, and a short recipe.
+
+---
+
+# Tips & Quick Start
+
+## Speed tips
+
+```bash
+# Set defaults once
+autocleaneeg-pipeline task set YourMainAnalysis
+autocleaneeg-pipeline source set   # pick your main data folder
+
+# Work fast
+autocleaneeg-pipeline process                 # use all defaults
+autocleaneeg-pipeline process --recursive     # process whole folder
+autocleaneeg-pipeline process DifferentTask   # override task only
+```
+
+## Status checks
+
+```bash
+autocleaneeg-pipeline task show     # active task?
+autocleaneeg-pipeline source show   # active source?
+autocleaneeg-pipeline list-tasks    # available tasks
+```
+
+## Reset
+
+```bash
+autocleaneeg-pipeline task unset
+autocleaneeg-pipeline source unset
+```
+
+## Quick start recipe
+
+```bash
+# First run creates your workspace automatically
+autocleaneeg-pipeline task set RestingEyesOpen
+autocleaneeg-pipeline source set    # choose your data folder
+autocleaneeg-pipeline process
+```
+
+That’s it — the three pillars now work in harmony.
+
+→ [Back to Overview](/essentials/autoclean-basics/overview)
+
