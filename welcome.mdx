@@ -1,62 +1,44 @@
 ---
-title: "Welcome to AutocleanEEG Pipeline!"
+title: "Welcome to the AutocleanEEG Pipeline!"
 sidebarTitle: "Welcome!"
 description: Automated EEG Processing Software
 
 ---
+<Note>
+**AutocleanEEG Pipeline** is an easy-to-use command line application for automated EEG processing designed to be **modular**, **reproducible**, and **audit-ready**. 
 
-**AutocleanEEG Pipeline** is an easy-to-use command line application for automated EEG processing. It is designed for **modular**, **reproducible**, and **audit-ready** processing of high-volume EEG data. Despite its automation focus, it provides highly visual outputs, intuitive data viewing, and extensive customization. **AutocleanEEG Pipeline** is built on a foundation of MNE-Python and other opensource tools.
+The **AutocleanEEG Pipeline** is built on a foundation of [MNE-Python](https://mne.tools/stable/index.html) and other opensource tools. We have also incorporated new features such as **AI Vision** based ICA component rejection.
 
-Cleaning an EEG file with a preprocessing pipeline in AutocleanEEG is simple and requires just a few steps after opening a terminal.
+The [principal investigator](https://scholar.google.com/citations?user=5vxtu0QAAAAJ&hl=en) has over 25+ years of signal processing experience. Our focus is on an easy to use tool with the ability to support complex, custom pipelines.
+</Note>
 
-### Install AutocleanEEG Pipeline
+<Info>
+  **Prerequisites**:
+  - [uv Python Package Manger](https://github.com/astral-sh/uv)
+</Info>
 
-
+<Steps>
+<Step title="Install AutocleanEEG Pipeline">
 <CodeGroup>
-```bash mac/linux
-
+```bash stable
 uv tool install autocleaneeg-pipeline
-
-
 ```
-
-```shell win
-# Install Python (https://github.com/astral-sh/uv)
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-
+```shell development
 uv tool install git+https://github.com/cincibrainlab/autoclean_pipeline.git
 ```
-
 </CodeGroup>
+</Step>
 
-
-<CodeGroup>
-```bash mac/linux
-# Install Python (https://github.com/astral-sh/uv)
-curl -LsSf https://astral.sh/uv/install.sh | sh
-uv tool install git+https://github.com/cincibrainlab/autoclean_pipeline.git
+<Step title="Run AutocleanEEG Pipeline">
+```bash
+autocleaneeg-pipeline
 ```
-
-```shell win
-# Install Python (https://github.com/astral-sh/uv)
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-
-uv tool install git+https://github.com/cincibrainlab/autoclean_pipeline.git
-```
-
-</CodeGroup>
+<img src="/images/welcome-autoclean-run.png" alt="AutocleanEEG CLI running" style={{ borderRadius: '0.5rem', marginTop: '0.75rem' }} />
+</Step>
+</Steps>
 
 
-```python {2, 6, 7}
-from fastapi import FastAPI
-from fastapi_mcp import FastApiMCP
 
-app = FastAPI()
-
-mcp = FastApiMCP(app)
-mcp.mount_http()
-```
-That's it! Your auto-generated MCP server is now available at `https://app.base.url/mcp`
 
 ## Features
 
