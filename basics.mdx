@@ -1,0 +1,68 @@
+---
+title: "Basic Concepts"
+sidebarTitle: "Basics"
+description: Understand the three pillars and how they fit together.
+
+---
+
+Everything revolves around three simple concepts in AutocleanEEG:
+
+```mermaid
+
+flowchart TD
+    %% Main Pillars with sharp corners
+    A1["AutocleanEEG Pipeline"]
+    B1["Workspace"]
+    C1["Task"]
+    D1["Source"]
+    E1["Smart Defaults"]
+
+    %% Connections
+    A1 --> B1
+    A1 --> C1
+    A1 --> D1
+
+    B1 -.-> E1
+    C1 -.-> E1
+    D1 -.-> E1
+
+    %% Descriptions
+    B1:::pillarDesc
+    C1:::pillarDesc
+    D1:::pillarDesc
+    E1:::defaultsDesc
+
+    %% Styles
+    classDef main fill:#7c4dff,stroke:#4a148c,stroke-width:2px,color:#fff,rect
+    classDef pillarDesc fill:#b39ddb,stroke:#7c4dff,stroke-width:2px,color:#222,rect
+    classDef defaultsDesc fill:#ede7f6,stroke:#7c4dff,stroke-width:2px,color:#4a148c,rect
+
+    class A1 main
+    class B1,C1,D1 pillarDesc
+    class E1 defaultsDesc
+
+    %% Labels
+    B1:::pillarDesc
+    C1:::pillarDesc
+    D1:::pillarDesc
+
+    %% Add descriptions as sublabels
+    B1["Workspace<br><span style='font-size:12px'>Stores tasks and outputs</span>"]
+    C1["Task<br><span style='font-size:12px'>config and analysis to run (built-in/custom)</span>"]
+    D1["Input<br><span style='font-size:12px'>EEG data location</span>"]
+    E1["Process<br><span style='font-size:12px'>Run pipeline</span>"]
+```
+
+- Workspace: folder for your tasks and outputs
+- Task: what analysis pipeline to run (built-in or custom)
+- Input: a single EEG file or folder of EEG files
+
+## Corresponding commands
+
+Use these commands to interact with each pillar. 
+
+| Pillar     | Command                               | Purpose (concise)                |
+|-----------|----------------------------------------|----------------------------------|
+| Workspace | `autocleaneeg-pipeline workspace`      | Manage or inspect a workspace    |
+| Task      | `autocleaneeg-pipeline task`           | Define, list, or run a task      |
+| Input     | `autocleaneeg-pipeline input`          | Specify / validate EEG data path |
