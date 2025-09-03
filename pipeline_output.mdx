@@ -1,0 +1,131 @@
+---
+title: "Exploring Outputs"
+sidebarTitle: "Pipeline Outputs"
+description: "Configure a workspace, select a task, and run reproducible EEG preprocessing with clear quality-control (QC) outputs."
+---
+
+<Steps>
+<Step title="Prerequisites">
+  - AutocleanEEG Pipeline (see [Installation](http://localhost:3000/installation))
+  - Download our example dataset from [Zenodo](https://zenodo.org/records/17042258)
+</Step>
+
+<Step title="Check Workspace Location">
+
+By default, AutocleanEEG Pipeline creates a workspace folder named **`Autoclean-EEG`** inside your **Documents** folder.
+
+* Verify the workspace location:
+
+```bash
+% autocleaneeg-pipeline workspace show
+
+      AutocleanEEG Pipeline Workspace                                             
+          Current configuration                                      
+
+  ✓ Workspace ~/Documents/Autoclean-EEG                              
+          💾 Free space 472.9 GB                                      
+
+% 
+```
+
+<Tip>
+To open the workspace in your file explorer try:
+
+`autocleaneeg-pipeline workspace explore`
+</Tip>
+
+</Step>
+
+<Step title="List Tasks">
+
+List available tasks in your workspace:
+
+```bash
+autocleaneeg-pipeline task list
+```
+
+<img src="/images/first-pipeline-task-list.png" alt="AutocleanEEG task list showing built-in and custom tasks" style={{ borderRadius: '0.5rem', marginTop: '0.75rem' }} />
+
+<Tip>
+Task creation can be entirely custom and complex, incorporating Python, R, or MATLAB code. For this guide, we're using a simple built-in task to get you started quickly.
+</Tip>
+
+</Step>
+
+<Step title="Copy Task">
+
+Copy the built-in `RestingState_Basic` task and rename it for our tutorial:
+
+```bash
+autocleaneeg-pipeline task copy RestingState_Basic RestingState_Tutorial
+```
+
+This creates a custom copy that you can modify without affecting the original built-in task.
+
+</Step>
+
+<Step title="Set Active Task">
+
+Set the copied task as your active task:
+
+```bash
+autocleaneeg-pipeline task set
+```
+
+Select the number corresponding to `RestingState_Tutorial` from the displayed list.
+
+</Step>
+
+<Step title="Set Input File">
+
+Set the input EEG file for processing:
+
+```bash
+autocleaneeg-pipeline input set
+```
+
+Copy and paste the full path to your downloaded example file when prompted.
+
+<Tip>
+You can also set a folder path for batch processing multiple files at once.
+</Tip>
+
+</Step>
+
+<Step title="Confirm Configuration">
+
+Verify that workspace, task, and input are all properly configured:
+
+```bash
+autocleaneeg-pipeline
+```
+
+This displays your current pipeline configuration and confirms everything is set correctly.
+
+</Step>
+
+<Step title="Run Pipeline">
+
+Start the processing pipeline:
+
+```bash
+autocleaneeg-pipeline process
+```
+
+Confirm the details when prompted and type `yes` to start the pipeline running.
+
+</Step>
+
+<Step title="View Outputs">
+
+When processing is complete, explore the generated outputs:
+
+```bash
+autocleaneeg-pipeline workspace explore
+```
+
+This opens your workspace folder to view the processed results and quality control outputs.
+
+</Step>
+
+</Steps>
