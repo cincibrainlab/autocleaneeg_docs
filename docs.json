@@ -26,23 +26,23 @@
             "pages": [
               "welcome",
               "basics",
-              "first_pipeline",
-              "installation",
-              "index_backup",
-              "essentials/cli-introduction",
-              "development"
+              "pipeline_tutorial"
             ]
           },
           {
             "group": "Reference",
             "pages": [
+              "installation",
               "essentials/autoclean-basics/overview",
               "essentials/autoclean-basics/workspace",
               "essentials/autoclean-basics/tasks",
               "essentials/autoclean-basics/source",
               "essentials/autoclean-basics/fallbacks",
               "essentials/autoclean-basics/workflows",
-              "essentials/autoclean-basics/tips-quickstart"
+              "essentials/autoclean-basics/tips-quickstart",
+              "index_backup",
+              "essentials/cli-introduction",
+              "development"
             ]
           },
           {
@@ -143,6 +143,25 @@
       "x": "https://x.com/cbrainlab",
       "github": "https://github.com/cincibrainlab/autoclean_pipeline",
       "linkedin": "https://www.linkedin.com/in/erniepedapati"
-    }
+    },
+    "links": [
+      {
+        "header": "Support",
+        "items": [
+          {
+            "label": "R01NS134914",
+            "href": "https://reporter.nih.gov/search/6u4FxtJRA0SJT7mFBFlXSw/project-details/11110443"
+          },
+          {
+            "label": "R01HD108222",
+            "href": "https://reporter.nih.gov/search/6u4FxtJRA0SJT7mFBFlXSw/project-details/10899435"
+          },
+          {
+            "label": "U54HD104461",
+            "href": "https://reporter.nih.gov/search/KfghYyAgcUqRr7VaJQPEbA/project-details/10271296"
+          }
+        ]
+      }
+    ]
   }
 }
