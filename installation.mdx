@@ -1,36 +1,195 @@
 ---
 title: Installation
+sidebarTitle: "Install"
 icon: arrow-down-to-line
 ---
 
-## Installing AutocleanEEG
+## Global Installation (Recommended)
 
-There are two main ways to install AutocleanEEG. You can install it as a **global tool** for convenient use across projects with a simple command, or **clone the repository** to install it locally, allowing easy editing and customization of the code.
+You can install AutocleanEEG either globally for use across projects or by cloning the repository for local customization.
 
 ### Prerequisites
 
-AutocleanEEG is a Python application. We recommend using [uv](https://docs.astral.sh/uv/), a fast Python package installer.
+AutocleanEEG Pipeline is a Python application. We recommend using [uv](https://docs.astral.sh/uv/), a fast Python package installer.
 
-### Global Installation (Recommended)
+<Info>
+**Why use Astral uv?**  
+[uv](https://docs.astral.sh/uv/) is a next-generation Python package manager that dramatically speeds up installs and dependency resolution. It is fully compatible with pip, supports modern Python workflows, and can make managing Python environments much faster and more reliable.
+</Info>
+
+
+
+### Installing the Stable version
 
 To install AutocleanEEG globally, use the following command:
 
 ```bash
-uv add autoclean-eeg
+uv tool install autocleaneeg-pipeline
 ```
 
-This command will make AutocleanEEG available from any terminal session, allowing you to use it across different projects without needing to install it separately for each one.
+<Info>
+**What is `uv tool install`?**  
+The `uv tool install` command lets you globally install Python applications as command-line tools, similar to `pipx`. This means you can run the installed tool from any terminal, regardless of your current project, folder, or environment.
+</Info>
+
+### Installing from Source
+
+If you prefer to customize or contribute to AutocleanEEG, you can clone the repository and install it locally. Live edits to the code will be reflected immediately when you run the executable (including PDB breakpoints).
 
 ```bash
-uv add autoclean-eeg
+
+git clone https://github.com/cincibrainlab/autocleaneeg-pipeline.git
+cd autocleaneeg-pipeline
+uv tool install -e --upgrade .
+
 ```
 
-Alternatively, you can install with `pip` or `uv pip`:
+### Platform-Specific Notes
+
+#### macOS and Linux
+
+AutocleanEEG Pipeline is fully compatible with macOS and **Linux** systems. All installation and usage instructions above have been tested on these platforms.
+
+<Info>
+On a fresh Debian/Ubuntu Linux install you may need development headers and Qt runtime libraries (often required for PyQt-related features).
 
 ```bash
-uv pip install autoclean-eeg
+sudo apt-get update
+sudo apt install -y python3.10-dev build-essential pkg-config
+sudo apt install -y qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools libxkbcommon-x11-0 libxrender1 libsm6 libxext6 libxcb1 libx11-xcb1
 ```
+</Info>
 
-```bash
-pip install autoclean-eeg
-```
+##### (Optional) Install system build dependencies (Linux)
+
+
+#### Windows Users
+
+While native Windows support is under active testing, we currently recommend using [Windows Subsystem for Linux (WSL)](https://learn.microsoft.com/en-us/windows/wsl/) for the best experience. WSL allows you to run a Linux environment directly on Windows, ensuring compatibility with all AutocleanEEG features.
+
+To get started with WSL:
+
+1. [Install WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
+2. Open your WSL terminal.
+3. Follow the Linux installation instructions above.
+
+If you encounter any issues on Windows or WSL, please [open an issue](https://github.com/your-repo/issues) on our GitHub repository.
+
+## Troubleshooting
+
+### Installing uv
+
+
+<AccordionGroup>
+    <Accordion title='Issue: Installed uv but "uv" command not found'>
+        This is usually a PATH issue.
+        
+        Steps:
+        1. Confirm install: `python -m pip show uv` (if you installed via pip) or follow the official installer instructions.
+        2. Ensure the uv bin directory is on PATH:
+             - macOS/Linux (typical): `~/.local/bin` or the location printed by the installer.
+             - Add to shell (bash/zsh): `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc` (or `.zshrc`) then restart the terminal.
+        3. Restart the terminal (or run `exec $SHELL`).
+        4. Test: `uv --version`.
+    </Accordion>
+
+    <Accordion title='Issue: "autocleaneeg-pipeline" command not found after install'>
+        Cause: Installed with `uv add` inside a project (adds as a dependency) instead of a global tool install.
+        
+        Solution:
+        1. Uninstall any local attempts: remove from `pyproject.toml` if added.
+        2. Run global install: `uv tool install autocleaneeg-pipeline`
+        3. Verify tool path: `uv tool list`
+        4. Ensure the uv tools bin dir is on PATH (printed by `uv tool dir`).
+    </Accordion>
+
+    <Accordion title='Issue: Changes to local source not reflected when running command'>
+        Ensure you installed in editable mode when working from a cloned repo.
+        
+        Steps:
+        1. From repo root: `uv tool install -e --upgrade .`
+        2. Confirm the tool points to your workspace: `uv tool list | grep autocleaneeg-pipeline`
+        3. If still stale: `uv tool uninstall autocleaneeg-pipeline` then reinstall.
+    </Accordion>
+
+    <Accordion title='Issue: Need to upgrade to latest release'>
+        Run:
+        ```bash
+        uv tool install --upgrade autocleaneeg-pipeline
+        ```
+        If still old, clear cache:
+        ```bash
+        uv cache clean
+        uv tool install --force-reinstall autocleaneeg-pipeline
+        ```
+    </Accordion>
+
+    <Accordion title='Issue: Permission denied (global install)'>
+        uv installs tools into a user-owned directory (no sudo needed). If you used sudo previously, file ownership may be wrong.
+        
+        Fix:
+        1. Remove sudo-installed copy (if any).
+        2. Reinstall normally: `uv tool install autocleaneeg-pipeline`
+        3. If PATH still points to a root-owned location, adjust PATH to prefer the user tool dir.
+    </Accordion>
+
+    <Accordion title='Issue: Command runs but imports fail (missing dependencies)'>
+        Possible corrupted or partial install.
+        
+        Fix:
+        ```bash
+        uv tool uninstall autocleaneeg-pipeline
+        uv cache clean
+        uv tool install autocleaneeg-pipeline
+        ```
+    </Accordion>
+
+    <Accordion title='Issue: Using Windows (PowerShell) and command not found'>
+        If using WSL, install and run inside the WSL shell (Ubuntu, etc.).
+        
+        Native Windows:
+        1. Ensure Scripts directory on PATH (e.g. `%APPDATA%\Python\Scripts` or the uv tools dir from `uv tool dir`).
+        2. Close and reopen PowerShell.
+        3. Try: `where autocleaneeg-pipeline`.
+    </Accordion>
+
+    <Accordion title='Issue: Need to uninstall / reset'>
+        Uninstall:
+        ```bash
+        uv tool uninstall autocleaneeg-pipeline
+        ```
+        Remove cached artifacts (optional):
+        ```bash
+        uv cache clean
+        ```
+    </Accordion>
+
+    <Accordion title='Issue: "uv: command not found" after installing via curl script'>
+        The installer prints where uv was placed. Add that directory to PATH and restart the shell.
+        
+        Example (bash/zsh):
+        ```bash
+        echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+        exec $SHELL
+        ```
+    </Accordion>
+
+    <Accordion title='Issue: Accidentally used "uv add autocleaneeg-pipeline" in a project'>
+        That only adds it as a dependency; it won't expose a global CLI.
+        
+        Fix:
+        1. Remove the dependency from `pyproject.toml` (if undesired).
+        2. Run: `uv tool install autocleaneeg-pipeline`
+    </Accordion>
+
+    <Accordion title='General: How to see where the tool binary lives'>
+        Run:
+        ```bash
+        uv tool dir
+        ```
+        Then ensure that directory is on PATH. List tools:
+        ```bash
+        uv tool list
+        ```
+    </Accordion>
+</AccordionGroup>
