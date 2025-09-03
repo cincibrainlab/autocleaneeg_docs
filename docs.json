@@ -26,7 +26,7 @@
             "pages": [
               "welcome",
               "basics",
-              "quickstart",
+              "first_pipeline",
               "installation",
               "index_backup",
               "essentials/cli-introduction",
