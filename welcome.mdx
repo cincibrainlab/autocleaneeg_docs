@@ -1,6 +1,6 @@
 ---
 title: "Welcome to the AutocleanEEG Pipeline!"
-sidebarTitle: "Welcome!"
+sidebarTitle: "Introduction"
 description: Automated EEG Processing Software
 
 ---
@@ -35,38 +35,20 @@ uv tool install git+https://github.com/cincibrainlab/autoclean_pipeline.git
 autocleaneeg-pipeline
 ```
 <img src="/images/welcome-autoclean-run.png" alt="AutocleanEEG CLI running" style={{ borderRadius: '0.5rem', marginTop: '0.75rem' }} />
+<Note>
+AutocleanEEG’s welcome page highlights system details, workspace setup, key commands, and provides links to documentation and the code repository.
+</Note>
 </Step>
 
 <Step title="View a file">
 ```bash
 autocleaneeg-pipeline view /path/to/your_file.set
 ```
+
+<img src="/images/welcome-view.png" alt="AutocleanEEG viewer showing an EEG file" style={{ borderRadius: '0.5rem', marginTop: '0.75rem' }} />
 <Note>
 AutocleanEEG’s `view` subcommand provides a simple CLI wrapper around the excellent MNE Qt Browser project. Learn more at https://github.com/mne-tools/mne-qt-browser.
 </Note>
-<img src="/images/welcome-view.png" alt="AutocleanEEG viewer showing an EEG file" style={{ borderRadius: '0.5rem', marginTop: '0.75rem' }} />
 </Step>
 </Steps>
 
-
-
-
-## Features
-
-- [**Authentication**](/advanced/auth) built in, using your existing FastAPI dependencies!
-
-- **FastAPI-native:** Not just another OpenAPI -> MCP converter
-
-- **Zero configuration** required - just point it at your FastAPI app and it works
-
-- **Preserving schemas** of your request models and response models
-
-- **Preserve documentation** of all your endpoints, just as it is in Swagger
-
-- [**Flexible deployment**](/advanced/deploy) - Mount your MCP server to the same app, or deploy separately
-
-- [**ASGI interface**](/advanced/asgi) - Uses FastAPI's ASGI interface directly for efficient internal communication
-
-## Hosted Solution
-
-If you prefer a managed hosted solution check out [tadata.com](https://tadata.com).
