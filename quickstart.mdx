@@ -1,15 +1,40 @@
 ---
 title: "Quickstart: Running an AutocleanEEG Pipeline"
-sidebarTitle: "Quickstart"
+sidebarTitle: "First Pipeline"
 description: "Configure a workspace, select a task, and provide inputs to execute reproducible EEG preprocessing with clear QC outputs."
 ---
 
-## Prerequisites
-
-<Info>
+<Steps>
+<Step title="Prerequisites">
+<Warning>
   - AutocleanEEG Pipeline (see [Installation](http://localhost:3000/installation))
   - Download our example dataset from [Zenodo](https://zenodo.org/records/17042258)
-</Info>
+</Warning>
+</Step>
+
+<Step title="Workspace">
+
+By default, AutocleanEEG Pipeline creates a workspace folder called **Autoclean-EEG** within your **Documents** folder. Confirm a valid workspace by running `autocleaneeg-pipeline` to confirm a valid workspace location.
+
+<Tip>
+Use the command `autocleaneeg-pipeline workspace explore` to open the workspace folder in your file exlorer.
+</Tip>
+
+</Step>
+
+<Step title="Task">
+
+Task files transparently describe configuration parameters and processing steps you intend to perform on your datasets.
+
+<Tip>
+Use the command `autocleaneeg-pipeline workspace explore` to open the workspace folder in your file exlorer.
+</Tip>
+
+</Step>
+
+
+</Steps>
+
 
 
 
