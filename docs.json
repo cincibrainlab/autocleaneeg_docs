@@ -25,15 +25,16 @@
             "group": "Getting started",
             "pages": [
               "welcome",
+              "basics",
+              "quickstart",
               "installation",
               "index_backup",
-              "quickstart",
               "essentials/cli-introduction",
               "development"
             ]
           },
           {
-            "group": "AutoClean Basics",
+            "group": "Reference",
             "pages": [
               "essentials/autoclean-basics/overview",
               "essentials/autoclean-basics/workspace",
