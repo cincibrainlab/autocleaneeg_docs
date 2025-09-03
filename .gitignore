@@ -1,3 +1,13 @@
 # macOS
 .DS_Store
 
+
+# Test data files
+*.fdt
+*.set
+
+# Logs
+logs/
+
+# Backup files
+*_backup.*
