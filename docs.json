@@ -38,7 +38,8 @@
               "outputs/subject_folders",
               "outputs/final_files",
               "outputs/derivatives_overview",
-              "outputs/intermediate_steps"
+              "outputs/intermediate_steps",
+              "outputs/subject_reports"
 
             ]
           },
