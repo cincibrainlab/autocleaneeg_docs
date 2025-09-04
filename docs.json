@@ -30,6 +30,14 @@
             ]
           },
           {
+            "group": "Pipeline Outputs",
+            "pages": [
+              "outputs/open_workspace",
+              "outputs/processing_log"
+
+            ]
+          },
+          {
             "group": "Reference",
             "pages": [
               "installation",

@@ -1,0 +1,57 @@
+---
+title: "Exploring Pipeline Outputs"
+sidebarTitle: "Workspace Overview"
+description: "Learn how to navigate and open the output workspace"
+---
+
+Each **AutoCleanEEG Pipeline** run generates a structured workspace folder containing logs, database records, and standardized outputs in BIDS format. This organization ensures your results are both reproducible and easy to review.
+
+<Note>
+Output folders are named after the task you run, so multiple tasks can coexist within the same project.  
+If you rerun a task, the existing folder is automatically backed up with the run date appended, ensuring previous results are preserved and never overwritten.
+</Note>
+
+## Folder Layout
+
+```Markdown
+# Pipeline Tutorial Folder Output
+Autoclean-EEG/
+├── process_log.txt         (command history)
+├── pipeline.db             (result database)   
+└── output/                 
+    ├── RestingStateTutorial/               (task folder)
+    │   ├── bids/                           (BIDS-compliant outputs) 
+    │   └── RestingStateTutorial_processing_log.csv  (CSV report)
+    └── RestingStateTutorial_2025-09-04/    (automatic backup from rerun)
+```
+**Figure 1.** Example of the workspace folder structure created by AutoCleanEEG.
+Each task creates its own subfolder. Reruns generate a timestamped backup to prevent overwriting results
+
+
+## Opening the Workspace Folder
+
+By default, the workspace is created as **`Autoclean-EEG`** inside your **Documents** directory.
+
+To open the workspace directly from the terminal, run:
+
+```bash
+autocleaneeg-pipeline workspace explore
+```
+
+This command will:
+
+* Locate your active workspace.
+* Launch your system’s file explorer at that location:
+
+  * **macOS** → Finder
+  * **Linux** → Nautilus (or your system’s default file manager)
+  * **Windows** → File Explorer
+
+## Next Steps
+
+* Explore the `bids/` subfolder for BIDS-compliant outputs.
+* Check `*_processing_log.csv` for a detailed summary of the run.
+* Use backups (`*_YYYY-MM-DD/`) to compare results across different preprocessing runs.
+
+
+
