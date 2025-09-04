@@ -1,0 +1,54 @@
+---
+title: "Raw Subject Folders in BIDS"
+sidebarTitle: "Folders: Raw Subjects"
+description: "Explore the per-subject structure (`sub-<ID>`) created when raw data are converted into BIDS format."
+---
+
+
+Each participant has their own folder inside `bids/`. The pipeline begins by **converting the original input files into BIDS-compliant format** before any cleaning is applied. This ensures future steps follow the strict BIDS standard.
+
+### Example Layout
+
+```
+sub-451559/
+├── sub-451559_scans.tsv
+└── eeg/
+    ├── sub-451559_task-tutorial_eeg.json
+    ├── sub-451559_task-tutorial_eeg.vhdr
+    ├── sub-451559_task-tutorial_eeg.vmrk
+    ├── sub-451559_task-tutorial_eeg.eeg
+    ├── sub-451559_task-tutorial_channels.tsv
+    ├── sub-451559_task-tutorial_events.json
+    ├── sub-451559_task-tutorial_events.tsv
+    ├── sub-451559_space-XYZ_coordsystem.json
+    └── sub-451559_space-XYZ_electrodes.tsv
+```
+
+<Tip>
+These files are a **direct conversion from the original inputs**.  
+If you need to save disk space, you can safely delete them after processing, since they can always be regenerated from the raw recordings.
+</Tip>
+
+
+### Key Files
+
+| File                                 | Purpose                                                                                                            |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| **`*_scans.tsv`**                    | Records acquisition date/time for each data file.                                                                  |
+| **`*_eeg.vhdr/.vmrk/.eeg`**          | The BrainVision EEG file trio (header, markers, raw data). This is the converted raw EEG recording in BIDS format. |
+| **`*_eeg.json`**                     | Metadata describing acquisition parameters (sampling rate, reference, filters).                                    |
+| **`*_channels.tsv`**                 | Channel list with type, name, and status (e.g., marked bad).                                                       |
+| **`*_events.tsv` / `*_events.json`** | Event timing and event metadata.                                                                                   |
+| **`*_coordsystem.json`**             | Coordinate system definition for electrode positions.                                                              |
+| **`*_electrodes.tsv`**               | Electrode names and 3D positions.                                                                                  |
+
+### Why BIDS First?
+
+* **Standardization**: Once in BIDS, every participant has the same predictable structure.
+* **Interoperability**: Outputs can be validated with the [BIDS validator](https://bids-standard.github.io/bids-validator/) and read by tools like MNE-BIDS or EEGLAB-BIDS.
+* **Traceability**: Original input → standardized BIDS copy → cleaned derivatives.
+
+<Info>
+The subject folder ID (e.g. `sub-451559`) may not match the original filename.  
+The mapping between recording filenames and subject IDs is tracked in `participants.tsv`.
+</Info>

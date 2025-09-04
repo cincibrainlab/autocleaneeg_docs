@@ -1,0 +1,75 @@
+---
+title: "Intermediate Pipeline Steps"
+sidebarTitle: "Folder: Intermediate Steps"
+description: "Learn how AutoCleanEEG dynamically exports step-by-step intermediate outputs, depending on the preprocessing stages you enable."
+---
+
+## The `intermediate/` Folder
+
+The `intermediate/` folder is where AutoCleanEEG saves **step-by-step snapshots** of your preprocessing pipeline.
+These folders are **dynamically generated** — only the steps you enable and configure for export will appear here.
+
+For example, if you skip ICA or don’t export filtering outputs, the corresponding step folder (`08_ica/` or `03_filter/`) won’t exist in your run.
+
+### Example Layout
+
+```
+intermediate/
+├── 01_import
+├── 02_resample
+├── 03_filter
+├── 04_trim
+├── 05_bad_channels
+├── 06_rereference
+├── 07_artifact_detection
+├── 08_ica
+├── 09_pre_ica
+├── 10_epochs
+├── 11_drop_bad_epochs
+├── 12_epochs
+├── 13_gfp_clean
+└── 14_comp
+```
+### How It Works
+
+* **Step numbering** reflects the pipeline order.
+* **Exported steps only**: If you request export after filtering but not after trimming, you’ll see `03_filter/` but not `04_trim/`.
+* **Flexible granularity**: This lets you save just the checkpoints you care about (for inspection or debugging), while avoiding unnecessary disk usage.
+
+### Step Highlights
+
+| Folder                | Purpose                                                                    |
+| --------------------- | -------------------------------------------------------------------------- |
+| **01\_import**        | Original raw data converted into BIDS-compatible format.                   |
+| **02\_resample**      | Data resampled (e.g., 1000 Hz → 250 Hz).                                   |
+| **03\_filter**        | Filtered signals (HP, LP, notch).                                          |
+| **05\_bad\_channels** | Snapshot of data after noisy channels are dropped.                         |
+| **08\_ica**           | Data after ICA decomposition and component removal.                        |
+| **10\_epochs**        | Segmented data into epochs.                                                |
+| **13\_gfp\_clean**    | Epochs cleaned with Global Field Power metrics.                            |
+| **14\_comp**          | Final compiled output before writing to `derivatives/` and `final_files/`. |
+
+<Info>
+### ICA Export Format
+
+The **ICA stage** is exported in both **EEGLAB (.set)** and **MNE (.fif)** formats.  
+This is a special case:
+
+- In **EEGLAB**, ICA weights are stored directly inside the `.set` dataset.  
+- In **MNE-Python**, ICA weights are stored separately from the EEG data (the `.fif` ICA file).  
+
+This separation allows you to:
+- Reapply ICA weights later to the same dataset.  
+- Redo component artifact removal and continue the pipeline from that point (feature coming soon).  
+</Info>
+
+
+### Why It Matters
+
+* **Customizable exports**: You decide which steps produce saved files.
+* **Debug-friendly**: Inspect any stage of the pipeline without re-running the entire process.
+* **Storage-aware**: Avoid large intermediate folders by disabling exports for steps you don’t need.
+
+<Info>
+Intermediate folders are **optional checkpoints**. You can enable or disable exports per step in your task configuration. Once validated, these folders can be safely deleted to reclaim space.
+</Info>

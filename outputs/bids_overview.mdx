@@ -1,0 +1,53 @@
+---
+title: "Exploring the BIDS Folder"
+sidebarTitle: "BIDS Overview"
+description: "Understand the structure and files created in the `bids/` folder, including metadata, subject folders, and processed outputs."
+---
+
+
+# The `bids/` Folder
+
+Each pipeline run outputs results in **BIDS (Brain Imaging Data Structure)** format, a widely adopted standard for EEG and neuroimaging data. This ensures your cleaned data are interoperable with other tools (e.g., EEGLAB-BIDS, MNE-BIDS, BIDS Validator).
+
+The `bids/` subfolder contains:
+
+* **Cleaned continuous and epoched EEG data** in BIDS layout
+* **Standard metadata files** describing participants, dataset structure, and channels
+* Events and derivatives for reproducibility
+
+<Tip>
+Because BIDS enforces strict formatting rules, the **subject identifier (`sub-XXXX`)** inside the `bids/` folder will not necessarily match the original filename.  
+To see how subjects are linked to original recordings, check the **`participants.tsv`** file, which maps subject IDs to participant metadata.
+</Tip>
+
+```
+└── RestingStateTutorial/ 
+    └── bids/ 
+        ├── dataset_description.json 
+        ├── sub-451559/ 
+        ├── participants.tsv 
+        ├── participants.json 
+        ├── README 
+        ├── derivatives/ 
+        └── final_files/ 
+``` 
+
+## File and Folder Overview
+
+| File / Folder                  | Purpose                                                                                       |
+| ------------------------------ | --------------------------------------------------------------------------------------------- |
+| **`dataset_description.json`** | Required by BIDS. Records dataset name, pipeline version, and references.                     |
+| **`participants.tsv`**         | Table listing subjects and basic attributes (age, sex, etc.).                                 |
+| **`participants.json`**        | Sidecar describing the meaning, format, and units of each column in `participants.tsv`.       |
+| **`README`**                   | Free-text description of the dataset, study, or preprocessing notes.                          |
+| **`sub-<ID>/`**                | Per-subject folder (e.g., `sub-451559`) containing the actual EEG data and metadata.          |
+| **`derivatives/`**             | Preprocessed outputs from the pipeline (e.g., ICA-cleaned signals, epoched data, QC reports). |
+| **`final_files/`**             | Convenience folder with cleaned, ready-to-use outputs (e.g., epoched datasets).               |
+
+
+## What to Expect
+
+* **Raw-like cleaned EEG** lives under each subject folder (`sub-<ID>`).
+* **Metadata** (`dataset_description.json`, `participants.tsv/json`, `README`) ensures the dataset is machine-readable and human-readable.
+* **Processed derivatives** contain artifacts-removed signals and QC artifacts.
+* **Final files** provide shortcuts for quick analysis, without digging into the full BIDS tree.

@@ -1,0 +1,35 @@
+---
+title: "Final Files Folder"
+sidebarTitle: "Folder: Final Files"
+description: "Learn about the convenience folder that collects cleaned and epoched EEG outputs along with processing logs."
+---
+
+## The `final_files/` Folder
+
+Although not part of the strict [BIDS standard](https://bids.neuroimaging.io/), AutoCleanEEG provides a **`final_files/`** folder inside the `bids/` directory.
+
+This folder is meant as a **convenience export**: it gathers the most useful processed outputs in one place, so users can quickly start analysis without digging through derivatives or raw-like structures.
+
+```
+bids/
+└── final_files/
+    ├── 128_Rest_EyesOpen_D1004_processing_log.csv   (CSV summary of preprocessing)
+    ├── 128_Rest_EyesOpen_D1004_processing.log       (detailed step log)
+    └── 128_Rest_EyesOpen_D1004_comp_epo.set         (cleaned & epoched EEG dataset)
+```
+
+This shows the three main items that typically appear:
+* **`*_processing_log.csv`** → concise summary table of the preprocessing run
+* **`*_processing.log`** → step-by-step log output
+* **`*_comp_epo.set`** → final, artifact-cleaned and epoched EEG dataset (EEGLAB format)
+
+### Why it exists
+
+* **Convenience**: Many users just want the “final” artifact-cleaned, epoched dataset without extra navigation.
+* **Reproducibility**: Logs are included alongside the cleaned files for transparency.
+* **Compatibility**: Outputs are still linked to the BIDS dataset, but collected in one easy-to-access folder.
+
+<Info>
+This folder is **not BIDS-compliant** and may not be recognized by external BIDS validators.  
+It is provided purely for user convenience. For strict BIDS workflows, always use the `sub-*/` and `derivatives/` folders instead.
+</Info>

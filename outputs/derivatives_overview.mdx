@@ -1,0 +1,45 @@
+---
+title: "Derivatives Overview"
+sidebarTitle: "Folder: Derivatives"
+description: "Learn how AutoCleanEEG stores processed outputs in the BIDS derivatives folder, including metadata, intermediate files, and subject-level results."
+---
+
+## The `derivatives/` Folder
+
+The `derivatives/` folder follows the [BIDS derivatives standard](https://bids.neuroimaging.io/), where processed data are kept separate from raw-like files.
+Each pipeline version creates its own subfolder, ensuring that outputs remain traceable to the exact software and parameters used.
+
+### Example Layout
+
+```
+bids/
+└── derivatives/
+    └── autoclean-v2.2.1/
+        ├── dataset_description.json
+        ├── metadata/          (pipeline-specific metadata)
+        ├── intermediate/      (temporary / intermediate outputs)
+        ├── logs/              (detailed run logs)
+        └── sub-451559/        (subject-level cleaned outputs)
+```
+
+### Key Components
+
+| Item                           | Purpose                                                                                                             |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| **`autoclean-v2.2.1/`**        | Pipeline-specific derivatives folder, versioned for traceability.                                                   |
+| **`dataset_description.json`** | Required by BIDS derivatives. Documents the pipeline, version, and references.                                      |
+| **`metadata/`**                | Stores additional pipeline metadata (e.g., preprocessing settings, QC parameters).                                  |
+| **`intermediate/`**            | Temporary or step-wise files (not always needed for downstream analyses, but useful for debugging).                 |
+| **`logs/`**                    | Processing logs at the derivative level, providing more detail than the top-level workspace logs.                   |
+| **`sub-<ID>/`**                | Subject-level cleaned outputs, in BIDS derivative format (e.g., artifact-corrected EEG, ICA solutions, epoch sets). |
+
+### Why Derivatives Matter
+
+* **Traceability**: Every derivative is tied to a pipeline version (`autoclean-v2.2.1`), making analyses reproducible.
+* **Separation of concerns**: Raw-like BIDS inputs are preserved, while processed data live here.
+* **Compatibility**: Other BIDS-aware tools know to look in `derivatives/` for cleaned or secondary outputs.
+* **Debugging**: `metadata/`, `logs/`, and `intermediate/` help you track down how results were produced.
+
+<Info>
+If disk space is limited, you can archive or delete the **`intermediate/`** folder after successful runs. The **final cleaned outputs** will remain in `sub-<ID>/`.
+</Info>

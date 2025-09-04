@@ -33,7 +33,12 @@
             "group": "Pipeline Outputs",
             "pages": [
               "outputs/open_workspace",
-              "outputs/processing_log"
+              "outputs/processing_log",
+              "outputs/bids_overview",
+              "outputs/subject_folders",
+              "outputs/final_files",
+              "outputs/derivatives_overview",
+              "outputs/intermediate_steps"
 
             ]
           },
