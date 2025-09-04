@@ -1,0 +1,709 @@
+{
+    "id": 146,
+    "run_id": "01K4AHHYHQR91EZRXSCD27PFB3",
+    "created_at": "2025-09-04 10:19:42",
+    "task": "RestingStateTutorial",
+    "unprocessed_file": "/Users/ernie/Documents/ExampleData 2/Resting/128_Rest_EyesOpen_D1004.raw",
+    "status": "completed",
+    "success": 1,
+    "json_file": "128_Rest_EyesOpen_D1004_autoclean_metadata.json",
+    "report_file": "128_Rest_EyesOpen_D1004_autoclean_report.pdf",
+    "user_context": {
+        "user": "ernie",
+        "host": "macbook14",
+        "pid": 7071,
+        "ts": 1756995582
+    },
+    "metadata": {
+        "step_prepare_directories": {
+            "bids": "/Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids",
+            "metadata": "/Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/metadata",
+            "clean": "/Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1",
+            "logs": "/Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/logs",
+            "stage": "/Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/intermediate",
+            "final_files": "/Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/final_files"
+        },
+        "entrypoint": {
+            "run_id": "01K4AHHYHQR91EZRXSCD27PFB3",
+            "task": "RestingStateTutorial",
+            "unprocessed_file": "/Users/ernie/Documents/ExampleData 2/Resting/128_Rest_EyesOpen_D1004.raw",
+            "output_dir": "/Users/ernie/Documents/Autoclean-EEG/output",
+            "bids_dir": "/Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids",
+            "metadata_dir": "/Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/metadata",
+            "clean_dir": "/Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1",
+            "logs_dir": "/Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/logs",
+            "stage_dir": "/Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/intermediate",
+            "final_files_dir": "/Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/final_files",
+            "config_hash": "eJwrqSxItVIoqCzJyM+LL0kszi6Oz8/LqeQqSy0qzszPs1JQN9QzUOcCAC/EDbY=",
+            "config_b64": "e459c30c53232f3a08791e6fa340632c145222803483c2db03d4ba073f2414cb",
+            "task_hash": "eJxLzkksLo7PS8xNtVIISi0uycxLDy5JLEkNKS3JL8pMzOEqqSwAShVUlmTk58WXJBZncwEAAWMThg==",
+            "task_b64": "b175b911830f76254a47dc469840273752666842558a84806dcb6e312a5e893e",
+            "participants_tsv_lock": "<unlocked _thread.lock object at 0x12c7f8280>"
+        },
+        "import_eeg": {
+            "import_function": "import_eeg",
+            "plugin_used": "EGIRawGSN129Plugin",
+            "file_format": "EGI_RAW",
+            "montage_name": "GSN-HydroCel-129",
+            "creationDateTime": "2025-09-04T10:19:44.215218",
+            "unprocessedFile": "128_Rest_EyesOpen_D1004.raw",
+            "eegSystem": "GSN-HydroCel-129",
+            "sampleRate": 1000.0,
+            "channelCount": 128,
+            "data_type": "raw",
+            "plugin_name": "EGIRawGSN129Plugin",
+            "plugin_version": "1.0.0",
+            "montage_details": {
+                "type": "GSN-HydroCel-129",
+                "channel_count": 129,
+                "manufacturer": "Electrical Geodesics, Inc. (EGI)",
+                "reference": "Common Reference",
+                "layout": "Geodesic",
+                "file_format": "EGI .raw binary format"
+            },
+            "durationSec": 303.429,
+            "numberSamples": 303429,
+            "hasEvents": true,
+            "event_dict": {
+                "DIN1": 1,
+                "DIN6": 2
+            },
+            "event_count": 2,
+            "unique_event_types": [
+                "1",
+                "2"
+            ],
+            "additional_event_info": {
+                "variables": [
+                    "time",
+                    "sample",
+                    "id",
+                    "type"
+                ],
+                "event_count": 2
+            }
+        },
+        "step_create_bids_path": {
+            "creationDateTime": "2025-09-04T10:19:44.596104",
+            "bids_subject": "451559",
+            "bids_task": "restingstatetutorial",
+            "bids_run": null,
+            "bids_session": null,
+            "bids_dir": "/Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids",
+            "bids_datatype": "eeg",
+            "bids_suffix": "eeg",
+            "bids_extension": null,
+            "bids_root": "/Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids",
+            "eegSystem": "GSN-HydroCel-129",
+            "configFile": "python_task_config",
+            "line_freq": 60,
+            "derivatives_dir": "/Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/sub-451559/eeg"
+        },
+        "save_raw_to_set": {
+            "creationDateTime": "2025-09-04T10:21:40.997392",
+            "stage": "pre_ica",
+            "stage_number": "09",
+            "outputPath": "/Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/intermediate/09_pre_ica/128_Rest_EyesOpen_D1004_pre_ica_raw.set",
+            "suffix": "_pre_ica",
+            "basename": "128_Rest_EyesOpen_D1004",
+            "format": "eeglab",
+            "n_channels": 128,
+            "actual_sfreq": 250.0,
+            "actual_duration": 295.424
+        },
+        "step_resample_data": {
+            "original_sfreq": 1000.0,
+            "target_sfreq": 250,
+            "actual_sfreq": 250.0,
+            "original_n_samples": 303429,
+            "resampled_n_samples": 75857,
+            "npad": "auto",
+            "window": "auto",
+            "n_jobs": 1,
+            "pad": "auto",
+            "original_data_type": "RawEGI",
+            "result_data_type": "RawEGI",
+            "creationDateTime": "2025-09-04T10:21:14.058720"
+        },
+        "step_filter_data": {
+            "original_sfreq": 250.0,
+            "filtered_sfreq": 250.0,
+            "original_n_channels": 128,
+            "filtered_n_channels": 128,
+            "applied_l_freq": 1,
+            "applied_h_freq": 80,
+            "applied_notch_freqs": [
+                60,
+                120
+            ],
+            "applied_notch_widths": 5,
+            "method": "fir",
+            "phase": "zero",
+            "fir_window": "hamming",
+            "original_data_type": "RawEGI",
+            "result_data_type": "RawEGI",
+            "creationDateTime": "2025-09-04T10:21:14.443385"
+        },
+        "step_trim_edges": {
+            "trim_duration": 4,
+            "original_start_time": 0.0,
+            "original_end_time": 303.424,
+            "new_start_time": 4.0,
+            "new_end_time": 299.424,
+            "original_duration": 303.424,
+            "new_duration": 295.424,
+            "creationDateTime": "2025-09-04T10:21:14.526726"
+        },
+        "step_clean_bad_channels": {
+            "method": "NoisyChannels",
+            "options": {
+                "random_state": 1337,
+                "correlation_thresh": 0.35,
+                "deviation_thresh": 2.5,
+                "ransac_sample_prop": 0.35,
+                "ransac_corr_thresh": 0.65,
+                "ransac_frac_bad": 0.25,
+                "ransac_channel_wise": false
+            },
+            "channelCount": 128,
+            "durationSec": 295.428,
+            "numberSamples": 73857,
+            "bads": [
+                "E3",
+                "E122",
+                "E107",
+                "E8",
+                "E14",
+                "E56",
+                "E17",
+                "E127",
+                "E2"
+            ],
+            "uncorrelated_channels": [
+                "E2",
+                "E3",
+                "E17",
+                "E56",
+                "E107",
+                "E122"
+            ],
+            "deviation_channels": [
+                "E8",
+                "E14",
+                "E17"
+            ],
+            "ransac_channels": [
+                "E127"
+            ],
+            "creationDateTime": "2025-09-04T10:21:25.900396"
+        },
+        "step_rereference_data": {
+            "new_ref_type": "average",
+            "creationDateTime": "2025-09-04T10:21:26.080536"
+        },
+        "step_annotate_noisy_epochs": {
+            "flagged_epochs": "[ 26  33  34  37  40  49  62  63  70  71 106 116 118 120 126 134 135 137\n 138 143]",
+            "flagged_epochs_description": "BAD_noisy_epoch",
+            "creationDateTime": "2025-09-04T10:21:26.147316"
+        },
+        "step_annotate_uncorrelated_epochs": {
+            "flagged_epochs": "[33]",
+            "flagged_epochs_description": "BAD_uncorrelated_epoch",
+            "creationDateTime": "2025-09-04T10:21:27.085746"
+        },
+        "step_detect_dense_oscillatory_artifacts": {
+            "window_size_ms": 100,
+            "channel_threshold_uv": 45,
+            "min_channels": 75,
+            "padding_ms": 500,
+            "annotation_label": "BAD_REF_AF",
+            "artifacts_detected": 130,
+            "creationDateTime": "2025-09-04T10:21:27.130622"
+        },
+        "step_run_ica": {
+            "ica": {
+                "ica_kwargs": {
+                    "method": "infomax",
+                    "n_components": null,
+                    "fit_params": {
+                        "extended": true
+                    },
+                    "max_iter": "auto",
+                    "random_state": 97
+                },
+                "ica_components": "118",
+                "temp_highpass_for_ica": null
+            },
+            "creationDateTime": "2025-09-04T10:21:40.821188"
+        },
+        "save_ica_to_fif": {
+            "creationDateTime": "2025-09-04T10:21:41.000428",
+            "components": [
+                "<generator object save_ica_to_fif.<locals>.<genexpr> at 0x1662e7880>"
+            ],
+            "ica_path": "128_Rest_EyesOpen_D1004-ica.fif",
+            "pre_ica_path": "/Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/intermediate/09_pre_ica/128_Rest_EyesOpen_D1004_pre_ica_raw.set"
+        },
+        "classify_ica_components": {
+            "ica": {
+                "classification_method": "iclabel",
+                "ica_components": "118"
+            },
+            "creationDateTime": "2025-09-04T10:21:46.168103"
+        },
+        "generate_ica_reports": {
+            "artifact_reports": {
+                "creationDateTime": "2025-09-04T10:22:30.319447",
+                "ica_rejected_components": null
+            },
+            "creationDateTime": "2025-09-04T10:22:30.319452"
+        },
+        "step_apply_ica_component_rejection": {
+            "ica": {
+                "configured_flags_to_reject": [
+                    "muscle",
+                    "heart",
+                    "eog",
+                    "ch_noise",
+                    "line_noise"
+                ],
+                "configured_rejection_threshold": 0.3,
+                "configured_threshold_overrides": {},
+                "rejected_indices_this_step": [
+                    0,
+                    1,
+                    2,
+                    4,
+                    7,
+                    8,
+                    12,
+                    13,
+                    17,
+                    18,
+                    20,
+                    28,
+                    30,
+                    31,
+                    32,
+                    35,
+                    38,
+                    45,
+                    50,
+                    64,
+                    70,
+                    98,
+                    115
+                ],
+                "auto_excluded_indices": [
+                    0,
+                    1,
+                    2,
+                    4,
+                    7,
+                    8,
+                    12,
+                    13,
+                    17,
+                    18,
+                    20,
+                    28,
+                    30,
+                    31,
+                    32,
+                    35,
+                    38,
+                    45,
+                    50,
+                    64,
+                    70,
+                    98,
+                    115
+                ],
+                "final_excluded_indices": [
+                    0,
+                    1,
+                    2,
+                    4,
+                    7,
+                    8,
+                    12,
+                    13,
+                    17,
+                    18,
+                    20,
+                    28,
+                    30,
+                    31,
+                    32,
+                    35,
+                    38,
+                    45,
+                    50,
+                    64,
+                    70,
+                    98,
+                    115
+                ]
+            },
+            "creationDateTime": "2025-09-04T10:22:30.399167"
+        },
+        "save_epochs_to_set": {
+            "creationDateTime": "2025-09-04T10:22:39.345023",
+            "stage": "post_comp",
+            "stage_number": "14",
+            "outputPaths": [
+                "/Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/intermediate/14_comp/128_Rest_EyesOpen_D1004_comp_epo.set"
+            ],
+            "suffix": "_comp",
+            "basename": "128_Rest_EyesOpen_D1004",
+            "format": "eeglab",
+            "n_epochs": 90,
+            "n_channels": 128,
+            "actual_sfreq": 250.0,
+            "actual_duration": 180.0,
+            "tmin": -1.0,
+            "tmax": 1.0
+        },
+        "step_create_regular_epochs": {
+            "duration": 2,
+            "reject_by_annotation": false,
+            "initial_epoch_count": 147,
+            "final_epoch_count": 99,
+            "single_epoch_duration": 2.0,
+            "single_epoch_samples": 501,
+            "initial_duration": 198.0,
+            "numberSamples": 49599,
+            "channelCount": 128,
+            "annotation_types": {
+                "BAD_ANNOTATION": 48,
+                "KEEP": 99,
+                "TOTAL": 147
+            },
+            "marked_epochs_file": "post_epochs",
+            "cleaned_epochs_file": "post_drop_bads",
+            "tmin": -1,
+            "tmax": 1,
+            "creationDateTime": "2025-09-04T10:22:30.584387"
+        },
+        "step_detect_outlier_epochs": {
+            "initial_epoch_count": 99,
+            "final_epoch_count": 94,
+            "dropped_epoch_count": 5,
+            "threshold": 3.0,
+            "bad_epochs": [
+                26,
+                28,
+                91,
+                92,
+                95
+            ],
+            "z_score_metrics": [
+                "mean",
+                "std",
+                "max",
+                "range"
+            ],
+            "single_epoch_duration": 2.0,
+            "single_epoch_samples": 501,
+            "total_duration_sec": 188.0,
+            "total_samples": 47094,
+            "channel_count": 128,
+            "creationDateTime": "2025-09-04T10:22:30.788661"
+        },
+        "step_gfp_clean_epochs": {
+            "initial_epochs": 94,
+            "final_epochs": 90,
+            "removed_by_gfp": 4,
+            "mean_amplitude": 3.7796484995734225e-08,
+            "max_amplitude": 0.0002365596536636981,
+            "min_amplitude": -0.00023719393839248879,
+            "std_amplitude": 7.94672782980758e-06,
+            "mean_gfp": 7.948237488826626e-06,
+            "gfp_threshold": 3.0,
+            "removed_total": 4,
+            "annotation_types": {
+                "BAD_ANNOTATION": 48,
+                "USER": 5,
+                "KEEP": 94,
+                "TOTAL": 147
+            },
+            "epoch_duration": 2.0,
+            "samples_per_epoch": 501,
+            "total_duration_sec": 180.0,
+            "total_samples": 45090,
+            "channel_count": 128,
+            "scalp_channels_used": [
+                "E1",
+                "E2",
+                "E3",
+                "E4",
+                "E5",
+                "E6",
+                "E7",
+                "E8",
+                "E9",
+                "E10",
+                "E11",
+                "E12",
+                "E13",
+                "E14",
+                "E15",
+                "E16",
+                "E18",
+                "E19",
+                "E20",
+                "E21",
+                "E22",
+                "E23",
+                "E24",
+                "E25",
+                "E26",
+                "E27",
+                "E28",
+                "E29",
+                "E30",
+                "E31",
+                "E32",
+                "E33",
+                "E34",
+                "E35",
+                "E36",
+                "E37",
+                "E39",
+                "E40",
+                "E41",
+                "E42",
+                "E45",
+                "E46",
+                "E47",
+                "E50",
+                "E51",
+                "E52",
+                "E53",
+                "E54",
+                "E55",
+                "E57",
+                "E58",
+                "E59",
+                "E60",
+                "E61",
+                "E62",
+                "E63",
+                "E64",
+                "E65",
+                "E66",
+                "E67",
+                "E68",
+                "E69",
+                "E70",
+                "E71",
+                "E72",
+                "E74",
+                "E75",
+                "E76",
+                "E77",
+                "E78",
+                "E79",
+                "E80",
+                "E82",
+                "E83",
+                "E84",
+                "E85",
+                "E86",
+                "E87",
+                "E89",
+                "E90",
+                "E91",
+                "E92",
+                "E93",
+                "E95",
+                "E96",
+                "E97",
+                "E98",
+                "E99",
+                "E100",
+                "E101",
+                "E102",
+                "E103",
+                "E104",
+                "E105",
+                "E106",
+                "E108",
+                "E109",
+                "E110",
+                "E111",
+                "E112",
+                "E115",
+                "E116",
+                "E117",
+                "E118",
+                "E122",
+                "E123",
+                "E124"
+            ],
+            "requested_epochs_exceeded": false,
+            "creationDateTime": "2025-09-04T10:22:30.848435"
+        },
+        "plot_raw_vs_cleaned_overlay": {
+            "artifact_reports": {
+                "creationDateTime": "2025-09-04T10:22:35.875516",
+                "plot_raw_vs_cleaned_overlay": "128_Rest_EyesOpen_D1004_raw_vs_cleaned_overlay.png"
+            },
+            "creationDateTime": "2025-09-04T10:22:35.875552"
+        },
+        "step_psd_topo_figure": {
+            "artifact_reports": {
+                "creationDateTime": "2025-09-04T10:22:39.262991",
+                "plot_psd_topo_figure": "128_Rest_EyesOpen_D1004_psd_topo_figure.png"
+            },
+            "creationDateTime": "2025-09-04T10:22:39.263018"
+        },
+        "copy_final_files": {
+            "creationDateTime": "2025-09-04T10:22:39.353077",
+            "source_stage": "14_comp",
+            "files_copied": 2,
+            "final_files_dir": "/Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/final_files",
+            "includes_processing_log": true
+        },
+        "json_summary": {
+            "run_id": "01K4AHHYHQR91EZRXSCD27PFB3",
+            "task": "RestingStateTutorial",
+            "bids_subject": "sub-451559",
+            "timestamp": "2025-09-04 10:19:42",
+            "basename": "128_Rest_EyesOpen_D1004.raw",
+            "proc_state": "completed_files",
+            "exclude_category": "",
+            "flagged_reasons": [
+                "WARNING: 130 potential reference artifacts detected"
+            ],
+            "import_details": {
+                "sample_rate": 1000.0,
+                "net_nbchan_orig": 128,
+                "duration": 303.429,
+                "basename": "128_Rest_EyesOpen_D1004.raw"
+            },
+            "processing_details": {
+                "h_freq": 80,
+                "l_freq": 1,
+                "notch_freqs": [
+                    60,
+                    120
+                ],
+                "notch_widths": 5,
+                "filtered_sfreq": 250.0,
+                "filtered_n_channels": 128,
+                "target_sfreq": 250,
+                "actual_sfreq": 250.0,
+                "resampled_n_samples": 75857,
+                "trim_duration": 4,
+                "ref_type": "average",
+                "ref_artifacts": 130
+            },
+            "export_details": {
+                "epoch_length": 2.0,
+                "final_n_epochs": 90,
+                "final_duration": 180.0,
+                "final_duration_verified": true,
+                "net_nbchan_post": 128,
+                "initial_n_epochs": 147,
+                "initial_duration": 198.0,
+                "srate_post": 250.0,
+                "epoch_limits": [
+                    -1,
+                    1
+                ]
+            },
+            "ica_details": {
+                "proc_nComps": "118",
+                "ica_method": "",
+                "classification_method": "iclabel",
+                "proc_removeComps": [
+                    0,
+                    1,
+                    2,
+                    4,
+                    7,
+                    8,
+                    12,
+                    13,
+                    17,
+                    18,
+                    20,
+                    28,
+                    30,
+                    31,
+                    32,
+                    35,
+                    38,
+                    45,
+                    50,
+                    64,
+                    70,
+                    98,
+                    115
+                ],
+                "num_rejected_components": 23
+            },
+            "channel_dict": {
+                "step_clean_bad_channels": [
+                    "E3",
+                    "E122",
+                    "E107",
+                    "E8",
+                    "E14",
+                    "E56",
+                    "E17",
+                    "E127",
+                    "E2"
+                ],
+                "uncorrelated_channels": [
+                    "E2",
+                    "E3",
+                    "E17",
+                    "E56",
+                    "E107",
+                    "E122"
+                ],
+                "deviation_channels": [
+                    "E8",
+                    "E14",
+                    "E17"
+                ],
+                "ransac_channels": [
+                    "E127"
+                ],
+                "removed_channels": [
+                    "E3",
+                    "E122",
+                    "E107",
+                    "E8",
+                    "E14",
+                    "E56",
+                    "E17",
+                    "E127",
+                    "E2"
+                ]
+            },
+            "outputs": [
+                "128_Rest_EyesOpen_D1004_psd_topo_figure.png",
+                "128_Rest_EyesOpen_D1004-ica.fif",
+                "128_Rest_EyesOpen_D1004_raw_vs_cleaned_overlay.png",
+                "sub-451559_task-restingstatetutorialica_components_all.pdf"
+            ],
+            "output_dir": "/Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial",
+            "derivatives_dir": "/Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/sub-451559/eeg"
+        }
+    },
+    "task_file_info": {
+        "task_name": "RestingStateTutorial",
+        "capture_timestamp": "2025-09-04T10:19:42.533759",
+        "file_path": "/Users/ernie/Documents/Autoclean-EEG/tasks/resting_state_tutorial.py",
+        "file_content_hash": "ced02b562910dc17582c10738180d4eb63fe378fa00d39423fcebc29d0054ec8",
+        "file_content": "from autoclean.core.task import Task\n\n# =============================================================================\n#  Resting state EEG recording EEG PREPROCESSING CONFIGURATION\n# =============================================================================\n# This configuration controls how your Resting state EEG recording EEG data will be\n# automatically cleaned and processed. Each section handles a different aspect\n# of the preprocessing pipeline.\n#\n# \ud83d\udfe2 enabled: True  = Apply this processing step\n# \ud83d\udd34 enabled: False = Skip this processing step\n#\n# =============================================================================\n\nconfig = {\n    \"move_flagged_files\": False,\n    \"resample_step\": {\"enabled\": True, \"value\": 250},\n    \"filtering\": {\n        \"enabled\": True,\n        \"value\": {\n            \"l_freq\": 1,\n            \"h_freq\": 80,\n            \"notch_freqs\": [60, 120],\n            \"notch_widths\": 5,\n        },\n    },\n    \"drop_outerlayer\": {\"enabled\": False, \"value\": []},\n    \"eog_step\": {\n        \"enabled\": False,\n        \"value\": [1, 32, 8, 14, 17, 21, 25, 125, 126, 127, 128],\n    },\n    \"trim_step\": {\"enabled\": True, \"value\": 4},\n    \"crop_step\": {\"enabled\": False, \"value\": {\"start\": 0, \"end\": 60}},\n    \"reference_step\": {\"enabled\": True, \"value\": \"average\"},\n    \"montage\": {\"enabled\": True, \"value\": \"GSN-HydroCel-129\"},\n    \"ICA\": {\n        \"enabled\": True,\n        \"value\": {\n            \"method\": \"infomax\",\n            \"n_components\": None,\n            \"fit_params\": {\"extended\": True},\n        },\n    },\n    \"component_rejection\": {\n        \"enabled\": True,\n        \"method\": \"icvision\",\n        \"value\": {\n            \"ic_flags_to_reject\": [\"muscle\", \"heart\", \"eog\", \"ch_noise\", \"line_noise\"],\n            \"ic_rejection_threshold\": 0.3,\n        },\n    },\n    \"epoch_settings\": {\n        \"enabled\": True,\n        \"value\": {\"tmin\": -1, \"tmax\": 1},\n        \"event_id\": None,\n        \"remove_baseline\": {\"enabled\": False, \"window\": [None, 0]},\n        \"threshold_rejection\": {\"enabled\": False, \"volt_threshold\": {\"eeg\": 0.000125}},\n    },\n}\n\n\nclass RestingStateTutorial(Task):\n    \"\"\"Task implementation for Resting state EEG recording EEG preprocessing.\"\"\"\n\n    def run(self) -> None:\n        # Import raw EEG data\n        self.import_raw()\n\n        breakpoint()\n\n        # Basic preprocessing steps\n        self.resample_data()\n\n        self.filter_data()\n\n        self.drop_outer_layer()\n\n        self.assign_eog_channels()\n\n        self.trim_edges()\n\n        self.crop_duration()\n\n        self.original_raw = self.raw.copy()\n\n        # Channel cleaning\n        self.clean_bad_channels()\n\n        # Re-referencing\n        self.rereference_data()\n\n        # Artifact detection\n        self.annotate_noisy_epochs()\n        self.annotate_uncorrelated_epochs()\n        self.detect_dense_oscillatory_artifacts()\n\n        # ICA processing with optional export\n        self.run_ica()  # Export after ICA\n        self.classify_ica_components(method=\"iclabel\")\n\n        # Epoching with export\n        # self.create_eventid_epochs() # Using event IDs\n        # Epoching with export\n        self.create_regular_epochs(export=True)  # Export epochs\n        # Detect outlier epochs\n        self.detect_outlier_epochs()\n\n        # Clean epochs using GFP with export\n        self.gfp_clean_epochs()\n\n        # Generate visualization reports\n        self.generate_reports()\n\n    def resume_after_ica(self, raw, post_ica_path=None):\n        \"\"\"\n        Resume the task tail after manual ICA re-apply.\n\n        Parameters\n        ----------\n        raw : mne.io.Raw\n            The post-ICA cleaned raw loaded from the manual_ica stage.\n        post_ica_path : str | None\n            Path to the post_ica_manual file (for context/logging only).\n        \"\"\"\n        # Attach post-ICA data to the task\n        self.raw = raw\n        try:\n            self.original_raw = raw.copy()  # for report overlays\n        except Exception:\n            self.original_raw = None\n\n        # Optional log if you want\n        # from autoclean.utils.logging import message\n        # message(\"header\", f\"Resuming {self.__class__.__name__} from post_ICA: {post_ica_path or '(in\u2011memory)'}\")\n        self.create_regular_epochs(export=True)  # Export epochs\n        # Detect outlier epochs\n        self.detect_outlier_epochs()\n\n        # Clean epochs using GFP with export\n        self.gfp_clean_epochs()\n\n        # Reports\n        self.generate_reports()\n\n    def generate_reports(self) -> None:\n        \"\"\"Generate quality control visualizations and reports.\"\"\"\n        if self.raw is None or self.original_raw is None:\n            return\n\n        # Plot raw vs cleaned overlay using mixin method\n        self.plot_raw_vs_cleaned_overlay(self.original_raw, self.raw)\n\n        # Plot PSD topography using mixin method\n        self.step_psd_topo_figure(self.original_raw, self.raw)\n\n        # Additional report generation can be added here\n",
+        "error": null,
+        "file_size_bytes": 4942,
+        "line_count": 156
+    },
+    "error": null,
+    "auth0_user_id": null
+}

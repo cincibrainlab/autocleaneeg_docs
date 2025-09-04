@@ -39,7 +39,8 @@
               "outputs/final_files",
               "outputs/derivatives_overview",
               "outputs/intermediate_steps",
-              "outputs/subject_reports"
+              "outputs/subject_reports",
+              "outputs/metadata_logs"
 
             ]
           },

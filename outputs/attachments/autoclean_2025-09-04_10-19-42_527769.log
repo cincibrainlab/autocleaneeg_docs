@@ -1,0 +1,174 @@
+2025-09-04 10:19:42 | HEADER   | Starting processing for task: RestingStateTutorial
+2025-09-04 10:19:42 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:19:42 | HEADER   | Using plugin: EGIRawGSN129Plugin
+2025-09-04 10:19:42 | INFO     | Loading EGI .raw file with GSN-HydroCel-129 montage: /Users/ernie/Documents/ExampleData 2/Resting/128_Rest_EyesOpen_D1004.raw
+2025-09-04 10:19:44 | SUCCESS  | Successfully loaded .raw file with all events
+2025-09-04 10:19:44 | DEBUG    | Annotations after loading: ['DIN1' 'DIN6']
+2025-09-04 10:19:44 | INFO     | Detected event types: {np.str_('DIN1'), np.str_('DIN6')}
+2025-09-04 10:19:44 | INFO     | Configuring GSN-HydroCel-129 montage
+2025-09-04 10:19:44 | SUCCESS  | Successfully configured GSN-HydroCel-129 montage
+2025-09-04 10:19:44 | INFO     | Processing events from EGI .raw file
+2025-09-04 10:19:44 | INFO     | Found 2 events of 2 unique types: ['Unknown-1' 'Unknown-2']
+2025-09-04 10:19:44 | INFO     | Event counts: {'Unknown-1': 1, 'Unknown-2': 1}
+2025-09-04 10:19:44 | INFO     | Applying task-specific event processing for: RestingStateTutorial
+2025-09-04 10:19:44 | INFO     | Using event processor: RestingStateEventProcessor
+2025-09-04 10:19:44 | INFO     | ✓ Processing resting state task-specific annotations...
+2025-09-04 10:19:44 | INFO     | No specific condition found for resting state task
+2025-09-04 10:19:44 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:19:44 | SUCCESS  | ✓ EEG data imported successfully as raw
+2025-09-04 10:19:44 | HEADER   | step_create_bids_path
+2025-09-04 10:19:44 | DEBUG    | Successfully validated threading.Lock object from autoclean_dict.
+2025-09-04 10:19:44 | INFO     | Generated participant ID for 128_Rest_EyesOpen_D1004: 451559
+2025-09-04 10:19:44 | INFO     | Created BIDS derivatives directory structure at /Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/sub-451559/eeg
+2025-09-04 10:19:44 | INFO     | Created autoclean derivatives dataset_description.json
+2025-09-04 10:19:44 | DEBUG    | Acquiring participants.tsv lock for 128_Rest_EyesOpen_D1004.raw...
+2025-09-04 10:19:44 | DEBUG    | Acquired participants.tsv lock for 128_Rest_EyesOpen_D1004.raw.
+2025-09-04 10:19:44 | INFO     | Creating participants.tsv with headers at /Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/participants.tsv
+2025-09-04 10:19:44 | WARNING  | RuntimeWarning: TSV file is empty: '/Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/participants.tsv'
+2025-09-04 10:19:44 | WARNING  | RuntimeWarning: Converting data files to BrainVision format
+2025-09-04 10:19:44 | SUCCESS  | Converted 128_Rest_EyesOpen_D1004.raw to BIDS format.
+2025-09-04 10:19:44 | DEBUG    | Participant sub-451559 already exists. Updating row.
+2025-09-04 10:19:44 | DEBUG    | Updated participants.tsv for 128_Rest_EyesOpen_D1004.raw
+2025-09-04 10:19:44 | DEBUG    | Released participants.tsv lock for 128_Rest_EyesOpen_D1004.raw.
+2025-09-04 10:19:44 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:19:44 | SUCCESS  | ✓ Saved post_import file to: /Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/intermediate/01_import/128_Rest_EyesOpen_D1004_import_raw.set
+2025-09-04 10:19:44 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:19:44 | DEBUG    | Record update_status successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:21:13 | HEADER   | Resampling data from 1000.0 Hz to 250 Hz...
+2025-09-04 10:21:13 | INFO     | Data successfully resampled to 250 Hz
+2025-09-04 10:21:14 | SUCCESS  | ✓ Saved post_resample file to: /Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/intermediate/02_resample/128_Rest_EyesOpen_D1004_resample_raw.set
+2025-09-04 10:21:14 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:21:14 | DEBUG    | Record update_status successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:21:14 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:21:14 | HEADER   | Filtering data...
+2025-09-04 10:21:14 | SUCCESS  | ✓ Saved post_filter file to: /Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/intermediate/03_filter/128_Rest_EyesOpen_D1004_filter_raw.set
+2025-09-04 10:21:14 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:21:14 | DEBUG    | Record update_status successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:21:14 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:21:14 | INFO     | Drop Outer Layer step is disabled in configuration
+2025-09-04 10:21:14 | INFO     | EOG Assignment step is disabled in configuration
+2025-09-04 10:21:14 | HEADER   | Trimming 4s from each end (new range: 4.000s to 299.424s)
+2025-09-04 10:21:14 | INFO     | Data trimmed. New duration: 295.424s
+2025-09-04 10:21:14 | SUCCESS  | ✓ Saved post_trim file to: /Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/intermediate/04_trim/128_Rest_EyesOpen_D1004_trim_raw.set
+2025-09-04 10:21:14 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:21:14 | DEBUG    | Record update_status successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:21:14 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:21:14 | INFO     | Duration Cropping step is disabled in configuration
+2025-09-04 10:21:25 | INFO     | Detected 9 bad channels: ['E3', 'E122', 'E107', 'E8', 'E14', 'E56', 'E17', 'E127', 'E2']
+2025-09-04 10:21:25 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:21:25 | SUCCESS  | ✓ Saved post_bad_channels file to: /Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/intermediate/05_bad_channels/128_Rest_EyesOpen_D1004_bad_channels_raw.set
+2025-09-04 10:21:25 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:21:25 | DEBUG    | Record update_status successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:21:25 | HEADER   | Rereferencing data...
+2025-09-04 10:21:26 | SUCCESS  | ✓ Saved post_rereference file to: /Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/intermediate/06_rereference/128_Rest_EyesOpen_D1004_rereference_raw.set
+2025-09-04 10:21:26 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:21:26 | DEBUG    | Record update_status successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:21:26 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:21:26 | HEADER   | Annotating noisy epochs
+2025-09-04 10:21:26 | INFO     | Epoching data with duration 2.0 and overlap 0.0.
+2025-09-04 10:21:26 | DEBUG    | Adding annotations to the original raw object.
+2025-09-04 10:21:26 | INFO     | Added 20 'BAD_noisy_epoch' annotations.
+2025-09-04 10:21:26 | DEBUG    | Reporting flagged epochs.
+2025-09-04 10:21:26 | INFO     | Total duration for 'BAD_noisy_epoch': 40.00 seconds.
+2025-09-04 10:21:26 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:21:26 | HEADER   | Annotating uncorrelated epochs
+2025-09-04 10:21:26 | INFO     | Epoching data with duration 2.0 and overlap 0.0.
+2025-09-04 10:21:27 | INFO     | Added 1 'BAD_uncorrelated_epoch' annotations.
+2025-09-04 10:21:27 | INFO     | Total duration for 'BAD_uncorrelated_epoch': 2.00 seconds.
+2025-09-04 10:21:27 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:21:27 | INFO     | Added 130 potential reference artifact annotations
+2025-09-04 10:21:27 | WARNING  | WARNING: 130 potential reference artifacts detected
+2025-09-04 10:21:27 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:21:27 | SUCCESS  | ✓ Saved post_artifact_detection file to: /Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/intermediate/07_artifact_detection/128_Rest_EyesOpen_D1004_artifact_detection_raw.set
+2025-09-04 10:21:27 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:21:27 | DEBUG    | Record update_status successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:21:27 | HEADER   | Running ICA step
+2025-09-04 10:21:27 | DEBUG    | Setting max_iter to auto
+2025-09-04 10:21:27 | DEBUG    | Setting random_state to 97
+2025-09-04 10:21:27 | DEBUG    | Fitting ICA with {'method': 'infomax', 'n_components': None, 'fit_params': {'extended': True}, 'max_iter': 'auto', 'random_state': 97}
+2025-09-04 10:21:40 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:21:40 | SUCCESS  | ✓ Saved post_ica file to: /Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/intermediate/08_ica/128_Rest_EyesOpen_D1004_ica_raw.set
+2025-09-04 10:21:40 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:21:40 | DEBUG    | Record update_status successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:21:40 | SUCCESS  | ✓ Saved pre_ica file to: /Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/intermediate/09_pre_ica/128_Rest_EyesOpen_D1004_pre_ica_raw.set
+2025-09-04 10:21:40 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:21:40 | DEBUG    | Record update_status successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:21:41 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:21:41 | SUCCESS  | ICA step complete
+2025-09-04 10:21:41 | HEADER   | Running ICA component classification with iclabel
+2025-09-04 10:21:41 | WARNING  | RuntimeWarning: The provided Raw instance is not filtered between 1 and 100 Hz. ICLabel was designed to classify features extracted from an EEG dataset bandpass filtered between 1 and 100 Hz (see the 'filter()' method for Raw and Epochs instances).
+2025-09-04 10:21:46 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:21:46 | SUCCESS  | ICA component classification with iclabel complete
+2025-09-04 10:22:30 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:22:30 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:22:30 | HEADER   | Applying ICA component rejection
+2025-09-04 10:22:30 | INFO     | Will reject ICs of types: ['muscle', 'heart', 'eog', 'ch_noise', 'line_noise'] with confidence > 0.3
+2025-09-04 10:22:30 | DEBUG    | Applying ICA to self.raw
+2025-09-04 10:22:30 | INFO     | Identified 23 components for rejection: [0, 1, 2, 4, 7, 8, 12, 13, 17, 18, 20, 28, 30, 31, 32, 35, 38, 45, 50, 64, 70, 98, 115]
+2025-09-04 10:22:30 | INFO     | Applied ICA, removing components: [0, 1, 2, 4, 7, 8, 12, 13, 17, 18, 20, 28, 30, 31, 32, 35, 38, 45, 50, 64, 70, 98, 115]
+2025-09-04 10:22:30 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:22:30 | SUCCESS  | ICA component rejection complete.
+2025-09-04 10:22:30 | HEADER   | Creating regular epochs from -1s to 1s...
+2025-09-04 10:22:30 | INFO     | Marked 48 epochs with bad annotations (not dropped)
+2025-09-04 10:22:30 | SUCCESS  | ✓ Saved post_epochs file to: /Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/intermediate/10_epochs/128_Rest_EyesOpen_D1004_epochs_epo.set
+2025-09-04 10:22:30 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:22:30 | DEBUG    | Record update_status successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:22:30 | DEBUG    | reordering metadata after dropping
+2025-09-04 10:22:30 | INFO     | 
+Epoch Drop Log Summary:
+2025-09-04 10:22:30 | INFO     | Total epochs: 147
+2025-09-04 10:22:30 | INFO     | Good epochs: 99
+2025-09-04 10:22:30 | INFO     | Epochs with BAD_ANNOTATION: 48
+2025-09-04 10:22:30 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:22:30 | SUCCESS  | ✓ Saved post_drop_bad_epochs file to: /Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/intermediate/11_drop_bad_epochs/128_Rest_EyesOpen_D1004_drop_bad_epochs_epo.set
+2025-09-04 10:22:30 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:22:30 | DEBUG    | Record update_status successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:22:30 | SUCCESS  | ✓ Saved post_epochs file to: /Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/intermediate/12_epochs/128_Rest_EyesOpen_D1004_epochs_epo.set
+2025-09-04 10:22:30 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:22:30 | DEBUG    | Record update_status successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:22:30 | HEADER   | Detecting and removing outlier epochs
+2025-09-04 10:22:30 | INFO     | Dropped 5 epochs with z-scores above 3.0
+2025-09-04 10:22:30 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:22:30 | HEADER   | Cleaning epochs based on Global Field Power (GFP)
+2025-09-04 10:22:30 | INFO     | Calculating Global Field Power (GFP) for each epoch using only scalp electrodes
+2025-09-04 10:22:30 | INFO     | Removing outlier epochs based on GFP z-scores
+2025-09-04 10:22:30 | INFO     | Outlier epochs removed based on GFP: 4
+2025-09-04 10:22:30 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:22:30 | SUCCESS  | ✓ Saved post_gfp_clean file to: /Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/intermediate/13_gfp_clean/128_Rest_EyesOpen_D1004_gfp_clean_epo.set
+2025-09-04 10:22:30 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:22:30 | DEBUG    | Record update_status successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:22:30 | INFO     | Epoch GFP cleaning process completed
+2025-09-04 10:22:35 | INFO     | Raw channels overlay full duration plot saved to /Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/sub-451559/eeg/128_Rest_EyesOpen_D1004_raw_vs_cleaned_overlay.png
+2025-09-04 10:22:35 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:22:35 | INFO     | Number of EEG channels: 128
+2025-09-04 10:22:39 | INFO     | Combined PSD and topographical map figure saved to /Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/sub-451559/eeg/128_Rest_EyesOpen_D1004_psd_topo_figure.png
+2025-09-04 10:22:39 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:22:39 | SUCCESS  | ✓ Saved post_comp file to: /Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/intermediate/14_comp/128_Rest_EyesOpen_D1004_comp_epo.set
+2025-09-04 10:22:39 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:22:39 | DEBUG    | Record update_status successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:22:39 | INFO     | Copying final files from 14_comp to final_files directory
+2025-09-04 10:22:39 | DEBUG    | Copied 128_Rest_EyesOpen_D1004_comp_epo.set to final_files
+2025-09-04 10:22:39 | DEBUG    | Copied processing log to final_files
+2025-09-04 10:22:39 | SUCCESS  | Copied 2 final files (including processing log) to /Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/final_files
+2025-09-04 10:22:39 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:22:39 | SUCCESS  | ✓ Task RestingStateTutorial completed successfully
+2025-09-04 10:22:39 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:22:39 | SUCCESS  | ✓ Task RestingStateTutorial completed successfully
+2025-09-04 10:22:39 | DEBUG    | step_run_ica metadata structure: ['ica', 'creationDateTime']
+2025-09-04 10:22:39 | DEBUG    | Found ICA components from nested structure: 118
+2025-09-04 10:22:39 | DEBUG    | classify_ica_components metadata structure: ['ica', 'creationDateTime']
+2025-09-04 10:22:39 | DEBUG    | Found ICA classification method from nested structure: iclabel
+2025-09-04 10:22:39 | DEBUG    | step_apply_ica_component_rejection metadata structure: ['ica', 'creationDateTime']
+2025-09-04 10:22:39 | DEBUG    | Found rejected components from nested structure: [0, 1, 2, 4, 7, 8, 12, 13, 17, 18, 20, 28, 30, 31, 32, 35, 38, 45, 50, 64, 70, 98, 115]
+2025-09-04 10:22:39 | DEBUG    | Final ICA details collected: {'proc_nComps': '118', 'ica_method': '', 'classification_method': 'iclabel', 'proc_removeComps': [0, 1, 2, 4, 7, 8, 12, 13, 17, 18, 20, 28, 30, 31, 32, 35, 38, 45, 50, 64, 70, 98, 115], 'num_rejected_components': 23}
+2025-09-04 10:22:39 | SUCCESS  | Created JSON summary for run 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:22:39 | SUCCESS  | Updated processing log for 128_Rest_EyesOpen_D1004 in /Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/RestingStateTutorial_processing_log.csv
+2025-09-04 10:22:39 | SUCCESS  | Saved per-file processing log to /Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/sub-451559/eeg/128_Rest_EyesOpen_D1004_processing_log.csv
+2025-09-04 10:22:39 | SUCCESS  | Saved per-file processing log to /Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/final_files/128_Rest_EyesOpen_D1004_processing_log.csv
+2025-09-04 10:22:39 | SUCCESS  | Bad channels tsv generated for 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:22:39 | INFO     | Using provided JSON summary for report generation
+2025-09-04 10:22:39 | SUCCESS  | Report saved to /Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/metadata/128_Rest_EyesOpen_D1004_autoclean_report.pdf
+2025-09-04 10:22:39 | SUCCESS  | Report saved to /Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/sub-451559/eeg
+2025-09-04 10:22:39 | DEBUG    | Record update successful for run_id: 01K4AHHYHQR91EZRXSCD27PFB3
+2025-09-04 10:22:39 | SUCCESS  | ✓ Run record exported to /Users/ernie/Documents/Autoclean-EEG/output/RestingStateTutorial/bids/derivatives/autoclean-v2.2.1/metadata/128_Rest_EyesOpen_D1004_autoclean_metadata.json
+2025-09-04 10:22:39 | INFO     | Processing completed successfully!
