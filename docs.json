@@ -1,8 +1,8 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "AutocleanEEG",
-  "description": "Professional EEG Software",
+  "name": "AutocleanEEG Pipeline",
+  "description": "Automated EEG Software",
   "background": {
     "color": {
       "dark": "#222831",
@@ -80,20 +80,6 @@
               "customizations/task-variables",
               "customizations/flagged-outputs",
               "customizations/cli-themes"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Reference",
-        "groups": [
-          {
-            "group": "Pipeline Steps",
-            "pages": [
-              "pipeline-steps/overview",
-              "pipeline-steps/steps",
-              "pipeline-steps/ica",
-              "pipeline-steps/icvision"
             ]
           }
         ]
