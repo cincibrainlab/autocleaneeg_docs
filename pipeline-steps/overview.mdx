@@ -1,0 +1,57 @@
+---
+title: "Pipeline Reference"
+sidebarTitle: "Reference"
+description: "Overview of how methods are organized in AutoCleanEEG, how to extend them, and how we approach documentation during development."
+---
+
+## Introduction
+
+The **Pipeline Reference** is a catalog of the core methods available in AutoCleanEEG.  
+Each method corresponds to a preprocessing step that can be called inside a Task class, from raw data import to ICA and quality control.  
+
+These methods are designed to be:
+- **Composable** – each method takes an EEG object (`Raw`, `Epochs`, `Evoked`) and returns a transformed version for the next step.  
+- **Configurable** – parameters can be set in the task’s `config` dictionary.  
+- **Transparent** – every method is logged, and many produce annotated outputs or QC figures.  
+
+## Adding New Methods
+
+AutoCleanEEG Pipeline is built to be **extensible**. You can add new functionality in two main ways:
+
+1. **Extend the Task class**  
+   - Write a custom method inside your Task file.  
+   - Call it from `run()` at the point you want it executed.  
+   - Return a valid MNE object so downstream steps can continue.
+
+2. **Contribute to the pipeline core**  
+   - Add a new method to `autoclean.core.task.Task`.  
+   - Document it in the Pipeline Reference with its parameters and outputs.  
+   - This makes it available to all Task files.
+
+Because the system passes full MNE objects through each step, new methods can leverage:
+- The entire [MNE-Python API](https://mne.tools/) (filtering, time-frequency analysis, source localization).  
+- External libraries (scikit-learn, NumPy, SciPy).  
+- Even MATLAB or EEGLAB functions, by exporting/importing intermediate files or using the MATLAB Engine for Python.
+
+## Our Approach During Development
+
+<Note>
+📖 **Documentation in Progress**  
+We are actively expanding the Pipeline Reference. Some methods are fully documented here, while others are listed as part of our **default task templates** during development.  
+
+This ensures users can **see the full sequence of steps used by default**, even if individual method pages are still being written.
+</Note>
+
+Default templates include steps such as:
+- Import and resample  
+- Filtering (high-pass, low-pass, notch)  
+- Bad channel detection  
+- Re-referencing  
+- ICA and component classification  
+- Epoching and epoch cleaning  
+- QC reporting  
+
+
+## Big Picture
+
+Think of the Pipeline Reference as both a **library of reusable functions** and a **map of the default workflow**. You can stick to the defaults, or extend the pipeline with your own methods, branching logic, and external tools. The goal is to make preprocessing **transparent, reproducible, and adaptable** to the needs of your study.

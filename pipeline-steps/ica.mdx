@@ -12,52 +12,39 @@ Independent Component Analysis (ICA) is a powerful technique that separates mixe
 ICA is particularly effective at removing **stereotypical artifacts** that occur consistently across your recording, such as eye blinks, heartbeat, and muscle activity.
 </Info>
 
-## How AutocleanEEG Uses ICA
+## Data Preparation Modes
+- **Temporary High-Pass Filtering**: A temporary high-pass filter (typically 1 Hz) can be applied before ICA decomposition to remove slow drifts.  
+- **Original Data Preservation**: ICA components are fitted on the filtered copy but applied to the original, unfiltered recording.
 
-AutocleanEEG implements a sophisticated ICA workflow designed for robust artifact removal:
+## Component Classification Modes
 
-### 1. Data Preparation
-- **Temporary High-Pass Filtering**: The pipeline can apply a temporary high-pass filter (typically 1 Hz) to remove slow drifts before running ICA decomposition
-- **Original Data Preservation**: ICA components are fitted on the filtered data but applied to your original, unfiltered recording
+AutocleanEEG Pipeline supports three modes for ICA component classification:
 
-### 2. Component Classification
-- **Automatic Classification**: Uses ICLabel to automatically identify component types:
-  - Brain activity
-  - Eye movements/blinks
-  - Muscle activity
-  - Heart artifacts
-  - Line noise
-  - Channel noise
+### 1. ICLabel (**Default**)
+- Runs **ICLabel** (from MNE-ICALabel) on all components.
+- Produces probability scores for 7 classes:
+  - Brain, Eye, Muscle, Heart, Line noise, Channel noise, Other
+- **This is the default and most stable option.**
 
-### 3. Artifact Removal
-- **Confidence-Based Rejection**: Components are removed based on classification confidence thresholds
-- **Selective Removal**: Only artifact components are removed, preserving brain-related signals
+### 2. ICVision (**Experimental**)
+- Runs **ICVision** on all components.
+- Provides fine-grained classification using computer vision features.
+- Still under evaluation — results may vary.
+- Use this mode if you want to test the latest classification research.
+
+### 3. Hybrid: ICLabel + ICVision (**Experimental**)
+- First pass: run **ICLabel** on all components.
+- Second pass: re-check a configurable subset of components with **ICVision**.
+- Produces a full `n_components × 7` confidence matrix.
+- Components reprocessed by ICVision are flagged with `annotator="ic_vision"`.
+- ICA reports will display `[Vision]` tags for these components.
+
+<Tip>
+Control how many components are rechecked with ICVision by passing  
+<code>icvision_n_components</code> to <code>classify_ica_components</code>.
+</Tip>
 
 ## Configuration Options
-
-### Standard Parameters
-Configure ICA through your task's YAML file:
-
-```yaml
-step_run_ica:
-  method: "infomax"          # ICA algorithm
-  n_components: null         # Auto-determine number of components
-  fit_params:
-    extended: true           # Extended Infomax for sub- and super-Gaussian sources
-  max_iter: "auto"          # Maximum iterations
-  random_state: 97          # For reproducible results
-```
-
-### Advanced High-Pass Filtering
-
-<Alert type="warning">
-**Configuration Limitation**: The pipeline supports temporary high-pass filtering for ICA (`temp_highpass_for_ica`), but this parameter is not currently exposed in the YAML configuration schema. This feature can only be accessed programmatically.
-</Alert>
-
-The `temp_highpass_for_ica` parameter (commonly set to 1 Hz) helps ICA by:
-- Removing slow drifts that can interfere with decomposition
-- Improving component separation quality
-- Maintaining original data integrity (filtering is temporary)
 
 ## Best Practices
 
@@ -84,24 +71,3 @@ From a typical processing run:
 Identified 23 components for rejection: [0, 1, 2, 4, 7, 8, 12, 13, 17, 18, 20, 28, 30, 31, 32, 35, 38, 45, 50, 64, 70, 98, 115]
 Applied ICA, removing components: [0, 1, 2, 4, 7, 8, 12, 13, 17, 18, 20, 28, 30, 31, 32, 35, 38, 45, 50, 64, 70, 98, 115]
 ```
-
-### Files Generated
-- **`*-ica.fif`**: ICA weights that can be reapplied later
-- **Component reports**: Visual inspection of each component's properties
-- **Before/after comparisons**: Signal quality assessment
-
-## Troubleshooting
-
-### Common Issues
-- **Too few components removed**: May indicate high-quality data with minimal artifacts
-- **Too many components removed**: Check data quality and recording conditions
-- **Poor separation**: Consider data length, filtering, or electrode impedances
-
-### When ICA Might Not Help
-- **Non-stereotypical artifacts**: Random, inconsistent noise patterns
-- **Very short recordings**: Insufficient data for reliable decomposition
-- **Extremely noisy data**: Pre-cleaning with other methods may be necessary
-
-<Info>
-ICA is most effective when combined with other preprocessing steps like bad channel detection, filtering, and epoch-based artifact rejection in AutocleanEEG's integrated pipeline.
-</Info>

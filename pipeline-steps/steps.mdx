@@ -1,0 +1,130 @@
+---
+title: Artifact and Epoching Steps
+description: Functions that label and clean artifacts and create analysis-ready epochs.
+---
+
+After basic preprocessing, AutoClean tasks apply a sequence of functions that tag artifacts, run ICA, and prepare epochs for analysis.
+
+<Note>
+📖 **Documentation in Progress**  
+We are actively expanding and refining the full documentation for ICA workflows and related preprocessing steps.  
+
+In the meantime, this page provides an **overview of the default template steps** included in AutoCleanEEG during development. These defaults are designed to give users a working, reproducible pipeline even before every option is fully documented.
+</Note>
+
+
+## Annotate noisy epochs
+Flags high-variance segments by temporarily epoching the continuous signal and measuring channel standard deviations.
+
+**Technical details:** Custom algorithm that uses an interquartile range (IQR) rule to mark epochs where many channels have outlier variance.
+
+[View Source Code →](https://github.com/cincibrainlab/autocleaneeg_pipeline/search?q=annotate_noisy_epochs)
+
+**Parameters**
+- `epoch_duration`, `epoch_overlap` – size and overlap of temporary epochs in seconds.
+- `quantile_k` – IQR multiplier for outlier detection.
+- `quantile_flag_crit` – proportion of channels required to flag an epoch.
+- `annotation_description` – text for added annotations.
+
+## Annotate uncorrelated epochs
+Identifies periods where channels lose spatial correlation with their neighbors.
+
+**Technical details:** Custom routine that computes nearest-neighbor correlations using channel locations; epochs with too many low-correlation channels are annotated.
+
+[View Source Code →](https://github.com/cincibrainlab/autocleaneeg_pipeline/search?q=annotate_uncorrelated_epochs)
+
+**Parameters**
+- `epoch_duration`, `epoch_overlap` – epoch size and overlap in seconds.
+- `n_nearest_neighbors` – number of spatial neighbors per channel.
+- `corr_method`, `corr_trim_percent` – aggregation strategy for neighbor correlations.
+- `outlier_k`, `outlier_flag_crit` – thresholds for marking epochs.
+- `annotation_description` – text for added annotations.
+
+## Detect dense oscillatory artifacts
+This step looks for short bursts of oscillations that appear across many channels simultaneously. These patterns often correspond to what some researchers call reference artifacts — global signals that arise not from neural activity but from the reference montage or amplifier coupling. They can appear as large-amplitude “waves” shared across nearly every electrode at once.
+
+### Technical details
+
+AutoCleanEEG uses a **custom sliding-window algorithm**:
+
+* For each window, it counts how many channels exceed a peak-to-peak amplitude threshold.
+* If the number of channels crossing the threshold is above a specified minimum, the window is annotated as an artifact.
+* Optional padding ensures the artifact window includes pre- and post-burst activity for safety.
+
+
+[View Source Code →](https://github.com/cincibrainlab/autocleaneeg_pipeline/search?q=detect_dense_oscillatory_artifacts)
+
+**Parameters**
+- `window_size_ms` – window length in milliseconds.
+- `channel_threshold_uv` – per-channel peak-to-peak amplitude threshold (µV).
+- `min_channels` – minimum number of channels exceeding the threshold.
+- `padding_ms` – padding added before/after detected artifacts.
+- `annotation_label` – description for annotations.
+
+## Run ICA
+Decomposes the signal into independent components for later artifact rejection.
+
+**Technical details:** `run_ica` wraps `autoclean.functions.ica.fit_ica`, which uses `mne.preprocessing.ICA` and optional temporary high-pass filtering.
+
+[View Source Code →](https://github.com/cincibrainlab/autocleaneeg_pipeline/search?q=run_ica)
+
+**Parameters**
+- `method`, `n_components`, `fit_params` – passed to MNE's ICA.
+- `temp_highpass_for_ica` – optional high-pass filter applied only for decomposition.
+
+## Classify and reject components
+Labels ICA components as brain or artifact and optionally removes the bad ones.
+
+**Technical details:** `classify_ica_components` calls AutoClean's classifier wrappers (ICLabel, ICVision, or a hybrid of both). `apply_ica_component_rejection` then drops components exceeding an optional probability threshold.
+
+[View Classification Code →](https://github.com/cincibrainlab/autocleaneeg_pipeline/search?q=classify_ica_components) | [View Rejection Code →](https://github.com/cincibrainlab/autocleaneeg_pipeline/search?q=apply_ica_component_rejection)
+
+**Parameters**
+- `method` – `'iclabel'` (machine learning), `'icvision'` (custom template matching), or `'hybrid'` (ICLabel followed by ICVision on a subset).
+- `ic_flags_to_reject` – component labels considered artifacts.
+- `ic_rejection_threshold` – minimum probability for rejection.
+- `psd_fmax` – max frequency in power spectrum plots (ICVision only).
+- `icvision_n_components` – number of leading components to inspect with ICVision when using the hybrid method.
+
+## Create regular epochs
+Splits continuous data into fixed-length segments for analysis.
+
+**Technical details:** Wrapper around `autoclean.functions.epoching.create_regular_epochs`, which builds events and constructs an `mne.Epochs` object while tracking metadata.
+
+[View Source Code →](https://github.com/cincibrainlab/autocleaneeg_pipeline/search?q=create_regular_epochs)
+
+**Parameters**
+- `tmin`, `tmax` – epoch boundaries in seconds.
+- `remove_baseline.window` – baseline interval if enabled.
+- `threshold_rejection.volt_threshold` – amplitude rejection threshold.
+- `reject_by_annotation` – drop epochs overlapping bad annotations.
+
+## Detect outlier epochs
+Removes epochs with abnormal amplitude or variance.
+
+**Technical details:** `detect_outlier_epochs` implements a FASTER-inspired z-score approach across mean, variance, maximum, and range metrics.
+
+[View Source Code →](https://github.com/cincibrainlab/autocleaneeg_pipeline/search?q=detect_outlier_epochs)
+
+**Parameters**
+- `threshold` – z-score required to mark an epoch as an outlier.
+
+## GFP clean epochs
+Drops epochs with extreme Global Field Power (GFP) values and optionally subsamples to a fixed count.
+
+**Technical details:** `gfp_clean_epochs` computes GFP across scalp electrodes and removes epochs whose GFP z-score exceeds a threshold.
+
+[View Source Code →](https://github.com/cincibrainlab/autocleaneeg_pipeline/search?q=gfp_clean_epochs)
+
+**Parameters**
+- `gfp_threshold` – z-score cutoff.
+- `number_of_epochs` – randomly retain this many cleaned epochs.
+- `random_seed` – seed used when selecting epochs.
+
+## Generate reports
+Creates before/after visualizations for quality control.
+
+**Technical details:** Combines mixin helpers like `plot_raw_vs_cleaned_overlay` and `step_psd_topo_figure` to save diagnostic figures.
+
+[View Report Generation →](https://github.com/cincibrainlab/autocleaneeg_pipeline/search?q=plot_raw_vs_cleaned_overlay) | [View PSD Figures →](https://github.com/cincibrainlab/autocleaneeg_pipeline/search?q=step_psd_topo_figure)
+

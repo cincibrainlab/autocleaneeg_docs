@@ -75,24 +75,6 @@
 
             ]
           },
-
-
-          {
-            "group": "Reference",
-            "pages": [
-              "installation",
-              "essentials/autoclean-basics/overview",
-              "essentials/autoclean-basics/workspace",
-              "essentials/autoclean-basics/tasks",
-              "essentials/autoclean-basics/source",
-              "essentials/autoclean-basics/fallbacks",
-              "essentials/autoclean-basics/workflows",
-              "essentials/autoclean-basics/tips-quickstart",
-              "index_backup",
-              "essentials/cli-introduction",
-              "development"
-            ]
-          },
           {
             "group": "Advanced",
             "pages": [
@@ -108,23 +90,6 @@
               "essentials/settings",
               "essentials/navigation"
             ]
-          },
-          {
-            "group": "Writing content",
-            "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
-            ]
-          },
-          {
-            "group": "AI tools",
-            "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
-            ]
           }
         ]
       },
@@ -134,22 +99,9 @@
           {
             "group": "Pipeline Steps",
             "pages": [
+              "pipeline-steps/overview",
+              "pipeline-steps/steps",
               "pipeline-steps/ica"
-            ]
-          },
-          {
-            "group": "API documentation",
-            "pages": [
-              "api-reference/introduction"
-            ]
-          },
-          {
-            "group": "Endpoint examples",
-            "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
             ]
           }
         ]
