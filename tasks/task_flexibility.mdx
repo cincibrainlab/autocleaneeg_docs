@@ -1,0 +1,51 @@
+---
+title: "Flexibility of the Task Class"
+sidebarTitle: "Task Flexibility"
+description: "See how the Task class enables branching, custom functions, and integration with Python or MATLAB to adapt pipelines for any experimental design."
+---
+
+## Flexibility of the Task Class
+
+The real strength of the Task class is its **flexibility**.  
+Because each step works directly on an **MNE object** (`Raw`, `Epochs`, or `Evoked`), you can:
+
+- Insert **custom functions** for specialized preprocessing.  
+- Branch into **different processing paths** depending on your experiment.  
+- Call **external libraries** (even MATLAB functions via `matlab.engine`) when needed.  
+- Return to the main pipeline as long as you hand back a valid MNE object.
+
+### Example: Branching for Custom Epoching
+
+```python
+class Oddball_Task(Task):
+    def run(self):
+        self.import_raw()
+        self.filter_data()
+
+        self.epochs = self.custom_event_epochs()
+        
+        self.generate_reports()
+
+    def custom_event_epochs(self):
+        """Epoch by event codes (e.g., standard vs oddball)."""
+        events = mne.find_events(self.raw, stim_channel="STI 014")
+        event_id = {"standard": 1, "oddball": 2}
+        epochs = mne.Epochs(
+            self.raw, events, event_id,
+            tmin=-0.2, tmax=0.8, baseline=(None, 0), preload=True
+        )
+        return epochs
+````
+
+### Why This Matters
+
+* **Customizable**: Tailor preprocessing to your study (e.g., resting state, oddball, Go/No-Go).
+* **Branchable**: Choose different paths for different datasets in the same task.
+* **Extensible**: Insert ML models, advanced artifact rejection, or external tool calls.
+* **Future-Proof**: As long as the function returns an MNE object, the pipeline can continue without breaking.
+
+<Info>
+Think of the Task class as the **backbone of your preprocessing recipe**.  
+You can keep it simple or expand it into a fully customized pipeline — the framework is designed to handle both.
+</Info>
+

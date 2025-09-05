@@ -1,0 +1,78 @@
+---
+title: "How the Task Class Works"
+sidebarTitle: "Task Class"
+description: "Understand how AutoCleanEEG Task classes transform MNE objects step by step, enabling powerful and customizable preprocessing workflows."
+---
+
+## How the Python Task Class Works
+
+At the core of AutoCleanEEG is the **Task class**.
+Every task is just a **Python class** that inherits from `autoclean.core.task.Task` and defines a sequence of steps in its `run()` method.
+
+For new users: think of it as a **recipe**. Each line in `run()` is an instruction that takes the current EEG dataset, applies some transformation, and passes it along to the next step.
+
+### Under the Hood: MNE Objects
+
+AutoCleanEEG builds on [MNE-Python](https://mne.tools/), which provides data objects for EEG/MEG:
+
+* **Raw** – continuous EEG recordings.
+* **Epochs** – segmented trials or fixed-length windows.
+* **Evoked** – averaged responses (like ERPs).
+
+Each function in your Task class **takes one of these MNE objects**, transforms it (e.g., filters it, runs ICA, drops bad epochs), and then **returns it for the next step**.
+
+This makes the pipeline flexible: at every stage, you’re just manipulating an EEG object in memory.
+
+### Why It’s Powerful
+
+* **Chainable** – You can call one function after another (`resample → filter → ICA → epoch`) and the data flows through.
+* **Customizable** – You can add, skip, or branch steps as needed.
+* **Interoperable** – Anything you can do in Python with an MNE object can be slotted into a Task step.
+* **Not Limited to Python** – With proper wrappers, you can even call **MATLAB functions** (e.g., via `matlab.engine` or exporting files to EEGLAB) inside a step.
+
+That means the Task framework doesn’t limit you to built-in methods — you can plug in **custom filters, artifact rejection methods, or ML models**.
+
+### Example: Transform Flow
+
+```python
+class MyCustomTask(Task):
+    def run(self):
+        self.import_raw()                 # Raw object
+        self.resample_data()              # Raw → resampled Raw
+        self.filter_data()                # Raw → filtered Raw
+        self.run_ica()                    # Raw → ICA-cleaned Raw
+        self.create_regular_epochs()      # Raw → Epochs
+        self.gfp_clean_epochs()           # Epochs → cleaned Epochs
+        self.generate_reports()           # Produce QC reports
+```
+
+Here the same dataset (`Raw` → `Epochs`) is transformed step by step. At any point, you could insert your own function (e.g., a MATLAB-based algorithm) as long as you return a valid MNE object.
+
+### Branching & Customization
+
+You’re not locked into a fixed sequence. You can:
+
+* **Skip steps** (by disabling them in the config or removing from `run()`).
+* **Branch** (e.g., create epochs two different ways, then compare results).
+* **Insert custom steps** (e.g., your own artifact detector).
+
+For example:
+
+```python
+if self.config["ICA"]["enabled"]:
+    self.run_ica()
+else:
+    self.skip("ICA disabled in config")
+
+# Branch into task-specific preprocessing
+if self.task_name == "RestingState":
+    self.create_regular_epochs()
+elif self.task_name == "Oddball":
+    self.create_eventid_epochs()
+```
+
+### Big Picture
+
+The **Task class** is both approachable for beginners (just follow the template) and extremely powerful for advanced users (because it exposes full MNE objects at every step).
+
+That means you can start with defaults and gradually extend your pipeline as your research questions demand.
