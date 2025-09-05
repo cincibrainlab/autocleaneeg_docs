@@ -45,6 +45,39 @@
             ]
           },
           {
+            "group": "Workspace",
+            "pages": [
+              "tasks/tasks_intro",
+              "tasks/task_class",
+              "outputs/bids_overview"
+
+
+            ]
+          },
+          {
+            "group": "Tasks",
+            "pages": [
+              "tasks/tasks_intro",
+              "tasks/task_class",
+              "outputs/bids_overview"
+
+
+            ]
+          },
+          {
+            "group": "Input",
+            "pages": [
+              "tasks/tasks_intro",
+              "tasks/task_class",
+              "tasks/task_flexibility",
+              "task-management"
+
+
+            ]
+          },
+
+
+          {
             "group": "Reference",
             "pages": [
               "installation",
@@ -96,8 +129,14 @@
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "Reference",
         "groups": [
+          {
+            "group": "Pipeline Steps",
+            "pages": [
+              "pipeline-steps/ica"
+            ]
+          },
           {
             "group": "API documentation",
             "pages": [

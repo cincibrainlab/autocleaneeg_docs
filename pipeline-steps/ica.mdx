@@ -1,0 +1,107 @@
+---
+title: "Independent Component Analysis (ICA)"
+sidebarTitle: "ICA"
+description: "Understand how AutocleanEEG uses ICA to identify and remove artifacts like eye blinks, muscle activity, and heartbeat from EEG data."
+---
+
+## What is ICA?
+
+Independent Component Analysis (ICA) is a powerful technique that separates mixed EEG signals into independent components. Think of it as "unmixing" the cocktail of brain activity, eye blinks, muscle tension, and heartbeat that gets recorded at each electrode.
+
+<Info>
+ICA is particularly effective at removing **stereotypical artifacts** that occur consistently across your recording, such as eye blinks, heartbeat, and muscle activity.
+</Info>
+
+## How AutocleanEEG Uses ICA
+
+AutocleanEEG implements a sophisticated ICA workflow designed for robust artifact removal:
+
+### 1. Data Preparation
+- **Temporary High-Pass Filtering**: The pipeline can apply a temporary high-pass filter (typically 1 Hz) to remove slow drifts before running ICA decomposition
+- **Original Data Preservation**: ICA components are fitted on the filtered data but applied to your original, unfiltered recording
+
+### 2. Component Classification
+- **Automatic Classification**: Uses ICLabel to automatically identify component types:
+  - Brain activity
+  - Eye movements/blinks
+  - Muscle activity
+  - Heart artifacts
+  - Line noise
+  - Channel noise
+
+### 3. Artifact Removal
+- **Confidence-Based Rejection**: Components are removed based on classification confidence thresholds
+- **Selective Removal**: Only artifact components are removed, preserving brain-related signals
+
+## Configuration Options
+
+### Standard Parameters
+Configure ICA through your task's YAML file:
+
+```yaml
+step_run_ica:
+  method: "infomax"          # ICA algorithm
+  n_components: null         # Auto-determine number of components
+  fit_params:
+    extended: true           # Extended Infomax for sub- and super-Gaussian sources
+  max_iter: "auto"          # Maximum iterations
+  random_state: 97          # For reproducible results
+```
+
+### Advanced High-Pass Filtering
+
+<Alert type="warning">
+**Configuration Limitation**: The pipeline supports temporary high-pass filtering for ICA (`temp_highpass_for_ica`), but this parameter is not currently exposed in the YAML configuration schema. This feature can only be accessed programmatically.
+</Alert>
+
+The `temp_highpass_for_ica` parameter (commonly set to 1 Hz) helps ICA by:
+- Removing slow drifts that can interfere with decomposition
+- Improving component separation quality
+- Maintaining original data integrity (filtering is temporary)
+
+## Best Practices
+
+### When ICA Works Best
+- **Sufficient Data**: At least 20-30 times more data points than channels
+- **Consistent Artifacts**: Stereotypical artifacts that occur multiple times
+- **Stable Recording**: Minimal electrode movement or impedance changes
+
+### Quality Control
+After ICA processing, review the generated outputs:
+- **Component Report**: `*_ica_components_all.pdf` shows all components and which were removed
+- **Signal Comparison**: `*_raw_vs_cleaned_overlay.png` displays before/after signal comparison
+- **Processing Log**: Documents which components were classified and removed
+
+<Tip>
+The number of ICA components typically equals the number of channels. With 128 channels, expect ~118-121 components after excluding bad channels.
+</Tip>
+
+## Understanding the Output
+
+### Component Classification Example
+From a typical processing run:
+```
+Identified 23 components for rejection: [0, 1, 2, 4, 7, 8, 12, 13, 17, 18, 20, 28, 30, 31, 32, 35, 38, 45, 50, 64, 70, 98, 115]
+Applied ICA, removing components: [0, 1, 2, 4, 7, 8, 12, 13, 17, 18, 20, 28, 30, 31, 32, 35, 38, 45, 50, 64, 70, 98, 115]
+```
+
+### Files Generated
+- **`*-ica.fif`**: ICA weights that can be reapplied later
+- **Component reports**: Visual inspection of each component's properties
+- **Before/after comparisons**: Signal quality assessment
+
+## Troubleshooting
+
+### Common Issues
+- **Too few components removed**: May indicate high-quality data with minimal artifacts
+- **Too many components removed**: Check data quality and recording conditions
+- **Poor separation**: Consider data length, filtering, or electrode impedances
+
+### When ICA Might Not Help
+- **Non-stereotypical artifacts**: Random, inconsistent noise patterns
+- **Very short recordings**: Insufficient data for reliable decomposition
+- **Extremely noisy data**: Pre-cleaning with other methods may be necessary
+
+<Info>
+ICA is most effective when combined with other preprocessing steps like bad channel detection, filtering, and epoch-based artifact rejection in AutocleanEEG's integrated pipeline.
+</Info>
