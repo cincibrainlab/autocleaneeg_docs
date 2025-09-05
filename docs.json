@@ -30,7 +30,7 @@
             ]
           },
           {
-            "group": "Pipeline Outputs",
+            "group": "Workspace",
             "pages": [
               "outputs/open_workspace",
               "outputs/processing_log",
@@ -41,27 +41,14 @@
               "outputs/intermediate_steps",
               "outputs/subject_reports",
               "outputs/metadata_logs"
-
-            ]
-          },
-          {
-            "group": "Workspace",
-            "pages": [
-              "tasks/tasks_intro",
-              "tasks/task_class",
-              "outputs/bids_overview"
-
-
             ]
           },
           {
             "group": "Tasks",
             "pages": [
               "tasks/tasks_intro",
-              "tasks/task_class",
-              "outputs/bids_overview"
-
-
+              "tasks/task_run",
+              "tasks/task_class"
             ]
           },
           {
@@ -71,8 +58,6 @@
               "tasks/task_class",
               "tasks/task_flexibility",
               "task-management"
-
-
             ]
           },
           {
