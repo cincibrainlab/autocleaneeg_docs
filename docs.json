@@ -89,6 +89,11 @@
     "global": {
       "anchors": [
         {
+          "anchor": "TaskWizard",
+          "href": "https://taskwizard.autocleaneeg.org/",
+          "icon": "wand-magic-sparkles"
+        },
+        {
           "anchor": "Community",
           "href": "https://github.com/cincibrainlab/autocleaneeg_pipeline/discussions",
           "icon": "slack"
@@ -100,7 +105,7 @@
         }
       ]
     }
-  },
+  }, 
   "logo": {
     "light": "/logo/light.svg",
     "dark": "/logo/dark.svg"
