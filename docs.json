@@ -53,6 +53,7 @@
             "group": "Tasks",
             "pages": [
               "tasks/tasks_intro",
+              "tasks/taskwizard",
               "tasks/task_class",
               "tasks/task-management",
               "tasks/task_flexibility"

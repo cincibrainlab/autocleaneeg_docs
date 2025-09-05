@@ -1,0 +1,193 @@
+---
+title: "TaskWizard: Online Task Builder"
+sidebarTitle: "TaskWizard"
+description: "Generate custom AutoCleanEEG task files through an intuitive web interface"
+---
+
+## What is TaskWizard?
+
+**TaskWizard** is a web-based tool that guides researchers through creating custom AutoCleanEEG task files without writing code. Instead of manually configuring Python scripts, the wizard provides an intuitive interface to set up complete EEG preprocessing pipelines.
+
+<Card title="Visit TaskWizard" icon="wand-magic-sparkles" href="https://taskwizard.autocleaneeg.org">
+  Create your custom task file in minutes at taskwizard.autocleaneeg.org
+</Card>
+
+## Key Features
+
+### Step-by-Step Wizard Interface
+- **9-step guided process** from template selection to final configuration
+- **Real-time validation** ensuring parameter compatibility  
+- **Template-based approach** with predefined workflows for common paradigms
+
+### Supported EEG Paradigms
+- **Resting State** (Eyes Open/Closed) - Standard resting EEG protocols
+- **Chirp Stimulation** - Frequency-modulated auditory stimuli
+- **ASSR (Auditory Steady-State Response)** - 40Hz and multi-frequency protocols
+
+### Comprehensive Pipeline Configuration
+<AccordionGroup>
+  <Accordion title="Basic Setup" icon="gear">
+    - **Template Selection**: Choose from validated EEG paradigms
+    - **Montage Configuration**: EGI, Biosemi, and custom electrode layouts
+    - **File Naming**: Automatic task naming with custom options
+  </Accordion>
+  
+  <Accordion title="Preprocessing Steps" icon="filter">
+    - **Resampling**: Configurable target sampling rates
+    - **Re-referencing**: Average, mastoid, or custom reference schemes
+    - **Data Trimming**: Remove initial/final segments for stabilization
+    - **Duration Cropping**: Extract specific time windows
+  </Accordion>
+  
+  <Accordion title="Artifact Handling" icon="shield">
+    - **EOG Channels**: Automatic detection and handling of eye movement channels
+    - **ICA Configuration**: Independent Component Analysis setup
+    - **Bad Channel Detection**: Automated identification of problematic electrodes
+    - **Filtering**: Bandpass, notch, and custom filter configurations
+  </Accordion>
+  
+  <Accordion title="Epoching & Analysis" icon="chart-line">
+    - **Epoch Parameters**: Time windows, baseline correction, rejection criteria
+    - **Event Handling**: Trigger-based or continuous epoching strategies
+    - **Quality Control**: Automated outlier detection and removal
+    - **Export Options**: BIDS-compliant output formatting
+  </Accordion>
+</AccordionGroup>
+
+## How It Works
+
+### 1. Template Selection
+Choose from research-validated templates:
+
+- **Resting Eyes Open**: Standard 5-minute resting paradigm with artifact removal
+- **Chirp Default**: Frequency-swept auditory stimulation with epoching  
+- **ASSR Default**: 40Hz steady-state response with specialized filtering
+
+### 2. Configuration Steps
+Navigate through 9 intuitive steps:
+
+1. **Task Information** - Name and description
+2. **Template Selection** - Choose your paradigm  
+3. **Basic Settings** - Core processing parameters
+4. **Montage** - Electrode configuration and layout
+5. **Resample & Re-reference** - Signal conditioning
+6. **Trim & Crop** - Data windowing
+7. **EOG & ICA** - Artifact removal configuration  
+8. **Epoching** - Time-domain segmentation
+9. **Final Configuration** - Review and advanced settings
+
+### 3. Download & Import
+<Steps>
+  <Step title="Generate Task File">
+    TaskWizard creates a complete Python task file with your configurations
+  </Step>
+  
+  <Step title="Download to Your System">
+    Save the generated `task_script.py` file to your local machine
+  </Step>
+  
+  <Step title="Import into AutoCleanEEG">
+    Use the pipeline's import command to add your custom task:
+    
+    ```bash
+    autocleaneeg-pipeline import task_script.py
+    ```
+  </Step>
+  
+  <Step title="Run Your Custom Pipeline">
+    Your task is now available in the pipeline's task list:
+    
+    ```bash
+    autocleaneeg-pipeline task list
+    autocleaneeg-pipeline task set YourCustomTask
+    ```
+  </Step>
+</Steps>
+
+## Advanced Features
+
+### Parameter Validation
+- **Real-time checking** for parameter compatibility
+- **Range validation** ensuring physiologically reasonable values  
+- **Dependency tracking** between interconnected settings
+
+### Export Options
+- **Python Script Generation**: Complete task files ready for execution
+- **Configuration Backup**: JSON files for future editing
+- **Documentation**: Automatically generated parameter summaries
+
+### Template Customization
+While templates provide starting points, every parameter can be customized:
+
+- **Modify filtering parameters** for specific research needs
+- **Adjust epoching windows** for different experimental designs  
+- **Configure artifact rejection** thresholds based on data quality
+- **Set custom channel selections** for targeted analyses
+
+## Best Practices
+
+### Starting Your First Task
+<Tip>
+Begin with a template closest to your paradigm, even if not perfect. It's easier to modify existing configurations than start from scratch.
+</Tip>
+
+1. **Choose the closest template** to your experimental design
+2. **Configure basic parameters** (sampling rate, montage, filtering)
+3. **Test with sample data** before processing full datasets
+4. **Iterate and refine** based on initial results
+
+### Parameter Selection Guidelines
+- **Sampling Rate**: Match or downsample from your recording rate
+- **Filtering**: 0.1-100 Hz bandpass for most EEG applications
+- **Epoching**: 2-second windows for resting state, event-locked for tasks  
+- **ICA Components**: Remove ~15-25% of total components typically
+
+### Quality Control Integration
+TaskWizard-generated tasks include comprehensive QC features:
+
+- **Automated reporting** with before/after visualizations
+- **Parameter logging** for reproducibility  
+- **BIDS compliance** for data sharing and archiving
+- **Flag-based routing** for problematic datasets
+
+## Troubleshooting
+
+### Common Issues
+**Import Failures**: Ensure the downloaded file has a `.py` extension and contains valid Python syntax
+
+**Parameter Conflicts**: Check the wizard's validation messages for incompatible settings
+
+**Template Selection**: If unsure, start with "Resting Eyes Open" as it provides the most flexible foundation
+
+### Getting Help
+- **Validation Messages**: Pay attention to real-time feedback in the wizard
+- **Parameter Tooltips**: Hover over settings for detailed explanations  
+- **Template Documentation**: Each template includes usage notes and recommendations
+
+## Integration with AutoCleanEEG Pipeline
+
+TaskWizard-generated files seamlessly integrate with your existing workflow:
+
+```bash
+# Import your custom task
+autocleaneeg-pipeline import my_custom_task.py
+
+# Verify it's available
+autocleaneeg-pipeline task list
+
+# Set as active task
+autocleaneeg-pipeline task set MyCustomTask
+
+# Process data
+autocleaneeg-pipeline process
+```
+
+The generated tasks include all the same features as built-in tasks:
+- **Quality control reporting**
+- **BIDS-compliant outputs**  
+- **Processing logs and metadata**
+- **Automatic backup systems**
+
+<Info>
+TaskWizard generates production-ready task files that follow AutoCleanEEG best practices for reproducible research and quality control.
+</Info>
