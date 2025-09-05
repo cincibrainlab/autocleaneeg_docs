@@ -32,7 +32,12 @@
           {
             "group": "Workspace",
             "pages": [
-              "outputs/open_workspace",
+              "outputs/open_workspace"
+            ]
+          },
+          {
+            "group": "Pipeline Outputs",
+            "pages": [
               "outputs/processing_log",
               "outputs/bids_overview",
               "outputs/subject_folders",
@@ -43,37 +48,38 @@
               "outputs/metadata_logs"
             ]
           },
+
           {
             "group": "Tasks",
             "pages": [
               "tasks/tasks_intro",
-              "tasks/task_run",
-              "tasks/task_class"
+              "tasks/task_class",
+              "tasks/task-management",
+              "tasks/task_flexibility"
             ]
           },
           {
             "group": "Input",
             "pages": [
-              "tasks/tasks_intro",
-              "tasks/task_class",
-              "tasks/task_flexibility",
-              "task-management"
+              "input/batch_run"
             ]
           },
           {
-            "group": "Advanced",
+            "group": "Pipeline Steps",
             "pages": [
-              "advanced/persistent-state",
-              "advanced/task-variables",
-              "advanced/flagged-outputs"
+              "pipeline-steps/steps",
+              "pipeline-steps/ica",
+              "pipeline-steps/icvision"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Customizations",
             "pages": [
-              "customizations/cli-themes",
-              "essentials/settings",
-              "essentials/navigation"
+              "pipeline-steps/overview",
+              "customizations/persistent-state",
+              "customizations/task-variables",
+              "customizations/flagged-outputs",
+              "customizations/cli-themes"
             ]
           }
         ]
@@ -86,7 +92,8 @@
             "pages": [
               "pipeline-steps/overview",
               "pipeline-steps/steps",
-              "pipeline-steps/ica"
+              "pipeline-steps/ica",
+              "pipeline-steps/icvision"
             ]
           }
         ]

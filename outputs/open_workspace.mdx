@@ -1,31 +1,40 @@
 ---
-title: "Exploring Pipeline Outputs"
-sidebarTitle: "Pipeline Outputs"
-description: "Learn how to navigate and open the output workspace"
+title: "AutoCleanEEG Workspace"
+sidebarTitle: "Overview"
+description: "Learn how to navigate and understand the AutoCleanEEG workspace structure"
 ---
 
-Each **AutoCleanEEG Pipeline** run generates a structured workspace folder containing logs, database records, and standardized outputs in BIDS format. This organization ensures your results are both reproducible and easy to review.
+The **AutoCleanEEG workspace** is your centralized hub for all pipeline activities, containing tasks, outputs, logs, and configuration files. This organized structure ensures your research is reproducible, traceable, and easy to manage across multiple projects and collaborators.
 
 <Note>
-Output folders are named after the task you run, so multiple tasks can coexist within the same project.  
-If you rerun a task, the existing folder is automatically backed up with the run date appended, ensuring previous results are preserved and never overwritten.
+The workspace is designed to support multiple concurrent projects. Output folders are named after the tasks you run, and reruns automatically create timestamped backups to preserve previous results.
 </Note>
 
-## Folder Layout
+## Workspace Structure
 
-```Markdown
-# Pipeline Tutorial Folder Output
+```
 Autoclean-EEG/
-├── process_log.txt         (command history)
-├── pipeline.db             (result database)   
-└── output/                 
-    ├── RestingStateTutorial/               (task folder)
-    │   ├── bids/                           (BIDS-compliant outputs) 
-    │   └── RestingStateTutorial_processing_log.csv  (CSV report)
+├── process_log.txt         (command history and system events)
+├── pipeline.db             (run database and metadata)   
+├── tasks/                  (task definitions and configurations)
+│   ├── RestingState_Basic.py
+│   ├── RestingStateTutorial.py
+│   └── custom_task.py
+└── output/                 (processing results and outputs)
+    ├── RestingStateTutorial/               (task-specific output folder)
+    │   ├── bids/                           (BIDS-compliant results) 
+    │   ├── logs/                          (execution logs)
+    │   ├── metadata/                      (run metadata and reports)
+    │   └── RestingStateTutorial_processing_log.csv
     └── RestingStateTutorial_2025-09-04/    (automatic backup from rerun)
 ```
-**Figure 1.** Example of the workspace folder structure created by AutoCleanEEG.
-Each task creates its own subfolder. Reruns generate a timestamped backup to prevent overwriting results
+
+### Key Components
+
+- **`tasks/`** - Contains your task definitions, both built-in and custom tasks you create
+- **`output/`** - Stores all processing results, organized by task name  
+- **`process_log.txt`** - System-wide command history and pipeline events
+- **`pipeline.db`** - SQLite database tracking all runs, parameters, and results
 
 
 ## Opening the Workspace Folder
@@ -47,11 +56,27 @@ This command will:
   * **Linux** → Nautilus (or your system’s default file manager)
   * **Windows** → File Explorer
 
+## Workspace Management
+
+### Multiple Projects
+The workspace supports running multiple tasks and projects simultaneously. Each task creates its own output folder, allowing you to:
+
+- Compare results across different preprocessing approaches
+- Maintain separate configurations for different studies  
+- Archive completed projects without affecting active work
+
+### Backup System
+AutoCleanEEG automatically preserves your work:
+- Reruns create timestamped backup folders (`TaskName_YYYY-MM-DD/`)
+- Previous results are never overwritten
+- Compare parameters and outcomes across different runs
+
 ## Next Steps
 
-* Explore the `bids/` subfolder for BIDS-compliant outputs.
-* Check `*_processing_log.csv` for a detailed summary of the run.
-* Use backups (`*_YYYY-MM-DD/`) to compare results across different preprocessing runs.
+* **Browse Tasks** - Explore the `tasks/` folder to see available processing pipelines
+* **Review Outputs** - Check the `output/` folder for BIDS-compliant results and reports  
+* **Examine Logs** - Use `process_log.txt` and run-specific logs for troubleshooting
+* **Database Queries** - Access `pipeline.db` for detailed run metadata and batch analysis
 
 
 

@@ -1,0 +1,154 @@
+---
+title: "Task Management"
+sidebarTitle: "Managing Tasks"
+description: "Comprehensive guide to creating, managing, and working with AutocleanEEG processing tasks."
+---
+
+## Overview
+
+Tasks in AutocleanEEG define the processing pipeline configuration and steps for your EEG data analysis. The CLI provides comprehensive task management capabilities through the `autocleaneeg-pipeline task` command suite.
+
+## Task Command Overview
+
+Running `autocleaneeg-pipeline task` displays the current workspace status and all available task commands:
+
+```bash
+autocleaneeg-pipeline task
+```
+
+This shows:
+- Current workspace location and free space
+- Active task (if set)
+- Input file (if configured)
+- Complete list of available task commands
+
+## Available Task Commands
+
+### Core Commands
+
+| Command | Description | Usage |
+|---------|-------------|--------|
+| `task list` | List all available tasks | Shows built-in, custom, and skipped tasks |
+| `task set` | Set the active task | Interactive selection if task name omitted |
+| `task copy` | Copy an existing task | Creates customizable copy of built-in tasks |
+| `task edit` | Edit a task file | Opens task configuration for modification |
+| `task show` | Display active task details | Shows current task configuration |
+
+### Management Commands
+
+| Command | Description | Usage |
+|---------|-------------|--------|
+| `task import <path>` | Import external task file | Copy task file into workspace |
+| `task delete` | Remove a task | Delete custom tasks (built-ins protected) |
+| `task unset` | Clear active task | Remove current task selection |
+| `task explore` | Open tasks folder | Launch file explorer in tasks directory |
+
+## Task Types
+
+### Built-in Tasks
+
+Pre-configured processing pipelines included with AutocleanEEG:
+
+```bash
+autocleaneeg-pipeline task list
+```
+
+Example output shows:
+- **RestingState_Basic**: Standard resting-state EEG preprocessing pipeline
+- Ready-to-use configurations for common analysis workflows
+- Cannot be modified directly (copy first for customization)
+
+### Custom Tasks  
+
+User-created or copied tasks stored in your workspace:
+
+- Created through `task copy` or `task import`
+- Fully customizable Python-based processing pipelines
+- Stored as `.py` files in workspace `tasks/` directory
+- Can incorporate Python, R, or MATLAB processing code
+
+### Task Files
+
+The system categorizes task files as:
+
+- **Valid Tasks**: Properly formatted and executable
+- **Skipped Files**: Templates or invalid configurations
+- **Built-in Tasks**: Core AutocleanEEG processing modules
+
+## Common Workflows
+
+### Creating a Custom Task
+
+1. **Copy a built-in task:**
+   ```bash
+   autocleaneeg-pipeline task copy RestingState_Basic MyCustomTask
+   ```
+
+2. **Set as active:**
+   ```bash
+   autocleaneeg-pipeline task set MyCustomTask
+   ```
+
+3. **Edit configuration:**
+   ```bash
+   autocleaneeg-pipeline task edit
+   ```
+
+### Working with Tasks
+
+1. **List available tasks:**
+   ```bash
+   autocleaneeg-pipeline task list
+   ```
+
+2. **Set active task interactively:**
+   ```bash
+   autocleaneeg-pipeline task set
+   ```
+
+3. **View current configuration:**
+   ```bash
+   autocleaneeg-pipeline task show
+   ```
+
+## Task Configuration
+
+Tasks define:
+- **Processing steps**: Filtering, artifact removal, referencing
+- **Parameters**: Thresholds, frequency bands, rejection criteria  
+- **Quality control**: Automated flagging and validation
+- **Output formats**: File types and organization
+
+<Note>
+Task creation can be entirely custom and complex, incorporating Python, R, or MATLAB code for specialized processing workflows.
+</Note>
+
+## Best Practices
+
+- **Copy before customizing**: Always copy built-in tasks rather than modifying them directly
+- **Descriptive naming**: Use clear, descriptive names for custom tasks
+- **Version control**: Consider backing up custom tasks outside the workspace
+- **Testing**: Validate custom tasks on sample data before batch processing
+- **Documentation**: Document custom task modifications for reproducibility
+
+## Next Steps
+
+<CardGroup cols={2}>
+
+<Card title="Input Management" icon="file-import" href="/input-management">
+  Learn how to configure input files and batch processing.
+</Card>
+
+<Card title="Pipeline Execution" icon="play" href="/pipeline-execution">  
+  Execute tasks and monitor processing progress.
+</Card>
+
+<Card title="Custom Task Development" icon="code" href="/custom-tasks">
+  Create advanced custom processing pipelines.
+</Card>
+
+<Card title="Quality Control" icon="shield-check" href="/quality-control">
+  Review and validate processing outputs.
+</Card>
+
+</CardGroup>

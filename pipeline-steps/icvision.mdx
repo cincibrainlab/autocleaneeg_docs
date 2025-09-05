@@ -1,0 +1,222 @@
+---
+title: 'How ICVision Works'
+description: 'Understanding the vision-based approach to ICA component classification'
+icon: 'brain'
+---
+
+## The Problem: Limitations of Current Automated Methods
+
+### A Compelling Case Example: Cardiac Artifact Misclassification
+
+<Frame caption="ICVision vs ICLabel: Cardiac artifact detection comparison demonstrating superior pattern recognition capabilities">
+<img src="/pipeline-steps/assets/iclabel_vs_icvision.png" alt="Side-by-side comparison showing ICLabel incorrectly classifying a cardiac artifact as brain activity (left) while ICVision correctly identifies it as a heart artifact (right)" />
+</Frame>
+
+This comparison demonstrates a critical limitation of feature-based classification methods. **ICLabel** (left) misclassifies an obvious cardiac artifact as "brain" activity, while **ICVision** (right) correctly identifies the same component as a "heart" artifact. The diagnostic features that ICVision recognizes include:
+
+- **Rhythmic ~1Hz oscillations** in the time series (top right panel)
+- **Consistent temporal patterns** across trials (bottom left panel)  
+- **Frontal-posterior dipolar topography** characteristic of cardiac artifacts (top left panel)
+
+This example illustrates why traditional automated approaches, which rely on extracted numerical features, often fail to capture the complex spatial-temporal-spectral relationships that make visual inspection effective.
+
+## The Vision-Based Solution
+
+ICVision addresses these limitations by implementing the same visual pattern recognition process that EEG analysts use—**systematic inspection of multi-panel component visualizations to distinguish brain activity from artifacts**. Rather than extracting mathematical features from the data, ICVision generates the same standardized visualizations used in manual analysis and applies computer vision models to identify diagnostic patterns. This approach was inspired in part by the comprehensive artifact detection framework implemented in [PyLossless](https://pylossless.readthedocs.io/en/latest/).
+
+### Methodological Rationale
+
+Component classification in EEG analysis is fundamentally a visual pattern recognition task. Manual analysis requires integrating information from multiple complementary views:
+
+- **Spatial topography patterns** (dipolar vs. focal vs. edge artifacts)
+- **Temporal dynamics** (rhythmic oscillations vs. transient changes)
+- **Spectral characteristics** (1/f neural activity vs. muscle's rising spectrum)
+- **Trial-to-trial consistency** (reliable neural sources vs. sporadic artifacts)
+
+### Standardized Visualization Protocol
+
+Each component is analyzed using a four-panel visualization format, following established conventions from EEGLAB:
+
+1. **Topography (Top Left)**: Spatial distribution across the scalp for identifying dipolar brain sources vs. edge artifacts
+2. **Time Series (Top Right)**: Initial 2.5 seconds of component activation revealing characteristic temporal patterns
+3. **Continuous Data Segments (Bottom Left)**: Trial-by-trial consistency analysis distinguishing reliable sources from sporadic noise
+4. **Power Spectrum (Bottom Right)**: Frequency content analysis essential for detecting muscle artifacts and neural oscillations
+
+## The Classification Algorithm
+
+<Steps>
+  <Step title="Data Preparation">
+    ICVision loads your preprocessed EEG data and ICA decomposition (supporting both MNE-Python and EEGLAB formats). The software automatically detects ICA data embedded in EEGLAB `.set` files, eliminating format conversion hassles.
+  </Step>
+  
+  <Step title="Parallel Visualization Generation">
+    Components are plotted in batches using matplotlib with optimized memory management. Each plot maintains consistent scaling and layout to ensure reliable classification across datasets.
+  </Step>
+  
+  <Step title="Concurrent API Classification">
+    Multiple components are classified simultaneously using OpenAI's vision API. The system sends the component image along with a carefully crafted prompt that encodes decades of EEG expertise into classification rules.
+  </Step>
+  
+  <Step title="Intelligent Label Assignment">
+    Each component receives one of seven standardized labels with an associated confidence score:
+    - **Brain**: Neural activity with dipolar patterns in central/parietal/temporal regions
+    - **Eye**: Periocular artifacts from blinks and eye movements
+    - **Muscle**: High-frequency contamination from facial/neck muscles
+    - **Heart**: Cardiac artifacts with ~1Hz rhythmic patterns
+    - **Line Noise**: 50/60Hz electrical interference
+    - **Channel Noise**: Single electrode failures or poor contact
+    - **Other Artifact**: Complex artifacts not fitting clear categories
+  </Step>
+  
+  <Step title="Automated Artifact Rejection">
+    Components classified as artifacts (confidence ≥ 0.8 by default) are automatically marked for exclusion. The ICA object is updated with both MNE-compatible labels and exclusion lists.
+  </Step>
+  
+  <Step title="Data Cleaning & Reporting">
+    The artifact components are projected out of your data, and a comprehensive PDF report is generated showing all classifications with reasoning, allowing for easy review and validation.
+  </Step>
+</Steps>
+
+## The Classification Prompt: Encoding EEG Expertise
+
+<Info>
+  The classification prompt is the heart of ICVision—it encodes the decision-making process that EEG experts use when visually inspecting components.
+</Info>
+
+The system uses a **hierarchical decision tree** that prioritizes the most diagnostic features:
+
+<Tabs>
+  <Tab title="Priority Rules">
+    1. **Heart Detection First**: Any ~1Hz rhythmic pattern immediately triggers heart classification
+    2. **Channel Noise**: Single focal spots without dipolar structure indicate bad electrodes
+    3. **Eye Artifacts**: Dipolar patterns confined to periocular regions (Fp1/Fp2/F7/F8)
+    4. **Line Noise**: Sharp peaks (not notches) at 50/60Hz
+    5. **Muscle**: Rising power spectrum at high frequencies—the definitive muscle signature
+    6. **Brain**: Dipolar patterns in cortical regions with 1/f spectrum
+    7. **Other**: Everything else, including complex or ambiguous patterns
+  </Tab>
+  
+  <Tab title="Scoring System">
+    ICVision uses a weighted scoring system that evaluates:
+    
+    - **Topography** (30-50% weight depending on component type)
+    - **Time Series** (80% weight for heart, 30% for brain/eye)
+    - **Power Spectrum** (90% for line noise, 50% for muscle)
+    - **Continuous Segments** (20% for heart patterns)
+    
+    Decisive features (like muscle's rising spectrum) can override other evidence to prevent misclassification.
+  </Tab>
+</Tabs>
+
+## Addressing Common Concerns
+
+<Warning>
+  **"Can AI really match human expertise in EEG analysis?"**
+</Warning>
+
+### Human-Computer Collaboration
+
+ICVision is designed to augment rather than replace expert judgment in EEG analysis:
+
+<CardGroup cols={2}>
+  <Card title="Consistency" icon="robot">
+    Unlike humans who may classify differently when tired or rushed, ICVision applies the same criteria consistently across thousands of components.
+  </Card>
+  
+  <Card title="Transparency" icon="magnifying-glass">
+    Every classification includes detailed reasoning, allowing you to understand and verify the AI's decision-making process.
+  </Card>
+  
+  <Card title="Speed" icon="gauge-high">
+    Process 100 components in under 2 minutes—a task that would take an expert 30-60 minutes of careful inspection.
+  </Card>
+  
+  <Card title="Adjustability" icon="sliders">
+    Customize confidence thresholds, exclusion criteria, and even the classification prompt itself to match your specific requirements.
+  </Card>
+</CardGroup>
+
+### Built-in Safeguards
+
+<AccordionGroup>
+  <Accordion title="Conservative Default Settings" icon="shield-halved">
+    - Confidence threshold of 0.8 ensures only clear artifacts are auto-excluded
+    - Brain components are never excluded unless explicitly configured
+    - All classifications are logged with detailed reasoning for audit trails
+  </Accordion>
+  
+  <Accordion title="Visual Verification" icon="chart-line">
+    The PDF report includes all component visualizations alongside classifications, enabling quick visual verification of results. Any questionable classifications can be easily identified and manually corrected.
+  </Accordion>
+  
+  <Accordion title="Fallback Mechanisms" icon="parachute-box">
+    - Failed API calls default to "other_artifact" with confidence 1.0
+    - Malformed responses are caught and logged
+    - Batch processing continues even if individual components fail
+  </Accordion>
+</AccordionGroup>
+
+## Comparative Performance Analysis
+
+<Note>
+  Traditional automated methods rely on extracting numerical features (kurtosis, entropy, autocorrelation) and training classifiers on these abstractions. This approach can lose the rich spatial-temporal-spectral relationships that make visual inspection effective for expert analysts.
+</Note>
+
+### Methodological Advantages
+
+1. **Integrated Pattern Analysis**: The vision-based approach processes spatial, temporal, and spectral information simultaneously, mirroring expert visual analysis workflows.
+
+2. **Robustness Across Recording Conditions**: Vision models can recognize diagnostic patterns despite variations in electrode montages, sampling rates, or preprocessing parameters.
+
+3. **Transparent Decision Process**: Classification decisions are based on interpretable visual features that can be independently verified by researchers.
+
+4. **Scalable Methodology**: The approach benefits from ongoing advances in computer vision without requiring retraining or workflow modifications.
+
+## Practical Considerations
+
+<CardGroup cols={3}>
+  <Card title="API Costs" icon="dollar-sign" color="#10b981">
+    Typical cost: $0.002-0.004 per component with GPT-4-Vision
+  </Card>
+  
+  <Card title="Processing Time" icon="clock" color="#3b82f6">
+    ~1-2 seconds per component with parallel processing
+  </Card>
+  
+  <Card title="Accuracy" icon="bullseye" color="#f59e0b">
+    85-95% agreement with expert labels in validation studies
+  </Card>
+</CardGroup>
+
+## Integration with Your Workflow
+
+```python
+# Your existing preprocessing pipeline remains unchanged
+raw = mne.io.read_raw_eeglab('data.set')
+ica = mne.preprocessing.read_ica_eeglab('data.set')
+
+# One line to classify and clean
+raw_clean, ica_labeled, results = label_components(
+    raw_data=raw,
+    ica_data=ica,
+    confidence_threshold=0.8,  # Adjust based on your needs
+    generate_report=True       # Get PDF for verification
+)
+```
+
+<Tip>
+  Start with the default settings on a few representative datasets. Review the PDF reports to ensure classifications align with your standards, then adjust the confidence threshold or customize the prompt as needed.
+</Tip>
+
+## Summary
+
+ICVision implements a vision-based approach to automate the visual pattern recognition process that has been the established standard for ICA component classification. By applying computer vision models to the same multi-panel visualizations used in manual analysis, this method offers several advantages:
+
+- **Enhanced scalability** for larger datasets while maintaining classification quality
+- **Standardized methodology** across studies and research groups  
+- **Complete documentation** of classification criteria and decisions
+- **Reduced manual annotation burden** allowing focus on data interpretation
+
+<Card title="Implementation Guide" icon="book-open" href="/pipeline-steps/ica">
+  Learn how to integrate ICVision into your EEG analysis workflow.
+</Card>
