@@ -8,7 +8,7 @@
       "dark": "#222831",
       "light": "#EEEEEE"
     },
-  "decoration": "windows"
+    "decoration": "windows"
   },
   "colors": {
     "primary": "#6d45dc",
@@ -30,6 +30,12 @@
             ]
           },
           {
+            "group": "System Architecture",
+            "pages": [
+              "system-architecture"
+            ]
+          },
+          {
             "group": "Workspace",
             "pages": [
               "outputs/open_workspace"
@@ -48,7 +54,6 @@
               "outputs/metadata_logs"
             ]
           },
-
           {
             "group": "Tasks",
             "pages": [
@@ -105,7 +110,7 @@
         }
       ]
     }
-  }, 
+  },
   "logo": {
     "light": "/logo/light.svg",
     "dark": "/logo/dark.svg"
@@ -118,15 +123,15 @@
   },
   "contextual": {
     "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
   },
   "footer": {
     "socials": {
