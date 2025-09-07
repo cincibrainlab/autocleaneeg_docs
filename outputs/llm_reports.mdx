@@ -1,0 +1,61 @@
+---
+title: "Derivatives: LLM Reports"
+sidebarTitle: "Folder: LLM Reports"
+description: "Opt-in AI-generated summaries from pipeline runs."
+---
+
+AutoCleanEEG can optionally generate textual summaries using a large
+language model. These reports live under each subject's
+`metadata/llm_reports` folder and are built from the processing log and
+PDF report.
+
+<!-- markdownlint-disable-next-line MD033 -->
+<Info>By default AI reporting is disabled. Set `"ai_reporting": true`
+in task config and provide `OPENAI_API_KEY` to enable.</Info>
+
+## Files Produced
+
+| File | Purpose |
+|------|---------|
+| `context.json` | Serialized run context used to produce all text. |
+| `methods.md` | Deterministic methods paragraph created without any API calls. |
+<!-- markdownlint-disable-next-line MD013 -->
+| `executive_summary.md` | Study-ready summary produced by the LLM (requires API key). |
+<!-- markdownlint-disable-next-line MD013 -->
+| `qc_narrative.md` | LLM-generated quality control narrative and recommendations (requires API key). |
+| `llm_trace.jsonl` | Hash-based trace of prompts and results for compliance. |
+
+## Enabling the Feature
+
+1. Add `"ai_reporting": true` to your task configuration or workspace
+   template.
+2. Ensure an `OPENAI_API_KEY` is available in the environment.
+3. Run the pipeline as usual – reports appear under:
+
+```text
+bids/derivatives/autoclean-v<version>/metadata/llm_reports/
+```
+
+## CLI Usage
+
+You can regenerate reports or chat about a run from the command line:
+
+```bash
+autocleaneeg-pipeline report create --run-id demo --context-json ./context.json \
+  --out-dir ./reports
+autocleaneeg-pipeline report chat --context-json ./context.json
+```
+
+`report create` always writes `context.json` and `methods.md`. If an API
+key is present, it also generates `executive_summary.md` and
+`qc_narrative.md`.
+
+## When to Use
+
+- Share short summaries with collaborators.
+- Capture deterministic methods text for manuscripts.
+- Quickly review quality metrics without opening the full PDF.
+
+<!-- markdownlint-disable-next-line MD033 -->
+<Info>Missing API keys or expected input files never break your run; the
+pipeline simply skips LLM outputs.</Info>
