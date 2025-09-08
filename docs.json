@@ -52,7 +52,8 @@
               "outputs/intermediate_steps",
               "outputs/subject_reports",
               "outputs/metadata_logs",
-              "outputs/llm_reports"
+              "outputs/llm_reports",
+              "outputs/report_chat"
             ]
           },
           {
