@@ -9,9 +9,15 @@ language model. These reports live under each subject's
 `metadata/llm_reports` folder and are built from the processing log and
 PDF report.
 
-<!-- markdownlint-disable-next-line MD033 -->
+
 <Info>By default AI reporting is disabled. Set `"ai_reporting": true`
 in task config and provide `OPENAI_API_KEY` to enable.</Info>
+
+<Warning>
+**Privacy Considerations for LLM Reporting**
+
+For 100% privacy, use a local language model instead of cloud-based APIs. When using OpenAI's API, ensure your setup includes zero data retention and a Business Associate Agreement (BAA) if handling Protected Health Information (PHI). Note that most data sent is deidentified and consists of aggregate processing metrics, not raw EEG data.
+</Warning>
 
 ## Files Produced
 
@@ -19,9 +25,7 @@ in task config and provide `OPENAI_API_KEY` to enable.</Info>
 |------|---------|
 | `context.json` | Serialized run context used to produce all text. |
 | `methods.md` | Deterministic methods paragraph created without any API calls. |
-<!-- markdownlint-disable-next-line MD013 -->
 | `executive_summary.md` | Study-ready summary produced by the LLM (requires API key). |
-<!-- markdownlint-disable-next-line MD013 -->
 | `qc_narrative.md` | LLM-generated quality control narrative and recommendations (requires API key). |
 | `llm_trace.jsonl` | Hash-based trace of prompts and results for compliance. |
 
@@ -56,6 +60,5 @@ key is present, it also generates `executive_summary.md` and
 - Capture deterministic methods text for manuscripts.
 - Quickly review quality metrics without opening the full PDF.
 
-<!-- markdownlint-disable-next-line MD033 -->
 <Info>Missing API keys or expected input files never break your run; the
 pipeline simply skips LLM outputs.</Info>
