@@ -91,6 +91,33 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "Protocols",
+        "groups": [
+          {
+            "group": "Resting State",
+            "pages": [
+              "protocols/resting_state_basic"
+            ]
+          },
+          {
+            "group": "Public Pipelines",
+            "pages": [
+              "protocols/made_pipeline",
+              "protocols/faster",
+              "protocols/happe",
+              "protocols/prep_pipeline",
+              "protocols/automagic"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "EEG Montages",
+        "pages": [
+          "montages/biosemi32-infant"
+        ]
       }
     ],
     "global": {

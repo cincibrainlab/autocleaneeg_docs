@@ -1,0 +1,24 @@
+---
+title: "HAPPE"
+description: "Harvard Automated Processing Pipeline for Electroencephalography."
+---
+
+<Tabs>
+<Tab title="Overview">
+<Note>
+HAPPE (Gabard-Durnam et al., 2018) targets high-artifact developmental EEG using
+wavelet-enhanced ICA and automated component rejection.
+</Note>
+</Tab>
+<Tab title="Steps">
+<Steps>
+<Step title="Import EEGLAB .set files and standardize channel labels" />
+<Step title="Apply 1–100 Hz band-pass and 60 Hz notch filters" />
+<Step title="Detect bad channels via correlation, flat segments, and extreme amplitude" />
+<Step title="Run wavelet-enhanced ICA" />
+<Step title="Reject artifactual components with MARA and residual variance metrics" />
+<Step title="Rereference to average and export cleaned data" />
+</Steps>
+</Tab>
+</Tabs>
+

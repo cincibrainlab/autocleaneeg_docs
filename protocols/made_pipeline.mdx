@@ -1,0 +1,28 @@
+---
+title: "MADE Pipeline"
+description: "Maryland Analysis of Developmental EEG (MADE) automated preprocessing."
+---
+
+<Tabs>
+<Tab title="Overview">
+<Note>
+MADE is a MATLAB-based pipeline for developmental EEG that standardizes filtering,
+artifact removal, and epoching (Debnath et al., 2020).
+</Note>
+</Tab>
+<Tab title="Steps">
+<Steps>
+<Step title="Import raw EEG and metadata" />
+<Step title="Resample to 250 Hz and apply 0.3–45 Hz band-pass filter" />
+<Step title="Remove 60 Hz line noise" />
+<Step title="Detect noisy channels via spectral and correlation metrics" />
+<Step title="Interpolate rejected channels" />
+<Step title="Rereference to average" />
+<Step title="Run ICA (extended infomax)" />
+<Step title="Reject artifact components with ADJUST" />
+<Step title="Epoch events and apply FASTER-based rejection" />
+<Step title="Export cleaned data and summary stats" />
+</Steps>
+</Tab>
+</Tabs>
+

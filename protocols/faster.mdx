@@ -1,0 +1,25 @@
+---
+title: "FASTER"
+description: "Fully Automated Statistical Thresholding for EEG artifact Rejection."
+---
+
+<Tabs>
+<Tab title="Overview">
+<Note>
+FASTER (Nolan et al., 2010) uses statistical thresholds at channel, epoch, and
+component levels to clean EEG without manual intervention.
+</Note>
+</Tab>
+<Tab title="Steps">
+<Steps>
+<Step title="Band-pass filter 1–80 Hz and remove line noise" />
+<Step title="Identify noisy channels via variance, correlation, and Hurst exponent" />
+<Step title="Interpolate rejected channels and rereference to average" />
+<Step title="Segment data into epochs" />
+<Step title="Reject epochs exceeding amplitude, variance, or kurtosis thresholds" />
+<Step title="Run ICA and score components on spatial/temporal statistics" />
+<Step title="Remove artifactual components and reconstruct cleaned signal" />
+</Steps>
+</Tab>
+</Tabs>
+
