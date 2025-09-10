@@ -111,6 +111,12 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "EEG Montages",
+        "pages": [
+          "montages/biosemi32-infant"
+        ]
       }
     ],
     "global": {
