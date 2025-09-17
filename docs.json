@@ -113,14 +113,25 @@
         ]
       },
       {
-        "tab": "EEG Montages",
-        "pages": [
-          "montages/biosemi32-infant"
+        "tab": "Utilities",
+        "groups": [
+          {
+            "group": "AutoCleanEEG-View",
+            "pages": [
+              "utilities/autocleaneeg-view/getting-started"
+            ]
+          }
         ]
       },
       {
-        "tab": "Signal Processing",
+        "tab": "Resources",
         "groups": [
+          {
+            "group": "EEG Montages",
+            "pages": [
+              "montages/biosemi32-infant"
+            ]
+          },
           {
             "group": "Filtering",
             "pages": [
@@ -151,17 +162,6 @@
               "signal-processing/advanced/time-frequency",
               "signal-processing/advanced/connectivity",
               "signal-processing/advanced/source-localization"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Utilities",
-        "groups": [
-          {
-            "group": "AutoCleanEEG-View",
-            "pages": [
-              "utilities/autocleaneeg-view/getting-started"
             ]
           }
         ]
