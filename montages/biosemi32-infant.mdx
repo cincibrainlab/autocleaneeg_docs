@@ -34,15 +34,10 @@ Many EEG systems use non-standard channel naming or custom electrode layouts. Th
   </Step>
 
   <Step title="Add the montage to configuration">
-    Ensure your montage list includes an entry for validation:
-
-    - File: `configs/montages.yaml`
-    - Add: `biosemi32_infant: "BioSemi 32 (Infant)"` under `valid_montages:`
-
-    This keeps `validate_eeg_system(...)` happy when tasks reference `biosemi32_infant`.
+    Register your custom montage in the pipeline configuration to ensure validation passes when tasks reference `biosemi32_infant`.
   </Step>
 
-  <Step title="Use it in a Python task">
+  <Step title="Use it in a task">
     In Python task files, add the montage to your config dictionary:
 
     ```python
@@ -56,22 +51,6 @@ Many EEG systems use non-standard channel naming or custom electrode layouts. Th
     ```
 
     The pipeline will discover `BIOSEMI_BDF` from the `.bdf` extension and select the infant plugin automatically.
-  </Step>
-
-  <Step title="Use it in a YAML task">
-    For YAML-based configurations, the structure mirrors the Python dict:
-
-    ```yaml
-    tasks:
-      my_infant_task:
-        settings:
-          montage:
-            enabled: true
-            value: biosemi32_infant
-    unprocessed_file: /path/to/recording.bdf
-    ```
-
-    Both approaches achieve the same result - the pipeline uses your custom montage plugin.
   </Step>
 
   <Step title="Verify the import">
@@ -92,10 +71,9 @@ Many EEG systems use non-standard channel naming or custom electrode layouts. Th
 - Channel mapping is defined in `CHANNEL_MAPPING` inside the plugin; adjust if your BioSemi32 infant cap uses a custom layout.
 - Auxiliary channel typing is set via `NON_EEG_TYPES`; extend if your device exports additional channels.
 - The montage applied is `biosemi32` (electrode positions) while the user‑facing system string is `biosemi32_infant` (import behavior + mapping).
-- Troubleshooting: If validation fails, confirm `biosemi32_infant` exists in `configs/montages.yaml` and that your input file is `.bdf`.
+- Troubleshooting: If validation fails, confirm your custom montage is properly registered and that your input file has the correct extension.
 
 ## Related Files
 
-- `src/autoclean/plugins/eeg_plugins/bdf_biosemi32_infant_plugin.py`
-- `src/autoclean/io/import_.py`
-- `configs/montages.yaml`
+- `src/autoclean/plugins/eeg_plugins/bdf_biosemi32_infant_plugin.py` - Plugin implementation
+- `src/autoclean/io/import_.py` - Import system registration
