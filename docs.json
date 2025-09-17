@@ -154,6 +154,17 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "Utilities",
+        "groups": [
+          {
+            "group": "AutoCleanEEG-View",
+            "pages": [
+              "utilities/autocleaneeg-view/getting-started"
+            ]
+          }
+        ]
       }
     ],
     "global": {
