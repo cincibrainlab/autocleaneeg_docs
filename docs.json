@@ -36,9 +36,10 @@
             ]
           },
           {
-            "group": "Workspace",
+            "group": "Workspaces",
             "pages": [
-              "outputs/open_workspace"
+              "outputs/open_workspace",
+              "essentials/workspace-cli"
             ]
           },
           {

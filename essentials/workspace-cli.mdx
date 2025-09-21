@@ -1,0 +1,87 @@
+---
+title: Setting Up Your Workspace
+description: Create and set up your AutoClean EEG workspace folder
+sidebarTitle: "Setting up"
+
+---
+
+import { Callout } from 'nextra-theme-docs'
+
+# Setting Up Your Workspace
+
+A **workspace** is a folder on your computer where AutoClean EEG stores all your processing results and custom settings. Think of it as your project folder for EEG analysis.
+
+## What Goes in a Workspace?
+
+When you set up a workspace, AutoClean creates this simple structure:
+
+```
+<your workspace folder>/
+├─ tasks/          # Custom processing tasks (optional)
+├─ output/         # All your processing results go here
+└─ example_basic_usage.py
+```
+
+<Callout type="info">
+Your workspace folder stays exactly where you put it. AutoClean doesn't create extra nested folders inside it.
+</Callout>
+
+
+## First Time Setup
+
+When you first run AutoClean, it will ask you to set up a workspace:
+
+```bash
+autocleaneeg-pipeline workspace
+```
+
+AutoClean will:
+1. Suggest a default location (usually `~/Documents/Autoclean-EEG`)
+2. Create the folder and basic structure
+3. Remember this location for future use
+
+<Callout type="success">
+Most users can just accept the default location and start processing EEG data right away!
+</Callout>
+
+
+
+## Choosing a Custom Location
+
+If you want your workspace somewhere else, you can set it manually:
+
+```bash
+autocleaneeg-pipeline workspace set /path/to/my/eeg/folder
+```
+
+**Important**: The folder you specify becomes your workspace directly. For example:
+- `workspace set ~/Projects/eeg` → workspace is `~/Projects/eeg`
+- `workspace set /data/lab` → workspace is `/data/lab`
+
+No extra "AutoClean" folder gets created inside.
+
+
+
+## Basic Workspace Commands
+
+| Command | What it does |
+|---------|-------------|
+| `workspace` | Set up or change your workspace |
+| `workspace show` | See where your current workspace is |
+| `workspace explore` | Open your workspace folder |
+
+Example - Check your current workspace:
+```bash
+autocleaneeg-pipeline workspace show
+```
+
+
+## Quick Tips
+
+- **Choose a dedicated folder**: Don't use your Desktop or Downloads folder
+- **Pick somewhere with space**: Processing results can take up several gigabytes
+- **Easy to find**: Choose a location you'll remember, like `~/EEG_Analysis`
+
+## What's Next?
+
+Once your workspace is set up, you're ready to start processing EEG data! All your results will automatically be saved in the `output/` folder inside your workspace.
