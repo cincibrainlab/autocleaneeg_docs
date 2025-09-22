@@ -1,0 +1,33 @@
+---
+title: "Exports Folder"
+sidebarTitle: "Folder: exports/"
+description: "Learn about the task‑root exports folder that collects EEG‑only final datasets and convenience logs."
+---
+
+## The `exports/` Folder
+
+AutoCleanEEG provides a **task‑root** convenience folder named **`exports/`**.
+
+This folder is meant as a **convenience export**: it gathers the most useful processed outputs in one place, so users can quickly start analysis without digging through derivatives or raw-like structures.
+
+```
+<task>/
+  exports/
+    ├── 101001_C1D1BL_EO_comp_epo.set         # Final EEG‑only dataset (EEGLAB)
+    ├── 101001_C1D1BL_EO_processing_log.csv   # Per‑file processing CSV (convenience copy)
+    └── 101001_C1D1BL_EO_processing.log       # Per‑file pipeline log (convenience copy)
+```
+
+Notes:
+- `.set` files are rewritten to include **EEG channels only**.
+- Per‑file CSV/log are convenience copies; originals live under `reports/run_reports/` and `logs/`.
+
+### Why it exists
+
+* **Convenience**: Many users just want the “final” artifact-cleaned, epoched dataset without extra navigation.
+* **Reproducibility**: Logs are included alongside the cleaned files for transparency.
+* **Compatibility**: Outputs are still linked to the BIDS dataset, but collected in one easy-to-access folder.
+
+<Info>
+This folder is a convenience location and not part of the BIDS standard. BIDS‑compliant inputs/outputs remain under `bids/` and `bids/derivatives/` respectively.
+</Info>

@@ -45,8 +45,8 @@ If you answer “No” to using the latest run, you’ll get an interactive run 
 
 - A completed (or failed) run stored in the database
 - Standard outputs on disk for that run:
-  - Per-file processing log CSV (saved under `.../bids/derivatives/autoclean-v<version>/` and also in `bids/final_files/`)
-  - PDF report under `.../bids/derivatives/autoclean-v<version>/metadata/`
+- Per-file processing log CSV (saved under `reports/run_reports/` with a copy in `exports/`)
+- PDF report under `reports/run_reports/`
 - For LLM chat: `OPENAI_API_KEY` (and optionally `OPENAI_BASE_URL` for compatible providers)
 
 > You do NOT need to have enabled `ai_reporting`; chat reconstructs context from always-present outputs when a saved LLM context is missing.

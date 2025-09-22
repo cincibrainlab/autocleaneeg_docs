@@ -45,10 +45,11 @@
           {
             "group": "Pipeline Outputs",
             "pages": [
+              "outputs/task_output_layout",
               "outputs/processing_log",
               "outputs/bids_overview",
               "outputs/subject_folders",
-              "outputs/final_files",
+              "outputs/exports",
               "outputs/derivatives_overview",
               "outputs/intermediate_steps",
               "outputs/subject_reports",
