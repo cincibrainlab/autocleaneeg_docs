@@ -11,9 +11,9 @@ Each pipeline run outputs results in **BIDS (Brain Imaging Data Structure)** for
 
 The `bids/` subfolder contains:
 
-* **Cleaned continuous and epoched EEG data** in BIDS layout
+* **Raw-like cleaned EEG data** in BIDS layout
 * **Standard metadata files** describing participants, dataset structure, and channels
-* Events and derivatives for reproducibility
+* Events and a derivatives folder for reproducibility
 
 <Tip>
 Because BIDS enforces strict formatting rules, the **subject identifier (`sub-XXXX`)** inside the `bids/` folder will not necessarily match the original filename.  
@@ -40,7 +40,7 @@ To see how subjects are linked to original recordings, check the **`participants
 | **`participants.json`**        | Sidecar describing the meaning, format, and units of each column in `participants.tsv`.       |
 | **`README`**                   | Free-text description of the dataset, study, or preprocessing notes.                          |
 | **`sub-<ID>/`**                | Per-subject folder (e.g., `sub-451559`) containing the actual EEG data and metadata.          |
-| **`derivatives/`**             | Preprocessed outputs from the pipeline (e.g., ICA-cleaned signals, epoched data, QC reports). |
+| **`derivatives/`**             | Numbered stage folders (e.g., 01_import … 16_comp) used for stepwise inspection.             |
 | —                             | — (Final user‑facing exports live at the task root under `exports/`).                       |
 
 
@@ -48,5 +48,5 @@ To see how subjects are linked to original recordings, check the **`participants
 
 * **Raw-like cleaned EEG** lives under each subject folder (`sub-<ID>`).
 * **Metadata** (`dataset_description.json`, `participants.tsv/json`, `README`) ensures the dataset is machine-readable and human-readable.
-* **Processed derivatives** contain artifacts-removed signals and QC artifacts.
-* **Final files** provide shortcuts for quick analysis, without digging into the full BIDS tree.
+* **Processed derivatives** contain stage outputs for debugging/inspection.
+* **Final deliverables** (EEG‑only sets) live under the task‑root `exports/` folder.

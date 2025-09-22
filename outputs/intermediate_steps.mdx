@@ -1,20 +1,19 @@
 ---
-title: "Derivatives: Intermediate Pipeline Steps"
-sidebarTitle: "Folder: Intermediate Steps"
-description: "Learn how AutoCleanEEG dynamically exports step-by-step intermediate outputs, depending on the preprocessing stages you enable."
+title: "Derivatives: Stage Folders"
+sidebarTitle: "Folder: Stage Folders"
+description: "Learn how AutoCleanEEG writes numbered stage folders under derivatives for step-by-step inspection."
 ---
 
-## The `intermediate/` Folder
+## Stage Folders under `derivatives/`
 
-The `intermediate/` folder is where AutoCleanEEG saves **step-by-step snapshots** of your preprocessing pipeline.
-These folders are **dynamically generated** — only the steps you enable and configure for export will appear here.
+AutoCleanEEG writes **numbered stage folders directly under `bids/derivatives/`**. These are **dynamically generated** — only the steps you enable and configure for export will appear.
 
 For example, if you skip ICA or don’t export filtering outputs, the corresponding step folder (`08_ica/` or `03_filter/`) won’t exist in your run.
 
 ### Example Layout
 
 ```
-intermediate/
+derivatives/
 ├── 01_import
 ├── 02_resample
 ├── 03_filter
@@ -38,15 +37,15 @@ intermediate/
 
 ### Step Highlights
 
-| Folder                | Purpose                                                                    |
-| --------------------- | -------------------------------------------------------------------------- |
-| **01\_import**        | Original raw data converted into BIDS-compatible format.                   |
-| **02\_resample**      | Data resampled (e.g., 1000 Hz → 250 Hz).                                   |
-| **03\_filter**        | Filtered signals (HP, LP, notch).                                          |
-| **05\_bad\_channels** | Snapshot of data after noisy channels are dropped.                         |
-| **08\_ica**           | Data after ICA decomposition and component removal.                        |
-| **10\_epochs**        | Segmented data into epochs.                                                |
-| **13\_gfp\_clean**    | Epochs cleaned with Global Field Power metrics.                            |
+| Folder                | Purpose                                                                          |
+| --------------------- | -------------------------------------------------------------------------------- |
+| **01\_import**        | Original raw data converted into BIDS‑compatible format.                        |
+| **02\_resample**      | Data resampled (e.g., 1000 Hz → 250 Hz).                                        |
+| **03\_filter**        | Filtered signals (HP, LP, notch).                                               |
+| **05\_bad\_channels** | Snapshot of data after noisy channels are dropped.                              |
+| **08\_ica**           | Data after ICA decomposition and component removal.                             |
+| **10\_epochs**        | Segmented data into epochs.                                                     |
+| **13\_gfp\_clean**    | Epochs cleaned with Global Field Power metrics.                                 |
 | **14\_comp**          | Final compiled output before writing to `derivatives/` and task‑root `exports/`. |
 
 <Info>
@@ -71,5 +70,5 @@ This separation allows you to:
 * **Storage-aware**: Avoid large intermediate folders by disabling exports for steps you don’t need.
 
 <Info>
-Intermediate folders are **optional checkpoints**. You can enable or disable exports per step in your task configuration. Once validated, these folders can be safely deleted to reclaim space.
+Stage folders are **optional checkpoints**. You can enable or disable exports per step in your task configuration. Once validated, these folders can be safely deleted to reclaim space.
 </Info>
