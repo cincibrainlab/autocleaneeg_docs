@@ -22,10 +22,13 @@ Autoclean-EEG/
 │   └── custom_task.py
 └── output/                 (processing results and outputs)
     ├── RestingStateTutorial/               (task-specific output folder)
-    │   ├── bids/                           (BIDS-compliant results) 
-    │   ├── logs/                          (execution logs)
-    │   ├── metadata/                      (run metadata and reports)
-    │   └── RestingStateTutorial_processing_log.csv
+    │   ├── bids/                           (BIDS-compliant inputs & derivatives) 
+    │   ├── exports/                        (EEG-only final datasets + convenience logs/CSVs)
+    │   ├── reports/                        (run_reports: PDFs, per-file CSVs, JSON summaries)
+    │   ├── logs/                           (single pipeline.log)
+    │   ├── qa/                             (fastplot PNGs + qa_manifest.csv)
+    │   ├── ica/                            (ICA FIF + ica_control_sheet.csv)
+    │   └── preprocessing_log.csv           (combined task-level processing log)
     └── RestingStateTutorial_2025-09-04/    (automatic backup from rerun)
 ```
 
@@ -74,9 +77,8 @@ AutoCleanEEG automatically preserves your work:
 ## Next Steps
 
 * **Browse Tasks** - Explore the `tasks/` folder to see available processing pipelines
-* **Review Outputs** - Check the `output/` folder for BIDS-compliant results and reports  
+* **Review Outputs** - Check the `output/` folder for BIDS inputs/derivatives, and task‑root `exports/`, `reports/`, `qa/`, and `ica/`  
 * **Examine Logs** - Use `process_log.txt` and run-specific logs for troubleshooting
 * **Database Queries** - Access `pipeline.db` for detailed run metadata and batch analysis
-
 
 

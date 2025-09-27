@@ -1,12 +1,12 @@
 ---
-title: "Derivatives: LLM Reports"
-sidebarTitle: "Folder: LLM Reports"
-description: "Opt-in AI-generated summaries from pipeline runs."
+title: "LLM Reports (Optional)"
+sidebarTitle: "LLM Reports"
+description: "Opt-in AI-generated summaries from pipeline runs, written under task-root reports."
 ---
 
 AutoCleanEEG can optionally generate textual summaries using a large
-language model. These reports live under each subject's
-`metadata/llm_reports` folder and are built from the processing log and
+language model. These reports live under the task‑root
+`reports/llm/` folder and are built from the processing log and
 PDF report.
 
 
@@ -34,11 +34,8 @@ For 100% privacy, use a local language model instead of cloud-based APIs. When u
 1. Add `"ai_reporting": true` to your task configuration or workspace
    template.
 2. Ensure an `OPENAI_API_KEY` is available in the environment.
-3. Run the pipeline as usual – reports appear under:
-
-```text
-bids/derivatives/autoclean-v<version>/metadata/llm_reports/
-```
+3. Run the pipeline as usual – reports appear under `reports/llm/` (or a
+   subfolder keyed by the subject base name).
 
 ## CLI Usage
 
