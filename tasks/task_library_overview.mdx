@@ -1,0 +1,86 @@
+---
+title: "Task Library & Online Registry"
+sidebarTitle: "Task Library"
+description: "Understand the built-in task library, GitHub registry, and how to keep your templates up to date."
+---
+
+The AutoCleanEEG Pipeline now ships with a **Task Library**: a curated set of preprocessing templates that live both inside the app _and_ in a public GitHub registry. You do not need to be a developer to use it-think of it as an app store for ready-made EEG workflows.
+
+<Info>
+The public registry is hosted at [`cincibrainlab/autocleaneeg-task-registry`](https://github.com/cincibrainlab/autocleaneeg-task-registry). The pipeline bundles a snapshot so everything still works when you are offline.
+</Info>
+
+## Why this matters
+
+- **Always current** - When the lab publishes improvements, a single command fetches the latest templates.
+- **Safe customisation** - You copy a template into your workspace before editing, preserving the original recipe.
+- **Offline friendly** - Hospitals, field sites, or planes can still use the packaged copies.
+- **Team alignment** - Everyone pulls from the same source, so collaborators process data the same way.
+
+## How the pieces fit together
+
+```
+GitHub Registry (official templates)
+        |  `task builtins update`
+        v
+Local Cache (~/.config/autocleaneeg/.builtin_cache)
+        |  fallback if offline
+        v
+Packaged Snapshot (ships with the installer)
+        |  `task builtins install`
+        v
+Workspace /tasks (your editable copies)
+```
+
+1. `task builtins update` downloads `registry.json` (the index) and any task you request.
+2. Tasks live in your cache so future installs are instant-even without internet.
+3. When you install a task, the CLI copies it into your workspace where you can tailor it.
+
+## Everyday commands
+
+```bash
+# Sync the index from GitHub (safe to run anytime)
+autocleaneeg-pipeline task builtins update
+
+# See what templates are available and where they came from
+autocleaneeg-pipeline task builtins list --show-paths
+
+# Bring a template into your workspace so you can tweak it
+autocleaneeg-pipeline task builtins install RestingEyesOpen
+```
+
+<Note>
+If the task already exists in your workspace, add `--force` to overwrite it. We recommend copying the file first if you have custom edits you want to keep.
+</Note>
+
+## Reading the status badges
+
+- `synced` - your workspace copy matches the official template.
+- `modified` - you have local edits; reinstall to compare with the original.
+- `not installed` - the template is available but not yet copied into your workspace.
+- `unknown` - the CLI could not verify a hash yet (usually before your first update).
+
+Whenever a network request fails, the CLI stores that reason and shows it the next time you open the task menu, so you always know if the cache is stale.
+
+## Real-world examples
+
+- **Resting-state study refresh** - The team pushes an updated `RestingEyesClosed` configuration to GitHub. Analysts run `task builtins update` Monday morning and install the new template before batching new participants.
+- **Multi-site collaboration** - Cincinnati and Houston sites agree to use `ASSR_40Hz`. Each lab installs the template directly from the registry so their pipelines match, even though the labs tune their copies independently.
+- **Offline hospital workflow** - A clinician on a secure network (no internet) lists built-ins. The CLI falls back to the packaged snapshot, so they can still install templates that were bundled with the release.
+- **Student sandboxing** - A trainee installs `MMN_Standard`, copies it to `MMN_Experiment2025`, and edits just the epoch window. Because the official template stays untouched, they can always reinstall if they need to revert.
+
+## Frequently asked questions
+
+**Do I need GitHub access?** - No. The CLI fetches public files. If the network is blocked, you still have the packaged snapshot.
+
+**What if a template changes after I customise it?** - Your workspace copy is yours. Re-run `task builtins install` to pull the updated version and compare differences.
+
+**Can I add our own tasks to the registry?** - Not yet. The first release focuses on lab-maintained templates. Community submissions are on the roadmap.
+
+## Next steps
+
+- Learn how to copy and edit a task in [Task Management](../tasks/task-management)
+- Explore how the CLI discovers tasks in [Task Flexibility](../tasks/task_flexibility)
+- Read the full engineering plan in the pipeline repo: `docs/task_registry_plan.md`
+
+Ready to try? Run `autocleaneeg-pipeline task builtins update` now so your cache is primed for the next study.

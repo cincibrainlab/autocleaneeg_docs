@@ -65,6 +65,7 @@
               "tasks/taskwizard",
               "tasks/task_class",
               "tasks/task-management",
+              "tasks/task_library_overview",
               "tasks/task_flexibility"
             ]
           },
