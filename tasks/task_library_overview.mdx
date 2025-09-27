@@ -21,18 +21,18 @@ The public registry is hosted at [`cincibrainlab/autocleaneeg-task-registry`](ht
 
 ```
 GitHub Registry (official templates)
-        |  `task builtins update`
+        |  `task library update`
         v
 Local Cache (~/.config/autocleaneeg/.builtin_cache)
         |  fallback if offline
         v
 Packaged Snapshot (ships with the installer)
-        |  `task builtins install`
+        |  `task library install`
         v
 Workspace /tasks (your editable copies)
 ```
 
-1. `task builtins update` downloads `registry.json` (the index) and any task you request.
+1. `task library update` downloads `registry.json` (the index) and any task you request.
 2. Tasks live in your cache so future installs are instant-even without internet.
 3. When you install a task, the CLI copies it into your workspace where you can tailor it.
 
@@ -40,13 +40,13 @@ Workspace /tasks (your editable copies)
 
 ```bash
 # Sync the index from GitHub (safe to run anytime)
-autocleaneeg-pipeline task builtins update
+autocleaneeg-pipeline task library update
 
 # See what templates are available and where they came from
-autocleaneeg-pipeline task builtins list --show-paths
+autocleaneeg-pipeline task library list --show-paths
 
 # Bring a template into your workspace so you can tweak it
-autocleaneeg-pipeline task builtins install RestingEyesOpen
+autocleaneeg-pipeline task library install RestingEyesOpen
 ```
 
 <Note>
@@ -64,7 +64,7 @@ Whenever a network request fails, the CLI stores that reason and shows it the ne
 
 ## Real-world examples
 
-- **Resting-state study refresh** - The team pushes an updated `RestingEyesClosed` configuration to GitHub. Analysts run `task builtins update` Monday morning and install the new template before batching new participants.
+- **Resting-state study refresh** - The team pushes an updated `RestingEyesClosed` configuration to GitHub. Analysts run `task library update` Monday morning and install the new template before batching new participants.
 - **Multi-site collaboration** - Cincinnati and Houston sites agree to use `ASSR_40Hz`. Each lab installs the template directly from the registry so their pipelines match, even though the labs tune their copies independently.
 - **Offline hospital workflow** - A clinician on a secure network (no internet) lists built-ins. The CLI falls back to the packaged snapshot, so they can still install templates that were bundled with the release.
 - **Student sandboxing** - A trainee installs `MMN_Standard`, copies it to `MMN_Experiment2025`, and edits just the epoch window. Because the official template stays untouched, they can always reinstall if they need to revert.
@@ -73,7 +73,7 @@ Whenever a network request fails, the CLI stores that reason and shows it the ne
 
 **Do I need GitHub access?** - No. The CLI fetches public files. If the network is blocked, you still have the packaged snapshot.
 
-**What if a template changes after I customise it?** - Your workspace copy is yours. Re-run `task builtins install` to pull the updated version and compare differences.
+**What if a template changes after I customise it?** - Your workspace copy is yours. Re-run `task library install` to pull the updated version and compare differences.
 
 **Can I add our own tasks to the registry?** - Not yet. The first release focuses on lab-maintained templates. Community submissions are on the roadmap.
 
@@ -83,4 +83,4 @@ Whenever a network request fails, the CLI stores that reason and shows it the ne
 - Explore how the CLI discovers tasks in [Task Flexibility](../tasks/task_flexibility)
 - Read the full engineering plan in the pipeline repo: `docs/task_registry_plan.md`
 
-Ready to try? Run `autocleaneeg-pipeline task builtins update` now so your cache is primed for the next study.
+Ready to try? Run `autocleaneeg-pipeline task library update` now so your cache is primed for the next study.
