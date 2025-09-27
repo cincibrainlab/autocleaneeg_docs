@@ -55,10 +55,10 @@ If the task already exists in your workspace, add `--force` to overwrite it. We 
 
 ## Reading the status badges
 
-- `synced` - your workspace copy matches the official template.
-- `modified` - you have local edits; reinstall to compare with the original.
-- `not installed` - the template is available but not yet copied into your workspace.
-- `unknown` - the CLI could not verify a hash yet (usually before your first update).
+- `up to date` - your workspace copy matches the official template.
+- `customized` - you have local edits; reinstall to compare with the original.
+- `install to use` - the template is available but not yet copied into your workspace.
+- `status unknown` - the CLI could not verify a hash yet (usually before your first update).
 
 Whenever a network request fails, the CLI stores that reason and shows it the next time you open the task menu, so you always know if the cache is stale.
 
