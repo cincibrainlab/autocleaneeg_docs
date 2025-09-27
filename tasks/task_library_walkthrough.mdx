@@ -4,67 +4,72 @@ sidebarTitle: "Library Walkthrough"
 description: "Step-by-step guide for syncing and installing official templates."
 ---
 
-Learn how to keep your Task Library current and bring new templates into your workspace.
+This walkthrough is written for analysts and coordinators who just want the official task templates in their workspace—no coding required.
 
 <Tip>
-The CLI now uses `task library` (replacing the old `task builtins` name). The legacy commands still work but print a gentle reminder.
+The command group is now `task library`. Older instructions may still reference `task builtins`; the CLI accepts both names but gently nudges you toward the new one.
 </Tip>
 
-## 1. Refresh the library index
+## Step 1 · Refresh the library index
 
-Make sure you have the newest list of templates. This only contacts GitHub for a tiny JSON file.
+Run this whenever you want to check for updates. It takes only a moment.
 
 ```bash
 autocleaneeg-pipeline task library update
 ```
 
-- **If you're offline:** add `--no-network` to skip the online check; the CLI will use the cached snapshot bundled with the app.
-- **Timeouts:** the command returns quickly even on locked-down networks. Any issue is recorded and reported the next time you open `task library`.
+- **Working offline?** Add `--no-network`. The CLI will skip the Internet check and use the last snapshot it stored locally.
+- **Behind a firewall?** If the request fails the CLI will tell you once and remember the reason so you know you are using cached templates.
 
-## 2. Browse available templates
+## Step 2 · See what is available
 
 ```bash
 autocleaneeg-pipeline task library list --show-paths
 ```
 
-What you will see:
+Read the table like this:
 
-- **Status badge** — `up to date`, `customized`, `install to use`, or `status unknown`.
-- **Source** — `local download` (from GitHub), `bundled snapshot` (shipped with the app), or `missing` if the template couldn't be located.
-- Add `--refresh` if you want to combine steps 1 and 2 in a single command.
+- **Status** shows whether the template is already in your workspace.
+- **Source** tells you where the file came from (`local download` = GitHub, `bundled snapshot` = shipped with the app).
+- Add `--refresh` to combine step 1 and 2 in a single command.
 
-## 3. Install a template into your workspace
+## Step 3 · Copy a template into your workspace
 
 ```bash
 autocleaneeg-pipeline task library install RestingEyesQuickCheck
 ```
 
-- The file is copied to your workspace `tasks/` folder so you can edit it safely.
-- Use `--force` to overwrite an existing copy (handy when you want to compare to the latest official version).
+What happens:
 
-After installing, run `task library list` again to confirm the status flips to `up to date` and the source shows `local download`.
+1. The file is downloaded (or taken from the bundled snapshot if you are offline).
+2. A copy is placed in your workspace `tasks/` folder so you can edit it safely.
+3. Running `task library list` again now shows the status badge `up to date` and the source `local download`.
 
-## 4. Customize and use the task
+Need to replace an older copy? Add `--force` to overwrite it, or install with a new filename.
 
-Open the new file from your workspace and tailor it:
+## Step 4 · Make it your own
+
+Open the file in your preferred editor:
 
 ```bash
 autocleaneeg-pipeline task edit RestingEyesQuickCheck
 ```
 
-Set it as the active task if you want to run the pipeline immediately:
+When you are ready to test it, set it as the active task:
 
 ```bash
 autocleaneeg-pipeline task set RestingEyesQuickCheck
 ```
 
+You can now run the pipeline as usual (`autocleaneeg-pipeline process …`).
+
 ## Troubleshooting
 
-- **Template missing?** Run `task library list --refresh` to clear the GitHub cache, then list again.
-- **Offline environments?** The CLI automatically falls back to the bundled snapshot; the banner shows "Working offline" along with the timestamp of the last successful check.
-- **Legacy commands?** `task builtins` commands still exist but map directly to `task library`. Update scripts when convenient.
+- **"Missing" template in the list?** Run `task library list --refresh` to clear the GitHub cache and try again.
+- **Slow or blocked network?** The CLI automatically falls back to the bundled snapshot. A banner will say "Working offline" with the time of the last successful check.
+- **Legacy scripts** that still call `task builtins` continue to work. Update them when convenient so everyone uses the same wording.
 
 ## Next steps
 
-- Understand how the status badges work in depth in [Task Library & Online Registry](./task_library_overview).
-- Dive into [Task Management](./task-management) to learn how to copy, edit, and organize templates once they're in your workspace.
+- Want to understand the concepts behind the scenes? Read [Task Library & Online Registry](./task_library_overview).
+- Ready to customise templates in depth? Visit [Task Management](./task-management).
