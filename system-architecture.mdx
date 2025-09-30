@@ -3,11 +3,17 @@ title: 'System Architecture'
 description: 'Overview of the modular architecture enabling reproducible EEG preprocessing'
 ---
 
-## Overview: Modular Task Design, Data Flow, and Conceptual Pillars
+## Overview: Three Simple Concepts
 
-AutoCleanEEG organizes preprocessing around three core concepts: **Workspaces**, **Tasks**, and **Inputs**. A *Workspace* stores task definitions, intermediate results, and final outputs in a transparent folder structure. An *Input* points to the EEG data to process, whether a single recording or a batch of files. The *Task* encapsulates a reproducible pipeline that may be built-in (e.g., `RestingState_Basic`) or custom.
+AutoCleanEEG is built around three core ideas:
 
-This separation keeps analyses organized while preserving reproducibility. Workspaces ensure outputs and provenance are centralized; inputs maintain data integrity; tasks capture the scientific logic. Under the hood, AutoCleanEEG standardizes data flow using canonical [MNE](https://mne.tools/stable/index.html) objects or EEGLAB `.set` files, balancing Python compatibility and legacy MATLAB support.
+**Workspaces** are folders where you store your tasks and results. Think of a workspace as your project directory—everything related to your analysis lives here in an organized structure.
+
+**Tasks** are Python files that define your preprocessing pipeline. Each task specifies what steps to run (filtering, ICA, epoching) and what parameters to use. Tasks can be built-in templates or custom pipelines you create.
+
+**Inputs** are your EEG data files. You can process a single file or batch process an entire folder.
+
+That's it. Point the pipeline at your data, tell it which task to run, and it handles everything else—processing, quality reports, organized outputs, and complete documentation of what was done.
 
 ```mermaid
 flowchart LR
@@ -18,78 +24,27 @@ flowchart LR
 
 By building on these pillars, AutoCleanEEG supports varied paradigms—resting-state, event-related, or murine recordings—while ensuring that identical tasks yield identical outputs across laboratories and regulatory environments.
 
-## Task System: Classes, Configurations, and Reusable Components
+## Task System: Python Files with Configuration
 
-Rather than treating preprocessing steps as independent scripts, AutoCleanEEG defines entire pipelines as subclasses of a base `Task` class. Each task combines a structured configuration dictionary with a `run` method that sequences multiple operations. Parameters such as filter cutoffs, notch frequencies, ICA methods, and classification thresholds live entirely in the configuration, allowing pipelines to be reproduced or modified without editing code.
+Each task is a Python file with two parts:
 
-Internally, the base class provides canonical methods for importing raw data, handling metadata, tracking provenance, and generating reports. Optional mixins extend capabilities with features like compliance logging or visualization. New preprocessing strategies emerge by subclassing `Task` and overriding only the scientific logic in `run`, while the framework handles file management, state persistence, and audit logging.
+A **configuration section** at the top lists all your preprocessing parameters—filter frequencies, ICA settings, epoch lengths. This is what you'll edit most often. Change a number here, and your entire pipeline updates accordingly.
 
-This design yields several advantages:
+A **run method** at the bottom sequences your preprocessing steps in order. It calls built-in methods like `self.import_raw()`, `self.filter_data()`, and `self.run_ica()`. The framework handles all file management, logging, and report generation behind the scenes.
 
-1. **Flexibility without fragility** – steps can be reordered, enabled, or parameterized through configuration.
-2. **Consistency across paradigms** – tasks enforce a common structure while allowing paradigm-specific logic.
-3. **Compliance readiness** – authenticated, logged executions produce traceable units suitable for regulated environments.
+This design means you can:
+- Share exact preprocessing protocols as simple Python files
+- Modify parameters without touching code logic
+- Reproduce results across different datasets and labs
+- Track exactly what was done for regulatory compliance
 
-## Processing Blocks: Modular Scientific Methods
+## Processing Blocks: Advanced Methods
 
-While the Task system provides core preprocessing methods (import, filter, resample, ICA, epoching), **Processing Blocks** extend the pipeline with advanced, scientifically-validated signal processing methods that can evolve independently from the core framework.
+The pipeline includes standard preprocessing methods that cover 90% of use cases: importing data, filtering, ICA, epoching, and basic quality control.
 
-### Architecture
+**Processing blocks** extend the pipeline with advanced, scientifically-validated methods for specialized analyses. These include wavelet-based artifact removal, data-driven epoch rejection, source localization, and spectral parameterization. Each block comes with comprehensive documentation, literature references, and example tasks.
 
-Processing Blocks are self-contained modules that bundle:
-- **Mixin interface** – Task-level API (e.g., `self.apply_wavelet_threshold()`)
-- **Algorithm implementation** – Core signal processing code
-- **Scientific documentation** – Literature references, parameter guidance, validation studies
-- **Configuration schema** – Structured parameter definitions
-- **Example tasks** – Demonstration of correct usage
-
-```mermaid
-flowchart TB
-    Task[Task File] --> Config[Block Configuration]
-    Task --> Method[Block Mixin Method]
-
-    Method --> Algorithm[Processing Algorithm]
-    Algorithm --> Data[Modified EEG Data]
-    Algorithm --> Report[Block-Specific Report]
-    Algorithm --> Metadata[Processing Metadata]
-
-    Registry[Task Registry] -.provides.-> Method
-    Registry -.provides.-> Config
-
-    style Task fill:#e1f5ff,stroke:#0078d4
-    style Method fill:#0078d4,stroke:#fff,stroke-width:2px,color:#fff
-    style Registry fill:#90EE90,stroke:#2F4F2F,stroke-width:2px
-```
-
-### Core vs. Advanced Methods
-
-AutoCleanEEG distinguishes between two tiers of preprocessing capabilities:
-
-**Core Methods** (built-in, always available):
-- Import, resample, filter, rereference
-- ICA with component rejection
-- Epoching and baseline correction
-- Basic artifact detection and removal
-- Standard quality control and reporting
-
-**Processing Blocks** (advanced, independently versioned):
-- Wavelet-based artifact removal ([wavelet_threshold](https://github.com/cincibrainlab/autocleaneeg-task-registry/tree/main/blocks/signal_processing/wavelet_threshold))
-- Enhanced ICA algorithms (planned)
-- Data-driven epoch rejection (planned)
-- Connectivity analysis (planned)
-- Time-frequency decomposition (planned)
-
-### Discovery and Distribution
-
-Processing blocks are discovered through the [AutoCleanEEG Task Registry](https://github.com/cincibrainlab/autocleaneeg-task-registry), a public repository that serves as both:
-1. **Block registry** – Centralized catalog with versions, dependencies, and scientific references
-2. **Example repository** – Pre-built task files demonstrating block usage
-
-This separation ensures:
-- **Transparency** – All block code is publicly visible and auditable
-- **Independent versioning** – Blocks evolve separately from the core pipeline
-- **Scientific rigor** – Each block includes peer-reviewed references and validation studies
-- **Community contribution** – Researchers can submit new blocks for shared use
+Unlike core methods, processing blocks are independently versioned and maintained in the [Task Registry](https://github.com/cincibrainlab/autocleaneeg-task-registry). This means new cutting-edge methods can be added without changing the core pipeline, and you can choose exactly which advanced methods you need.
 
 ### Integration Example
 
@@ -130,36 +85,32 @@ The block handles algorithm execution, report generation, and metadata logging a
 
 For comprehensive documentation on processing blocks, see [Processing Blocks Introduction](/processing-blocks/introduction).
 
-## Command-Line Interface (CLI)
+## Command-Line Interface
 
-The `autocleaneeg-pipeline` CLI exposes Workspaces, Tasks, and Inputs through a single entrypoint:
+The `autocleaneeg-pipeline` command provides everything you need:
 
 ```bash
-autocleaneeg-pipeline workspace  # create, inspect, and manage workspaces
-autocleaneeg-pipeline task       # define, list, or execute preprocessing tasks
-autocleaneeg-pipeline input      # validate or register EEG data sources
+autocleaneeg-pipeline workspace  # Set up and manage your project workspace
+autocleaneeg-pipeline task       # Choose and configure preprocessing tasks
+autocleaneeg-pipeline process    # Run the pipeline on your data
+autocleaneeg-pipeline review     # Open the results viewer
 ```
 
-Clear subcommands and rich help menus make the framework approachable to users with limited programming experience. Each invocation is logged and linked to the workspace's provenance system, enabling reproducible pipelines without writing Python code.
+The interface uses clear menus and helpful prompts—you don't need to be a programmer to use it effectively. Every command you run is logged automatically, creating a complete audit trail of your work.
 
-In compliance mode, commands such as `task run` or `workspace finalize` require authentication through identity management (e.g., Auth0). Actions are recorded with user identity, timestamp, and cryptographic signature, creating a tamper-evident audit trail. Sensitive information is redacted from logs, while audit-relevant details are immutably chained to prevent undetected modification.
+When compliance mode is enabled (for clinical or regulatory work), you'll authenticate with your institution's identity system before processing. All actions are cryptographically signed and tamper-evident.
 
 ## Provenance and Reproducibility
 
-Every preprocessing run produces a detailed provenance record capturing:
+AutoCleanEEG automatically tracks everything about each processing run:
 
-- **Configuration parameters** – explicit task settings and inferred defaults.
-- **Software environment** – version identifiers for AutoCleanEEG, MNE-Python, EEGLAB/Matlab connectors, and dependencies.
-- **Dataset metadata** – subject IDs, input paths, montages, and workspace organization.
-- **Execution context** – user identity (when authenticated), timestamps, environment variables, and process IDs.
+**What was done**: Every parameter, every step, every decision is recorded. The exact task file (including its cryptographic hash) is saved alongside the results.
 
-AutoCleanEEG also snapshots the source code used during execution, including file paths and cryptographic hashes of relevant `Task` classes.
+**What was used**: Software versions, data paths, montage information—everything needed to reproduce the analysis.
 
-Provenance records are exported in human-readable formats (CSV, JSON) and stored in a structured database for aggregation and auditing. When tasks invoke external tools—such as the Matlab Runtime via the `autocleaneeg-matlab-connector`—the Docker image tag is recorded to guarantee consistent results across machines and time.
+**Who did it**: When compliance mode is enabled, user identity, timestamps, and electronic signatures create audit trails that meet FDA 21 CFR Part 11 requirements.
 
-When Compliance Mode is enabled, provenance and user interactions satisfy FDA 21 CFR Part 11 requirements. Records are tamper-evident, cryptographically chained, and authenticated via Auth0. Users can generate electronic signatures tied to individual runs, permanently linking identity, timestamp, and signature type to the record.
+All records are exported in human-readable formats (CSV, JSON) and stored in a tamper-evident database. If you manually adjust ICA components and then resume processing, that intervention is logged too. Quality control visualizations are automatically generated and linked to the provenance record.
 
-Provenance extends to manual interventions and report generation. If processing resumes after manual ICA adjustment, the new raw data and metadata are logged alongside a pointer to the post-ICA file. Quality-control visualizations—raw versus cleaned overlays, power spectral density topographies—are automatically generated and attached to the record, capturing both algorithmic steps and human decisions.
-
-AutoCleanEEG therefore serves both exploratory science and regulated clinical workflows by uniting reproducibility, auditability, and compliance in a single architecture.
+This means whether you're doing exploratory research or preparing for regulatory submission, you have complete documentation of what was done and why.
 

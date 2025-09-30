@@ -6,10 +6,9 @@ description: "Understand how AutoCleanEEG Task classes transform MNE objects ste
 
 ## How the Python Task Class Works
 
-At the core of AutoCleanEEG is the **Task class**.
-Every task is just a **Python class** that inherits from `autoclean.core.task.Task` and defines a sequence of steps in its `run()` method.
+Every task is a **Python class with a run() method**. That method lists your preprocessing steps in order—import data, filter it, run ICA, create epochs. Each step transforms the data and passes it to the next step.
 
-For new users: think of it as a **recipe**. Each line in `run()` is an instruction that takes the current EEG dataset, applies some transformation, and passes it along to the next step.
+Think of it like a recipe: follow the steps in sequence, and you get clean, analyzed EEG data at the end.
 
 ### Under the Hood: MNE Objects
 
