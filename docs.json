@@ -59,10 +59,29 @@
             "group": "Tasks",
             "pages": [
               "tasks/tasks_intro",
-              "tasks/taskwizard",
-              "tasks/task_class",
+              "tasks/task-getting-started",
+              "tasks/task-library",
+              "tasks/task-workflows",
+              "tasks/task-customization",
               "tasks/task-management",
+              "tasks/taskwizard",
+              "tasks/task-troubleshooting",
+              "tasks/task_class",
               "tasks/task_flexibility"
+            ]
+          },
+          {
+            "group": "Processing Blocks",
+            "pages": [
+              "processing-blocks/introduction",
+              "processing-blocks/getting-started",
+              "processing-blocks/available-blocks",
+              {
+                "group": "Wavelet Threshold",
+                "pages": [
+                  "processing-blocks/wavelet-threshold/overview"
+                ]
+              }
             ]
           },
           {
@@ -130,38 +149,6 @@
             "group": "EEG Montages",
             "pages": [
               "montages/biosemi32-infant"
-            ]
-          },
-          {
-            "group": "Filtering",
-            "pages": [
-              "signal-processing/filtering/bandpass",
-              "signal-processing/filtering/notch",
-              "signal-processing/filtering/high-low-pass"
-            ]
-          },
-          {
-            "group": "Artifact Removal",
-            "pages": [
-              "signal-processing/artifacts/ica-components",
-              "signal-processing/artifacts/bad-channels",
-              "signal-processing/artifacts/epoching-rejection"
-            ]
-          },
-          {
-            "group": "Preprocessing",
-            "pages": [
-              "signal-processing/preprocessing/resampling",
-              "signal-processing/preprocessing/rereferencing",
-              "signal-processing/preprocessing/baseline-correction"
-            ]
-          },
-          {
-            "group": "Advanced Methods",
-            "pages": [
-              "signal-processing/advanced/time-frequency",
-              "signal-processing/advanced/connectivity",
-              "signal-processing/advanced/source-localization"
             ]
           }
         ]

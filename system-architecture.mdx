@@ -30,6 +30,106 @@ This design yields several advantages:
 2. **Consistency across paradigms** – tasks enforce a common structure while allowing paradigm-specific logic.
 3. **Compliance readiness** – authenticated, logged executions produce traceable units suitable for regulated environments.
 
+## Processing Blocks: Modular Scientific Methods
+
+While the Task system provides core preprocessing methods (import, filter, resample, ICA, epoching), **Processing Blocks** extend the pipeline with advanced, scientifically-validated signal processing methods that can evolve independently from the core framework.
+
+### Architecture
+
+Processing Blocks are self-contained modules that bundle:
+- **Mixin interface** – Task-level API (e.g., `self.apply_wavelet_threshold()`)
+- **Algorithm implementation** – Core signal processing code
+- **Scientific documentation** – Literature references, parameter guidance, validation studies
+- **Configuration schema** – Structured parameter definitions
+- **Example tasks** – Demonstration of correct usage
+
+```mermaid
+flowchart TB
+    Task[Task File] --> Config[Block Configuration]
+    Task --> Method[Block Mixin Method]
+
+    Method --> Algorithm[Processing Algorithm]
+    Algorithm --> Data[Modified EEG Data]
+    Algorithm --> Report[Block-Specific Report]
+    Algorithm --> Metadata[Processing Metadata]
+
+    Registry[Task Registry] -.provides.-> Method
+    Registry -.provides.-> Config
+
+    style Task fill:#e1f5ff,stroke:#0078d4
+    style Method fill:#0078d4,stroke:#fff,stroke-width:2px,color:#fff
+    style Registry fill:#90EE90,stroke:#2F4F2F,stroke-width:2px
+```
+
+### Core vs. Advanced Methods
+
+AutoCleanEEG distinguishes between two tiers of preprocessing capabilities:
+
+**Core Methods** (built-in, always available):
+- Import, resample, filter, rereference
+- ICA with component rejection
+- Epoching and baseline correction
+- Basic artifact detection and removal
+- Standard quality control and reporting
+
+**Processing Blocks** (advanced, independently versioned):
+- Wavelet-based artifact removal ([wavelet_threshold](https://github.com/cincibrainlab/autocleaneeg-task-registry/tree/main/blocks/signal_processing/wavelet_threshold))
+- Enhanced ICA algorithms (planned)
+- Data-driven epoch rejection (planned)
+- Connectivity analysis (planned)
+- Time-frequency decomposition (planned)
+
+### Discovery and Distribution
+
+Processing blocks are discovered through the [AutoCleanEEG Task Registry](https://github.com/cincibrainlab/autocleaneeg-task-registry), a public repository that serves as both:
+1. **Block registry** – Centralized catalog with versions, dependencies, and scientific references
+2. **Example repository** – Pre-built task files demonstrating block usage
+
+This separation ensures:
+- **Transparency** – All block code is publicly visible and auditable
+- **Independent versioning** – Blocks evolve separately from the core pipeline
+- **Scientific rigor** – Each block includes peer-reviewed references and validation studies
+- **Community contribution** – Researchers can submit new blocks for shared use
+
+### Integration Example
+
+Using a processing block in a task is straightforward:
+
+```python
+from autoclean.core.task import Task
+
+config = {
+    "resample_step": {"enabled": True, "value": 250},
+    "filtering": {"enabled": True, "value": {"l_freq": 1, "h_freq": 45}},
+
+    # Processing block configuration
+    "wavelet_threshold": {
+        "enabled": True,
+        "value": {
+            "wavelet": "sym4",
+            "level": 5,
+            "threshold_mode": "soft",
+            "threshold_scale": 1.0,
+        }
+    },
+}
+
+class MyTask(Task):
+    def run(self):
+        self.import_raw()
+        self.resample_data()
+        self.filter_data()
+
+        # Call processing block method
+        self.apply_wavelet_threshold()  # ← Processing block
+
+        self.create_epochs(export=True)
+```
+
+The block handles algorithm execution, report generation, and metadata logging automatically. No additional code is required.
+
+For comprehensive documentation on processing blocks, see [Processing Blocks Introduction](/processing-blocks/introduction).
+
 ## Command-Line Interface (CLI)
 
 The `autocleaneeg-pipeline` CLI exposes Workspaces, Tasks, and Inputs through a single entrypoint:
