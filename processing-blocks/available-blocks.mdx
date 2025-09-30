@@ -296,14 +296,14 @@ icon: "books"
 </Card>
 
 <Card title="fooof_aperiodic" icon="wave-square" href="/processing-blocks/fooof-aperiodic/overview">
-  **FOOOF aperiodic (1/f) parameter extraction from source-localized data**
+  **specparam aperiodic (1/f) parameter extraction from source-localized data**
 
   <Accordion title="Details" icon="info">
   **Version**: 1.0.0 (Stable)
 
   **Category**: Analysis / Spectral Parameterization
 
-  **Purpose**: Extract aperiodic (1/f background) parameters from vertex-level source estimates using FOOOF algorithm
+  **Purpose**: Extract aperiodic (1/f background) parameters from vertex-level source estimates using specparam algorithm (formerly FOOOF)
 
   **Best For**:
   - Excitation/inhibition (E/I) balance studies
@@ -320,7 +320,7 @@ icon: "books"
   - Minimum 60 seconds of clean data
 
   **Scientific References**:
-  - Donoghue et al. (2020) - FOOOF method
+  - Donoghue et al. (2020) - specparam spectral parameterization
   - Voytek & Knight (2015) - Aperiodic activity and cognition
   - [DOI: 10.1038/s41593-020-00744-x](https://doi.org/10.1038/s41593-020-00744-x)
 
@@ -354,14 +354,14 @@ icon: "books"
 </Card>
 
 <Card title="fooof_periodic" icon="chart-scatter" href="/processing-blocks/fooof-periodic/overview">
-  **FOOOF periodic (oscillatory peak) detection from source-localized data**
+  **specparam periodic (oscillatory peak) detection from source-localized data**
 
   <Accordion title="Details" icon="info">
   **Version**: 1.0.0 (Stable)
 
   **Category**: Analysis / Spectral Parameterization
 
-  **Purpose**: Detect and characterize oscillatory peaks (alpha, beta, theta, etc.) after removing aperiodic component
+  **Purpose**: Detect and characterize oscillatory peaks (alpha, beta, theta, etc.) after removing aperiodic component using specparam (formerly FOOOF)
 
   **Best For**:
   - Oscillatory biomarker discovery
@@ -376,7 +376,7 @@ icon: "books"
   - Requires sufficient peak prominence
 
   **Scientific References**:
-  - Donoghue et al. (2020) - FOOOF method
+  - Donoghue et al. (2020) - specparam spectral parameterization
   - [DOI: 10.1038/s41593-020-00744-x](https://doi.org/10.1038/s41593-020-00744-x)
 
   **Parameters Extracted (per peak)**:
@@ -642,8 +642,8 @@ graph TD
     Analysis -->|Source estimation| SourceLoc[source_localization]
     SourceLoc -->|Regional PSD?| SourcePSD[source_psd]
     SourceLoc -->|Connectivity?| SourceConn[source_connectivity]
-    SourceLoc -->|1/f parameters?| FOOOF_A[fooof_aperiodic]
-    SourceLoc -->|Oscillatory peaks?| FOOOF_P[fooof_periodic]
+    SourceLoc -->|1/f parameters?| Specparam_A[specparam_aperiodic]
+    SourceLoc -->|Oscillatory peaks?| Specparam_P[specparam_periodic]
 
     Analysis -->|Time-frequency| ITC[statistical_learning_itc - planned]
     Analysis -->|Microstates| Micro[microstate - planned]
@@ -653,8 +653,8 @@ graph TD
     style SourceLoc fill:#90EE90,stroke:#2F4F2F,stroke-width:2px
     style SourcePSD fill:#90EE90,stroke:#2F4F2F,stroke-width:2px
     style SourceConn fill:#90EE90,stroke:#2F4F2F,stroke-width:2px
-    style FOOOF_A fill:#90EE90,stroke:#2F4F2F,stroke-width:2px
-    style FOOOF_P fill:#90EE90,stroke:#2F4F2F,stroke-width:2px
+    style Specparam_A fill:#90EE90,stroke:#2F4F2F,stroke-width:2px
+    style Specparam_P fill:#90EE90,stroke:#2F4F2F,stroke-width:2px
     style ICA fill:#e1f5ff,stroke:#0078d4
     style Segment fill:#e1f5ff,stroke:#0078d4
     style ITC fill:#fffacd,stroke:#daa520
@@ -681,8 +681,8 @@ graph TD
 | **source_localization** | Source estimation | Raw/Epochs | SourceEstimate objects | 🐌🐌 |
 | **source_psd** | Regional PSD | SourceEstimate | ROI PSD dataframes | 🐌🐌 |
 | **source_connectivity** | Brain networks | SourceEstimate | Connectivity matrices + graphs | 🐌🐌🐌 |
-| **fooof_aperiodic** | 1/f parameters | SourceEstimate | Aperiodic params (20k vertices) | 🐌🐌 |
-| **fooof_periodic** | Oscillatory peaks | SourceEstimate | Peak parameters (frequency, power, BW) | 🐌🐌 |
+| **specparam_aperiodic** | 1/f parameters | SourceEstimate | Aperiodic params (20k vertices) | 🐌🐌 |
+| **specparam_periodic** | Oscillatory peaks | SourceEstimate | Peak parameters (frequency, power, BW) | 🐌🐌 |
 | **statistical_learning_itc** | Time-frequency | Epochs | ITC/ERSP maps | 🐌🐌 (planned) |
 | **microstate** | State dynamics | Continuous | Microstate sequences | 🐌🐌 (planned) |
 
@@ -724,5 +724,5 @@ This catalog is regularly updated as new blocks are developed and existing block
 - ✅ source_localization: MNE source estimation with fsaverage
 - ✅ source_psd: Regional PSD with Desikan-Killiany atlas
 - ✅ source_connectivity: Functional connectivity + graph metrics
-- ✅ fooof_aperiodic: 1/f parameter extraction
-- ✅ fooof_periodic: Oscillatory peak detection
+- ✅ specparam_aperiodic: 1/f parameter extraction (formerly FOOOF)
+- ✅ specparam_periodic: Oscillatory peak detection (formerly FOOOF)

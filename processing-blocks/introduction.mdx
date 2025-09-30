@@ -74,38 +74,25 @@ graph LR
 
 ## How Processing Blocks Work
 
-### Anatomy of a Processing Block
+Processing blocks are specialized methods built into AutoCleanEEG that extend your tasks with advanced signal processing capabilities. They're scientifically validated, well-documented, and work seamlessly with the core pipeline.
 
-Each processing block is a self-contained package living in the [AutoCleanEEG Task Registry](https://github.com/cincibrainlab/autocleaneeg-task-registry):
-
-```mermaid
-graph TB
-    subgraph Block["🧩 Processing Block"]
-        direction TB
-        M[mixin.py<br/>Task Interface]
-        D[README.md<br/>Documentation]
-        MF[manifest.json<br/>Metadata]
-    end
-
-    subgraph Components["Components"]
-        direction LR
-        C1[Algorithm Code]
-        C2[Parameter Schema]
-        C3[Scientific References]
-        C4[Usage Examples]
-        C5[Test Tasks]
-    end
-
-    Block --> Components
-
-    Task[Your Task File] -.calls.-> M
-    M --> Output[Processed Data + Report]
-
-    style Block fill:#e1f5ff,stroke:#0078d4,stroke-width:3px
-    style M fill:#bfe6ff,stroke:#0078d4
-    style D fill:#bfe6ff,stroke:#0078d4
-    style MF fill:#bfe6ff,stroke:#0078d4
+**What you see:**
+```python
+class MyTask(Task):
+    def run(self):
+        self.import_raw()
+        self.filter_data()
+        self.apply_wavelet_threshold()  # ← Processing block method
+        self.create_epochs()
 ```
+
+**What you get:**
+- ✅ Processed data with artifacts removed
+- ✅ Comprehensive PDF report showing before/after
+- ✅ Processing metadata automatically logged
+- ✅ BIDS-compliant derivatives saved
+
+That's it. No complex setup, no external dependencies to manage—just call the method and it works.
 
 ### Three Types of Processing Blocks
 
@@ -135,7 +122,7 @@ These blocks are copied from the task-registry into the pipeline package during 
 - `source_localization` - MNE source estimation
 - `source_psd` - Source-level power spectral density
 - `source_connectivity` - Functional connectivity analysis
-- `fooof_analysis` - FOOOF/SpecParam spectral parameterization (aperiodic + periodic)
+- `specparam_analysis` - specparam spectral parameterization (aperiodic + periodic, formerly FOOOF)
 
 **CLI Commands:**
 ```bash
