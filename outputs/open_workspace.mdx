@@ -1,82 +1,61 @@
 ---
-title: "AutoCleanEEG Workspace"
-sidebarTitle: "Overview"
-description: "Learn how to navigate and understand the AutoCleanEEG workspace structure"
+title: "Opening Your Workspace"
+sidebarTitle: "Open Workspace"
+description: "Quick guide to accessing your workspace folder"
 ---
 
-The **AutoCleanEEG workspace** is your centralized hub for all pipeline activities, containing tasks, outputs, logs, and configuration files. This organized structure ensures your research is reproducible, traceable, and easy to manage across multiple projects and collaborators.
+## Open Workspace Folder
 
-<Note>
-The workspace is designed to support multiple concurrent projects. Output folders are named after the tasks you run, and reruns automatically create timestamped backups to preserve previous results.
-</Note>
-
-## Workspace Structure
-
-```
-Autoclean-EEG/
-├── process_log.txt         (command history and system events)
-├── pipeline.db             (run database and metadata)   
-├── tasks/                  (task definitions and configurations)
-│   ├── RestingState_Basic.py
-│   ├── RestingStateTutorial.py
-│   └── custom_task.py
-└── output/                 (processing results and outputs)
-    ├── RestingStateTutorial/               (task-specific output folder)
-    │   ├── bids/                           (BIDS-compliant results) 
-    │   ├── logs/                          (execution logs)
-    │   ├── metadata/                      (run metadata and reports)
-    │   └── RestingStateTutorial_processing_log.csv
-    └── RestingStateTutorial_2025-09-04/    (automatic backup from rerun)
-```
-
-### Key Components
-
-- **`tasks/`** - Contains your task definitions, both built-in and custom tasks you create
-- **`output/`** - Stores all processing results, organized by task name  
-- **`process_log.txt`** - System-wide command history and pipeline events
-- **`pipeline.db`** - SQLite database tracking all runs, parameters, and results
-
-
-## Opening the Workspace Folder
-
-By default, the workspace is created as **`Autoclean-EEG`** inside your **Documents** directory.
-
-To open the workspace directly from the terminal, run:
+The fastest way to open your workspace in your file explorer:
 
 ```bash
 autocleaneeg-pipeline workspace explore
 ```
 
-This command will:
+This opens your workspace directory in:
+- **macOS** - Finder
+- **Linux** - Your default file manager
+- **Windows** - File Explorer
 
-* Locate your active workspace.
-* Launch your system’s file explorer at that location:
+## Check Workspace Location
 
-  * **macOS** → Finder
-  * **Linux** → Nautilus (or your system’s default file manager)
-  * **Windows** → File Explorer
+```bash
+autocleaneeg-pipeline workspace show
+```
 
-## Workspace Management
+Shows the current workspace path and disk space available.
 
-### Multiple Projects
-The workspace supports running multiple tasks and projects simultaneously. Each task creates its own output folder, allowing you to:
+## Default Location
 
-- Compare results across different preprocessing approaches
-- Maintain separate configurations for different studies  
-- Archive completed projects without affecting active work
+By default, your workspace is at:
+```
+~/Documents/Autoclean-EEG/
+```
 
-### Backup System
-AutoCleanEEG automatically preserves your work:
-- Reruns create timestamped backup folders (`TaskName_YYYY-MM-DD/`)
-- Previous results are never overwritten
-- Compare parameters and outcomes across different runs
+## Change Workspace Location
 
-## Next Steps
+```bash
+autocleaneeg-pipeline workspace set /path/to/new/location
+```
 
-* **Browse Tasks** - Explore the `tasks/` folder to see available processing pipelines
-* **Review Outputs** - Check the `output/` folder for BIDS-compliant results and reports  
-* **Examine Logs** - Use `process_log.txt` and run-specific logs for troubleshooting
-* **Database Queries** - Access `pipeline.db` for detailed run metadata and batch analysis
+Useful for:
+- Moving to external drive with more space
+- Separate workspaces for different projects
+- Network storage for team access
+
+## What's in the Workspace?
+
+Your workspace contains three main areas:
+
+| Folder | Contents |
+|--------|----------|
+| **tasks/** | Your preprocessing task files (.py) |
+| **output/** | All processing results, organized by task |
+| **logs/** | System execution logs |
+
+For a complete understanding of the workspace structure, see [Workspace Overview](/workspace-overview).
+
+To understand what the pipeline produces, see [Pipeline Outputs](/outputs/outputs_overview).
 
 
 

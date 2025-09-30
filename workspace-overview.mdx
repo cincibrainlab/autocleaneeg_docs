@@ -1,0 +1,235 @@
+---
+title: "Workspace: Your Processing Hub"
+sidebarTitle: "Workspace Overview"
+description: "Understand how AutoCleanEEG organizes all your tasks, outputs, and processing history"
+---
+
+## Your Workspace
+
+The AutoCleanEEG workspace is a folder that contains everything related to your EEG processing: task files, processing results, logs, and configuration. By default, it's created at `~/Documents/Autoclean-EEG/` the first time you run the pipeline.
+
+Think of it as your EEG processing laboratory—organized, automatic, and keeping a complete record of everything you do.
+
+## Complete Workspace Structure
+
+Here's what a real, actively-used workspace looks like:
+
+```
+Autoclean-EEG/                          # Your workspace root
+│
+├── tasks/                              # Task definitions
+│   ├── builtin/                        # Built-in example tasks
+│   ├── RestingState_Basic.py           # Your tasks
+│   ├── CustomAnalysis.py
+│   └── ... (your custom tasks)
+│
+├── output/                             # All processing results
+│   ├── RestingState_Basic/             # Output from first run
+│   │   ├── bids/                       # BIDS-formatted data
+│   │   ├── exports/                    # Analysis-ready files
+│   │   ├── ica/                        # ICA decompositions
+│   │   ├── qa/                         # Quality control
+│   │   ├── reports/                    # Visual reports
+│   │   ├── status/                     # Run metadata
+│   │   └── preprocessing_log.csv       # Processing summary
+│   │
+│   ├── RestingState_Basic_backup_20250929_214222/  # Automatic backup
+│   │   └── ... (same structure)
+│   │
+│   └── CustomAnalysis/                 # Another task's outputs
+│       └── ... (same structure)
+│
+├── logs/                               # System logs
+│   └── pipeline.log                    # Detailed execution log
+│
+├── process_log.txt                     # Command history
+└── example_basic_usage.py              # Getting started script
+```
+
+## The Three Main Areas
+
+### 1. **tasks/** - Your Processing Recipes
+
+This folder contains Python task files that define your preprocessing pipelines.
+
+**What's inside:**
+- `builtin/` - Example tasks that come with AutoCleanEEG
+- Your custom task files (`.py` files)
+- Shared by all your projects
+
+**Quick actions:**
+```bash
+# List all tasks
+autocleaneeg-pipeline task list
+
+# Create new task from template
+autocleaneeg-pipeline task install RestingEyesOpen --name MyCustomTask
+
+# Edit active task
+autocleaneeg-pipeline task edit
+```
+
+**Adding tasks:** Just drop a `.py` task file into this folder and it's immediately available. No registration or configuration needed.
+
+### 2. **output/** - All Your Results
+
+Each time you process data with a task, AutoCleanEEG creates an output folder named after that task. This folder contains everything produced by that processing run.
+
+**Each output folder contains:**
+
+| Folder | What It Has |
+|--------|-------------|
+| **bids/** | BIDS-formatted data with full derivatives |
+| **exports/** | Analysis-ready `.set` files and processing logs |
+| **ica/** | ICA weight matrices and control sheets |
+| **qa/** | Quick quality assessment plots |
+| **reports/** | Comprehensive PDF reports and visualizations |
+| **status/** | Run metadata, task file copy, execution logs |
+
+**preprocessing_log.csv** at the root summarizes all files processed in that run.
+
+See [Pipeline Outputs Overview](/outputs/outputs_overview) for complete details on the output structure.
+
+**Automatic backups:** When you rerun the same task, AutoCleanEEG automatically renames the existing output folder by adding `_backup_YYYYMMDD_HHMMSS` before creating a new one. Your previous results are never lost.
+
+```
+output/
+├── MyTask/                              # Latest run
+└── MyTask_backup_20250929_143022/       # Previous run (automatic backup)
+```
+
+### 3. **logs/** - Execution History
+
+System-level logging for debugging and audit trails.
+
+**pipeline.log** - Detailed technical log of all pipeline operations. Useful when troubleshooting issues or understanding exactly what happened during processing.
+
+**process_log.txt** - Simple command history showing what you've run.
+
+## Quick Operations
+
+### Open Your Workspace
+
+```bash
+# Open workspace folder in file explorer
+autocleaneeg-pipeline workspace explore
+```
+
+Opens Finder (macOS), File Explorer (Windows), or your Linux file manager directly to your workspace.
+
+### Check Workspace Location
+
+```bash
+# Show current workspace path
+autocleaneeg-pipeline workspace show
+```
+
+### Change Workspace Location
+
+```bash
+# Set custom workspace location
+autocleaneeg-pipeline workspace set /path/to/your/workspace
+```
+
+Useful for:
+- Moving workspace to external drive with more space
+- Maintaining separate workspaces for different projects
+- Using network storage for shared access
+
+## Real-World Usage Patterns
+
+### Single Study, Multiple Preprocessing Approaches
+
+```
+output/
+├── RestingState_Conservative/    # Conservative artifact removal
+├── RestingState_Aggressive/       # Aggressive artifact removal
+└── RestingState_WaveletOnly/      # Different method entirely
+```
+
+Compare results across different preprocessing strategies to find what works best for your data.
+
+### Multiple Studies in One Workspace
+
+```
+tasks/
+├── Study1_RestingState.py
+├── Study2_ASSR.py
+└── Study3_MMN.py
+
+output/
+├── Study1_RestingState/
+├── Study2_ASSR/
+└── Study3_MMN/
+```
+
+Keep all your work organized in one place while maintaining clear separation between projects.
+
+### Iterative Refinement with History
+
+```
+output/
+├── MyTask/                               # Current best version
+├── MyTask_backup_20250929_143022/        # Yesterday's version
+├── MyTask_backup_20250928_091533/        # Earlier attempt
+└── MyTask_backup_20250927_162145/        # First attempt
+```
+
+The automatic backup system lets you experiment freely. Every run is preserved, so you can always go back to previous parameter settings.
+
+## Workspace Management Tips
+
+**Disk space:** Output folders can grow large (1-5 GB per run depending on data size). After confirming results:
+- Keep the latest output folder
+- Archive or delete old backup folders
+- The `bids/derivatives/` subfolder within outputs can be deleted if space is tight (final data is in `exports/` and main `bids/`)
+
+**Organization:** Use descriptive task names that indicate the preprocessing strategy:
+- `RestingState_1Hz_Filter` vs `RestingState_0.5Hz_Filter`
+- `ASSR_StandardICA` vs `ASSR_WaveletICA`
+
+**Sharing:** To share results with collaborators:
+- Send the entire task output folder (includes everything)
+- Or just `exports/` for analysis-ready data
+- Include `preprocessing_log.csv` for methods documentation
+
+**Version control:** Keep your task files (`.py`) in git. The workspace outputs are data (not code), so they typically shouldn't be version controlled.
+
+## Troubleshooting
+
+**Can't find workspace:**
+```bash
+autocleaneeg-pipeline workspace show
+```
+
+**Workspace permissions issues:**
+The workspace should be in your user directory with normal user permissions. If you see permission errors, don't use sudo—instead, move the workspace to a proper user-owned location.
+
+**Multiple workspaces:**
+You can maintain separate workspaces and switch between them:
+```bash
+autocleaneeg-pipeline workspace set ~/Project1/Autoclean-EEG
+# Process data...
+
+autocleaneeg-pipeline workspace set ~/Project2/Autoclean-EEG
+# Process different data...
+```
+
+**Workspace migration:**
+To move your workspace:
+1. Close AutoCleanEEG if running
+2. Move the entire `Autoclean-EEG/` folder to new location
+3. Run `autocleaneeg-pipeline workspace set /new/location/Autoclean-EEG`
+
+## What's Next
+
+Now that you understand the workspace structure:
+
+- **Browse your tasks:** Check the `tasks/` folder to see available pipelines
+- **Explore outputs:** Look at what the pipeline produces in [Pipeline Outputs](/outputs/outputs_overview)
+- **Process data:** See [Running a Pipeline](/pipeline_tutorial) to start processing
+- **Create custom tasks:** Learn about [Task Customization](/tasks/task-customization)
+
+<Info>
+**Pro tip:** Run `autocleaneeg-pipeline workspace explore` and bookmark your workspace folder. You'll reference it frequently when reviewing results and managing disk space.
+</Info>

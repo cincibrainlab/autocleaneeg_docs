@@ -1,40 +1,46 @@
 ---
 title: "AutoClean Basics: Workspace"
 sidebarTitle: "Workspace"
-description: Your EEG command center where tasks, outputs, and configs live.
+description: Your EEG processing hub where everything is organized automatically
 
 ---
 
-# Workspace: Your Command Center
+## Workspace: Your Processing Hub
 
-The Workspace is a dedicated folder where Autoclean keeps your custom tasks, outputs, and configuration.
+The workspace is a folder that contains all your EEG processing work: task files, results, and logs. AutoCleanEEG creates it automatically at `~/Documents/Autoclean-EEG/` when you first run the pipeline.
 
-## Smart Setup
+## Automatic Setup
 
-- First run: Autoclean creates `~/Documents/Autoclean-EEG/` automatically
-- No manual config needed to get started
+No configuration needed. Just run AutoCleanEEG and your workspace is created with the right structure:
 
-### Structure
-
-```text
+```
 Autoclean-EEG/
-├── tasks/           # Your custom Python task files
-├── tasks/builtin/   # Example tasks from Autoclean
-├── output/          # Processing results
-└── example_basic_usage.py
+├── tasks/           # Your task files
+├── output/          # All processing results
+└── logs/            # Execution logs
 ```
 
-### “Drop-and-Go” Magic
+## Three Simple Parts
 
-Drop a `.py` task file into `tasks/` and it’s instantly available.
+**tasks/** - Python files defining your preprocessing pipelines. Drop a `.py` task file here and it's immediately available.
+
+**output/** - Every time you process data, results are saved in a folder named after your task. Rerunning automatically creates backups so nothing is ever lost.
+
+**logs/** - System execution logs for troubleshooting.
+
+## Quick Access
 
 ```bash
-# Copy your custom task
-cp my_mmn_experiment.py ~/Documents/Autoclean-EEG/tasks/
+# Open workspace in file explorer
+autocleaneeg-pipeline workspace explore
 
-# It’s immediately available
-autocleaneeg-pipeline process MyMmnExperiment data.raw
+# Show workspace location and disk space
+autocleaneeg-pipeline workspace show
 ```
+
+## Learn More
+
+For complete details on workspace structure and management, see [Workspace Overview](/workspace-overview).
 
 → [Next: Tasks](/essentials/autoclean-basics/tasks)
 
