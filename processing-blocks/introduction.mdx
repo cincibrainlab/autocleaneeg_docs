@@ -107,6 +107,141 @@ graph TB
     style MF fill:#bfe6ff,stroke:#0078d4
 ```
 
+### Three Types of Processing Blocks
+
+AutoCleanEEG supports three types of processing blocks, each serving a different purpose in the architecture:
+
+<Tabs>
+<Tab title="Bundled Blocks">
+**Shipped with the Pipeline** 📦
+
+**Bundled blocks** are processing blocks from the task-registry repository that are packaged and distributed with the pipeline itself.
+
+**Location:** `src/autoclean/blocks/`
+
+**Characteristics:**
+- ✅ Always available after installation
+- ✅ Task-registry is the source of truth
+- ✅ Versioned with the pipeline
+- ✅ Automatically discovered and loaded first (highest priority)
+- ✅ Include manifest.json with full metadata
+
+**Why Bundled?**
+These blocks are copied from the task-registry into the pipeline package during development, ensuring users get essential processing methods out-of-the-box without separate downloads. The task-registry remains the authoritative source, while bundling guarantees availability.
+
+**Currently Bundled (v2.4.0):**
+- `wavelet_threshold` - Wavelet-based artifact removal
+- `autoreject` - Data-driven epoch rejection
+- `source_localization` - MNE source estimation
+- `source_psd` - Source-level power spectral density
+- `source_connectivity` - Functional connectivity analysis
+- `fooof_aperiodic` - Aperiodic EEG parameters
+- `fooof_periodic` - Oscillatory peak detection
+
+**CLI Commands:**
+```bash
+# List all bundled blocks
+autocleaneeg-pipeline blocks list
+
+# Get detailed info about a specific block
+autocleaneeg-pipeline blocks info wavelet_threshold
+
+# Check for updates (future feature)
+autocleaneeg-pipeline blocks update
+```
+</Tab>
+
+<Tab title="Internal Mixins">
+**Core Pipeline Methods** 🏗️
+
+**Internal mixins** are fundamental preprocessing methods built directly into the pipeline source code.
+
+**Location:** `src/autoclean/mixins/`
+
+**Characteristics:**
+- ✅ Core functionality (import, filter, ICA, epoch)
+- ✅ Stable, rarely changing API
+- ✅ Required for basic preprocessing
+- ✅ Thoroughly tested and validated
+- ✅ Not intended for independent distribution
+
+**Purpose:**
+These handle the 90% of standard preprocessing that every EEG analysis needs: loading data, filtering, rereferencing, ICA, epoching. They form the foundation on which processing blocks build.
+
+**Examples:**
+- `import_raw()` - Load EEG files
+- `resample_data()` - Change sampling rate
+- `filter_data()` - Band-pass/notch filtering
+- `rereference_data()` - Channel rereferencing
+- `run_ica()` - Independent component analysis
+- `create_epochs()` - Segment continuous data
+
+**Note:** Internal mixins are being gradually replaced by bundled blocks for advanced methods, maintaining clear separation between core functionality and extensible processing methods.
+</Tab>
+
+<Tab title="External Blocks">
+**User Plugins** 🔌
+
+**External blocks** are custom processing methods installed by users for specialized analyses or local extensions.
+
+**Location:** `~/.autoclean/blocks/` or workspace-specific directories
+
+**Characteristics:**
+- 🔧 User-installed
+- 🔧 Not part of the package
+- 🔧 Lowest priority (can override bundled/internal if needed)
+- 🔧 Custom extensions for specific research needs
+- 🔧 Can be shared as standalone plugins
+
+**Use Cases:**
+- Laboratory-specific processing methods
+- Experimental algorithms under development
+- Proprietary analyses not suitable for public release
+- Custom integrations with other tools
+
+**Installation:**
+```bash
+# Copy plugin to blocks directory
+cp my_custom_block.py ~/.autoclean/blocks/
+
+# Or install from git
+git clone https://github.com/lab/custom-block.git ~/.autoclean/blocks/custom_block
+```
+</Tab>
+</Tabs>
+
+### Block Discovery Priority
+
+When AutoCleanEEG starts, it discovers blocks in this priority order:
+
+```mermaid
+graph TB
+    Start[Pipeline Startup] --> Base[1. Load BaseMixin]
+    Base --> Bundled[2. Discover Bundled Blocks<br/>src/autoclean/blocks/]
+    Bundled --> Internal[3. Discover Internal Mixins<br/>src/autoclean/mixins/]
+    Internal --> External[4. Discover External Blocks<br/>~/.autoclean/blocks/]
+    External --> Combine[5. Combine All via MRO]
+    Combine --> Task[Task Class Ready]
+
+    style Bundled fill:#90EE90,stroke:#2F4F2F,stroke-width:2px
+    style Internal fill:#FFD700,stroke:#B8860B,stroke-width:2px
+    style External fill:#87CEEB,stroke:#4682B4,stroke-width:2px
+    style Task fill:#FF6B6B,stroke:#C92A2A,stroke-width:3px,color:#fff
+```
+
+**What This Means:**
+- Bundled blocks take priority over internal mixins with the same method name
+- External blocks have lowest priority but can still override if placed correctly
+- Task-registry blocks (bundled) are always the source of truth for advanced methods
+- Core methods (internal mixins) provide stable foundation
+
+<Note>
+**Version 2.4.0 Architecture**: The pipeline transitioned from internal mixins to bundled blocks for advanced processing methods. This creates clear separation:
+- **Internal mixins** = Core preprocessing (stable, built-in)
+- **Bundled blocks** = Advanced methods (task-registry, always available)
+- **External blocks** = User extensions (custom, optional)
+</Note>
+
 **Example structure** for the wavelet_threshold block:
 
 ```
