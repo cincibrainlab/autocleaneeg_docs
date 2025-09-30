@@ -1,154 +1,920 @@
 ---
-title: "Task Management"
-sidebarTitle: "Managing Tasks"
-description: "Comprehensive guide to creating, managing, and working with AutocleanEEG processing tasks."
+title: "Task Command Reference"
+sidebarTitle: "Command Reference"
+description: "Complete reference guide for all task management commands"
 ---
 
-## Overview
+## Command Overview
 
-Tasks in AutocleanEEG define the processing pipeline configuration and steps for your EEG data analysis. The CLI provides comprehensive task management capabilities through the `autocleaneeg-pipeline task` command suite.
+AutoCleanEEG provides a comprehensive suite of commands for managing your EEG processing tasks. This reference covers all commands organized by function.
 
-## Task Command Overview
+<Tip>
+**Quick Navigation:**
+- [Discovery & Browsing](#discovery--browsing) - Find and explore tasks
+- [Installation & Setup](#installation--setup) - Add and activate tasks
+- [Maintenance & Updates](#maintenance--updates) - Keep tasks current
+- [Workspace Management](#workspace-management) - Organize and clean up
+- [Advanced Features](#advanced-features) - Power user tools
+</Tip>
 
-Running `autocleaneeg-pipeline task` displays the current workspace status and all available task commands:
+---
 
+## Discovery & Browsing
+
+### `task list`
+
+Display all available tasks with filtering options.
+
+**Syntax:**
 ```bash
-autocleaneeg-pipeline task
+autocleaneeg-pipeline task list [OPTIONS]
 ```
 
-This shows:
-- Current workspace location and free space
-- Active task (if set)
-- Input file (if configured)
-- Complete list of available task commands
+**Options:**
 
-## Available Task Commands
+| Option | Values | Description |
+|--------|--------|-------------|
+| `--source` | `all`, `library`, `builtin`, `workspace`, `active` | Filter by task source |
+| `--status` | `all`, `installed`, `available`, `outdated`, `customized` | Filter by installation status |
+| `--category` | `all`, `resting`, `auditory`, `visual`, `rodent` | Filter by paradigm category |
+| `--format` | `table`, `json` | Output format |
+| `--overrides` | (flag) | Show workspace tasks overriding built-ins |
 
-### Core Commands
+**Examples:**
 
-| Command | Description | Usage |
-|---------|-------------|--------|
-| `task list` | List all available tasks | Shows built-in, custom, and skipped tasks |
-| `task set` | Set the active task | Interactive selection if task name omitted |
-| `task copy` | Copy an existing task | Creates customizable copy of built-in tasks |
-| `task edit` | Edit a task file | Opens task configuration for modification |
-| `task show` | Display active task details | Shows current task configuration |
-
-### Management Commands
-
-| Command | Description | Usage |
-|---------|-------------|--------|
-| `task import <path>` | Import external task file | Copy task file into workspace |
-| `task delete` | Remove a task | Delete custom tasks (built-ins protected) |
-| `task unset` | Clear active task | Remove current task selection |
-| `task explore` | Open tasks folder | Launch file explorer in tasks directory |
-
-## Task Types
-
-### Built-in Tasks
-
-Pre-configured processing pipelines included with AutocleanEEG:
-
-```bash
+<CodeGroup>
+```bash Show All Tasks
 autocleaneeg-pipeline task list
 ```
 
-Example output shows:
-- **RestingState_Basic**: Standard resting-state EEG preprocessing pipeline
-- Ready-to-use configurations for common analysis workflows
-- Cannot be modified directly (copy first for customization)
+```bash Library Tasks Only
+autocleaneeg-pipeline task list --source=library
+```
 
-### Custom Tasks  
+```bash Installed Tasks
+autocleaneeg-pipeline task list --status=installed
+```
 
-User-created or copied tasks stored in your workspace:
+```bash Resting State Tasks
+autocleaneeg-pipeline task list --category=resting
+```
 
-- Created through `task copy` or `task import`
-- Fully customizable Python-based processing pipelines
-- Stored as `.py` files in workspace `tasks/` directory
-- Can incorporate Python, R, or MATLAB processing code
+```bash JSON Output
+autocleaneeg-pipeline task list --format=json
+```
 
-### Task Files
+```bash Override Detection
+autocleaneeg-pipeline task list --overrides
+```
+</CodeGroup>
 
-The system categorizes task files as:
+**Output:**
 
-- **Valid Tasks**: Properly formatted and executable
-- **Skipped Files**: Templates or invalid configurations
-- **Built-in Tasks**: Core AutocleanEEG processing modules
+```
+                           Tasks
+                 Available processing tasks
 
-## Common Workflows
+Task Library version: abc123f (last checked 2 hours ago)
 
-### Creating a Custom Task
+╭─────────────────── Installed Tasks (in workspace) ───────────────────╮
+│                                                                       │
+│  Task Name       Source   Status       Montage        Description    │
+│  ASSR_40Hz       library  ✓ synced     GSN-129        40Hz ASSR      │
+│  RestingState    library  ⚠ customized standard_1020  Resting EEG    │
+│                                                                       │
+╰───────────────────────────────────────────────────────────────────────╯
 
-1. **Copy a built-in task:**
-   ```bash
-   autocleaneeg-pipeline task copy RestingState_Basic MyCustomTask
-   ```
+╭───────────────────── Available to Install ───────────────────────────╮
+│                                                                       │
+│  Task Name           Source      Montage  Description                │
+│  Chirp_Default       📦 library  —        Chirp auditory stimulation │
+│  MMN_Standard        📦 library  —        Mismatch negativity        │
+│                                                                       │
+╰───────────────────────────────────────────────────────────────────────╯
 
-2. **Set as active:**
-   ```bash
-   autocleaneeg-pipeline task set MyCustomTask
-   ```
+       Found 12 tasks (2 installed, 10 available)
+```
 
-3. **Edit configuration:**
-   ```bash
-   autocleaneeg-pipeline task edit
-   ```
+---
 
-### Working with Tasks
+### `task search`
 
-1. **List available tasks:**
-   ```bash
-   autocleaneeg-pipeline task list
-   ```
+Search for tasks across all sources using keywords.
 
-2. **Set active task interactively:**
-   ```bash
-   autocleaneeg-pipeline task set
-   ```
+**Syntax:**
+```bash
+autocleaneeg-pipeline task search <query>
+```
 
-3. **View current configuration:**
-   ```bash
-   autocleaneeg-pipeline task show
-   ```
+**Arguments:**
+- `<query>` - Search term (searches names and descriptions)
 
-## Task Configuration
+**Examples:**
 
-Tasks define:
-- **Processing steps**: Filtering, artifact removal, referencing
-- **Parameters**: Thresholds, frequency bands, rejection criteria  
-- **Quality control**: Automated flagging and validation
-- **Output formats**: File types and organization
+<CodeGroup>
+```bash Find Resting Tasks
+autocleaneeg-pipeline task search resting
+```
+
+```bash Find ASSR Tasks
+autocleaneeg-pipeline task search assr
+```
+
+```bash Find Mouse Tasks
+autocleaneeg-pipeline task search mouse
+```
+</CodeGroup>
+
+**Output:**
+```
+→ Searching for 'assr'...
+
+Found 3 task(s):
+
+ Task                Source   Status     Description
+ ASSR_40Hz           library  available  Auditory steady-state at 40 Hz
+ Mouse_XDAT_ASSR     library  available  Mouse ASSR protocol
+ ASSR_Custom         user     installed  Custom ASSR variant
+
+Use 'task use <name>' to install and activate a task
+```
+
+---
+
+### `task show`
+
+Display detailed information about the currently active task.
+
+**Syntax:**
+```bash
+autocleaneeg-pipeline task show [task_name]
+```
+
+**Arguments:**
+- `[task_name]` - Optional: Show specific task (defaults to active task)
+
+**Examples:**
+
+<CodeGroup>
+```bash Show Active Task
+autocleaneeg-pipeline task show
+```
+
+```bash Show Specific Task
+autocleaneeg-pipeline task show ASSR_40Hz
+```
+</CodeGroup>
+
+**Output:**
+```
+╭───────────────────────────────────────────────────────────────────────╮
+│                        Active Task Details                            │
+├───────────────────────────────────────────────────────────────────────┤
+│                                                                       │
+│  Task Name:     ASSR_40Hz                                            │
+│  Source:        library                                               │
+│  Status:        ✓ synced                                             │
+│  File:          /Users/you/Autoclean-EEG/tasks/ASSR_40Hz.py         │
+│  Description:   Auditory steady-state response at 40 Hz              │
+│                                                                       │
+│  Configuration:                                                       │
+│    • Montage: GSN-HydroCel-129                                       │
+│    • Resample: 250 Hz                                                 │
+│    • Filter: 1-100 Hz, notch at 60/120 Hz                           │
+│    • ICA: Enabled (infomax method)                                    │
+│    • Epochs: -0.5 to 1.5 s, baseline -0.2 to 0                      │
+│                                                                       │
+╰───────────────────────────────────────────────────────────────────────╯
+```
+
+---
+
+## Installation & Setup
+
+### `task use` ⭐
+
+**One-step install and activate** - The simplest way to start using a task.
+
+**Syntax:**
+```bash
+autocleaneeg-pipeline task use [task_name] [OPTIONS]
+```
+
+**Arguments:**
+- `[task_name]` - Task to install (omit for interactive selection)
+
+**Options:**
+
+| Option | Description |
+|--------|-------------|
+| `--force` | Overwrite existing workspace copy |
+| `--no-activate` | Install only, don't set as active |
+
+**Examples:**
+
+<CodeGroup>
+```bash Install and Activate
+autocleaneeg-pipeline task use ASSR_40Hz
+```
+
+```bash Interactive Selection
+autocleaneeg-pipeline task use
+# Shows numbered list to choose from
+```
+
+```bash Install Without Activating
+autocleaneeg-pipeline task use MMN_Standard --no-activate
+```
+
+```bash Force Overwrite
+autocleaneeg-pipeline task use RestingState --force
+```
+</CodeGroup>
+
+**Output:**
+```
+✓ ASSR_40Hz installed to /Users/you/Autoclean-EEG/tasks/ASSR_40Hz.py
+✓ Active task set to: ASSR_40Hz
+Ready to process: autocleaneeg-pipeline process <file>
+```
+
+<Tip>
+**Recommended for most users!** `task use` combines installation and activation in one command.
+</Tip>
+
+---
+
+### `task install`
+
+Universal installer supporting multiple sources (library, file, built-in).
+
+**Syntax:**
+```bash
+autocleaneeg-pipeline task install <source> [OPTIONS]
+```
+
+**Arguments:**
+- `<source>` - Task name (library/builtin) or file path
+
+**Options:**
+
+| Option | Values | Description |
+|--------|--------|-------------|
+| `--source` | `auto`, `library`, `file`, `builtin` | Explicitly specify source type |
+| `--name` | `<custom_name>` | Install with a different name |
+| `--force` | (flag) | Overwrite existing task |
+| `--activate` | (flag) | Set as active after installing |
+
+**Examples:**
+
+<CodeGroup>
+```bash From Library
+autocleaneeg-pipeline task install ASSR_40Hz
+```
+
+```bash From File
+autocleaneeg-pipeline task install /path/to/custom_task.py
+```
+
+```bash With Custom Name
+autocleaneeg-pipeline task install ASSR_40Hz --name ASSR_Modified
+```
+
+```bash Install and Activate
+autocleaneeg-pipeline task install Chirp_Default --activate
+```
+
+```bash From File with Custom Name
+autocleaneeg-pipeline task install my_task.py --name ProjectX_Task
+```
+</CodeGroup>
+
+**Auto-Detection:**
+
+The `install` command automatically detects the source:
+- **File path exists** → Installs from file
+- **Name in library** → Installs from library
+- **Name in built-ins** → Installs from built-in tasks
+
+---
+
+### `task set`
+
+Set the active task for processing.
+
+**Syntax:**
+```bash
+autocleaneeg-pipeline task set [task_name]
+```
+
+**Arguments:**
+- `[task_name]` - Task to activate (omit for interactive selection)
+
+**Examples:**
+
+<CodeGroup>
+```bash Set Specific Task
+autocleaneeg-pipeline task set ASSR_40Hz
+```
+
+```bash Interactive Selection
+autocleaneeg-pipeline task set
+# Shows list of installed tasks to choose from
+```
+</CodeGroup>
+
+**Output:**
+```
+✓ Active task set to: ASSR_40Hz
+```
+
+---
+
+### `task unset`
+
+Clear the active task selection.
+
+**Syntax:**
+```bash
+autocleaneeg-pipeline task unset
+```
+
+**Example:**
+```bash
+autocleaneeg-pipeline task unset
+```
+
+**Output:**
+```
+✓ Active task cleared
+```
 
 <Note>
-Task creation can be entirely custom and complex, incorporating Python, R, or MATLAB code for specialized processing workflows.
+After unsetting, you'll need to specify a task when running `process` or set a new active task.
 </Note>
 
-## Best Practices
+---
 
-- **Copy before customizing**: Always copy built-in tasks rather than modifying them directly
-- **Descriptive naming**: Use clear, descriptive names for custom tasks
-- **Version control**: Consider backing up custom tasks outside the workspace
-- **Testing**: Validate custom tasks on sample data before batch processing
-- **Documentation**: Document custom task modifications for reproducibility
+## Maintenance & Updates
+
+### `task update`
+
+Update the task library index from GitHub registry.
+
+**Syntax:**
+```bash
+autocleaneeg-pipeline task update [OPTIONS]
+```
+
+**Options:**
+
+| Option | Description |
+|--------|-------------|
+| `--no-network` | Skip network check, use cache only |
+
+**Examples:**
+
+<CodeGroup>
+```bash Update Library
+autocleaneeg-pipeline task update
+```
+
+```bash Offline Mode
+autocleaneeg-pipeline task update --no-network
+```
+</CodeGroup>
+
+**Output:**
+```
+→ Updating task library from GitHub registry...
+
+✓ Found 3 change(s) in library
+
+ Task          Change
+ ASSR_40Hz     updated
+ NewTask       new
+ OldTask       removed
+
+New tasks available:
+  • Run 'task list --source=library' to see all library tasks
+  • Run 'task use <name>' to install and activate a new task
+
+Tasks with updates:
+  • Run 'task sync' to check if your workspace tasks are outdated
+  • Run 'task sync --update' to automatically update outdated tasks
+```
+
+<Tip>
+**Run monthly** to get the latest task improvements and new features!
+</Tip>
+
+---
+
+### `task sync`
+
+Check workspace tasks for updates and optionally apply them.
+
+**Syntax:**
+```bash
+autocleaneeg-pipeline task sync [OPTIONS]
+```
+
+**Options:**
+
+| Option | Description |
+|--------|-------------|
+| `--update` | Automatically apply updates (creates backups) |
+| `--dry-run` | Show what would be updated without making changes |
+
+**Examples:**
+
+<CodeGroup>
+```bash Check Status
+autocleaneeg-pipeline task sync
+```
+
+```bash Auto-Update
+autocleaneeg-pipeline task sync --update
+```
+
+```bash Preview Changes
+autocleaneeg-pipeline task sync --dry-run
+```
+</CodeGroup>
+
+**Output:**
+```
+→ Checking workspace tasks against sources...
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ SYNC STATUS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ ✓  ASSR_40Hz          [library]  up to date
+ ⚠  RestingState       [library]  customized
+ ↻  MMN_Standard       [library]  outdated
+ ✗  OldTask            [orphan]   source removed
+
+Summary:
+  • 1 task has updates available
+  • 1 customized task
+  • 1 orphaned task
+
+Next steps:
+  • Run 'task sync --update' to apply updates (will backup customized tasks)
+  • Run 'task diff MMN_Standard' to preview changes
+  • Run 'task delete OldTask' to remove orphaned tasks
+```
+
+**Status Indicators:**
+- ✓ **Synced** - Workspace matches library exactly
+- ⚠ **Customized** - You've modified this task
+- ↻ **Outdated** - Newer version available
+- ✗ **Orphaned** - Task removed from library
+
+---
+
+### `task diff`
+
+Show differences between workspace task and its source.
+
+**Syntax:**
+```bash
+autocleaneeg-pipeline task diff <task_name> [OPTIONS]
+```
+
+**Arguments:**
+- `<task_name>` - Task to compare
+
+**Options:**
+
+| Option | Description |
+|--------|-------------|
+| `--color` | Enable colored diff output (default: auto) |
+| `--context` | Number of context lines (default: 3) |
+
+**Examples:**
+
+<CodeGroup>
+```bash Compare Task
+autocleaneeg-pipeline task diff MMN_Standard
+```
+
+```bash More Context
+autocleaneeg-pipeline task diff MMN_Standard --context=5
+```
+</CodeGroup>
+
+**Output (if no changes):**
+```
+✓ No differences - workspace copy matches library
+```
+
+**Output (with changes):**
+```diff
+--- Workspace: MMN_Standard.py
++++ Library: MMN_Standard.py
+
+@@ -45,7 +45,7 @@
+     "filtering": {
+         "enabled": True,
+         "value": {
+-            "l_freq": 0.5,
++            "l_freq": 0.1,  # Improved low-frequency filtering
+             "h_freq": 100,
+             "notch_freqs": [60, 120]
+         }
+```
+
+---
+
+### `task diagnose`
+
+Run comprehensive workspace health check.
+
+**Syntax:**
+```bash
+autocleaneeg-pipeline task diagnose
+```
+
+**Example:**
+```bash
+autocleaneeg-pipeline task diagnose
+```
+
+**Output:**
+```
+→ Running workspace health check...
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ WORKSPACE HEALTH: GOOD ✓
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Tasks:
+  • 5 tasks installed in workspace
+  • 0 orphan(s)
+  • 2 customized
+
+Cache:
+  • Library cache: abc123f (2 hours ago)
+  • Network: OK
+  • Cache size: 2.3 MB
+
+Configuration:
+  • Workspace: /Users/you/Documents/Autoclean-EEG ✓
+  • Tasks directory: /Users/you/Documents/Autoclean-EEG/tasks ✓
+
+Overall: Your workspace is healthy ✓
+```
+
+<Info>
+**Run diagnostics:**
+- Before major processing runs
+- After software updates
+- Monthly for maintenance
+- When troubleshooting issues
+</Info>
+
+---
+
+## Workspace Management
+
+### `task delete`
+
+Remove a task file from your workspace.
+
+**Syntax:**
+```bash
+autocleaneeg-pipeline task delete [task_name]
+```
+
+**Arguments:**
+- `[task_name]` - Task to delete (omit to delete active task)
+
+**Examples:**
+
+<CodeGroup>
+```bash Delete Specific Task
+autocleaneeg-pipeline task delete OldTask
+```
+
+```bash Delete Active Task
+autocleaneeg-pipeline task delete
+```
+</CodeGroup>
+
+**Output:**
+```
+⚠ This will permanently delete: OldTask
+Continue? [y/N]: y
+✓ Task deleted: OldTask.py
+```
+
+<Warning>
+**Built-in tasks are protected** - You can only delete tasks in your workspace. Built-in tasks cannot be deleted.
+</Warning>
+
+---
+
+### `task edit`
+
+Open a task file in your editor for modification.
+
+**Syntax:**
+```bash
+autocleaneeg-pipeline task edit [task_name]
+```
+
+**Arguments:**
+- `[task_name]` - Task to edit (omit for active task)
+
+**Examples:**
+
+<CodeGroup>
+```bash Edit Active Task
+autocleaneeg-pipeline task edit
+```
+
+```bash Edit Specific Task
+autocleaneeg-pipeline task edit ASSR_40Hz
+```
+</CodeGroup>
+
+**Behavior:**
+- Opens task file in your default editor (`$EDITOR`)
+- Creates workspace copy if editing a built-in task
+- Validates file after saving
+
+**Editor Priority:**
+1. `$EDITOR` environment variable
+2. `$VISUAL` environment variable
+3. Platform defaults (nano, vim, notepad)
+
+---
+
+### `task explore`
+
+Open the tasks folder in your file browser.
+
+**Syntax:**
+```bash
+autocleaneeg-pipeline task explore
+```
+
+**Example:**
+```bash
+autocleaneeg-pipeline task explore
+```
+
+**Behavior:**
+- **Mac**: Opens in Finder
+- **Linux**: Opens in default file manager
+- **Windows**: Opens in Explorer
+
+**Opens:** `~/Documents/Autoclean-EEG/tasks/`
+
+---
+
+### `task copy`
+
+Copy an existing task to create a new customizable variant.
+
+**Syntax:**
+```bash
+autocleaneeg-pipeline task copy [source] [destination]
+```
+
+**Arguments:**
+- `[source]` - Task to copy from (omit for interactive selection)
+- `[destination]` - New task name
+
+**Examples:**
+
+<CodeGroup>
+```bash Copy Task
+autocleaneeg-pipeline task copy RestingState MyRestingVariant
+```
+
+```bash Interactive Copy
+autocleaneeg-pipeline task copy
+# Shows list of tasks to copy from
+# Prompts for new name
+```
+</CodeGroup>
+
+**Output:**
+```
+✓ Task copied: RestingState → MyRestingVariant
+📁 Location: /Users/you/Autoclean-EEG/tasks/MyRestingVariant.py
+```
+
+---
+
+## Advanced Features
+
+### `task import` (Legacy)
+
+Import an external task file into workspace.
+
+<Warning>
+**Deprecated**: Use `task install <file>` instead for unified installation.
+
+This command will show a deprecation warning but continues to work for backward compatibility.
+</Warning>
+
+**Syntax:**
+```bash
+autocleaneeg-pipeline task import <path> [OPTIONS]
+```
+
+**Options:**
+
+| Option | Description |
+|--------|-------------|
+| `--name` | Custom name for imported task |
+| `--force` | Overwrite existing task |
+
+---
+
+### `task add` (Legacy)
+
+Add a custom task file to workspace.
+
+<Warning>
+**Deprecated**: Use `task install <file>` instead for unified installation.
+
+This command will show a deprecation warning but continues to work for backward compatibility.
+</Warning>
+
+**Syntax:**
+```bash
+autocleaneeg-pipeline task add <file> [OPTIONS]
+```
+
+---
+
+### `task library` (Legacy)
+
+Access library management commands (old namespace).
+
+<Warning>
+**Modernized Commands:**
+- `task library update` → `task update`
+- `task library install` → `task use` or `task install`
+- `task library list` → `task list --source=library`
+
+The old commands still work but show deprecation warnings.
+</Warning>
+
+**Old Syntax:**
+```bash
+autocleaneeg-pipeline task library <action>
+```
+
+**Actions:**
+- `update` - Update library (use `task update` instead)
+- `list` - List library tasks (use `task list --source=library` instead)
+- `install` - Install from library (use `task use` or `task install` instead)
+
+---
+
+### `task schema export`
+
+Export the canonical task configuration schema as JSON.
+
+**Syntax:**
+```bash
+autocleaneeg-pipeline task schema export [OPTIONS]
+```
+
+**Options:**
+
+| Option | Description |
+|--------|-------------|
+| `--output` | Output file path |
+| `--indent` | JSON indentation (default: 2) |
+
+**Examples:**
+
+<CodeGroup>
+```bash Export to File
+autocleaneeg-pipeline task schema export --output schema.json
+```
+
+```bash Print to Console
+autocleaneeg-pipeline task schema export
+```
+
+```bash Compact JSON
+autocleaneeg-pipeline task schema export --indent=0
+```
+</CodeGroup>
+
+**Use Cases:**
+- Task file validation
+- IDE autocomplete configuration
+- Documentation generation
+- Task builder tools
+
+---
+
+## Command Quick Reference
+
+### Essential Commands
+
+| Command | Purpose | Most Common Usage |
+|---------|---------|-------------------|
+| `task use <name>` | Install + activate | `task use ASSR_40Hz` |
+| `task list` | Browse tasks | `task list --source=library` |
+| `task search <query>` | Find tasks | `task search resting` |
+| `task set <name>` | Switch active task | `task set MMN_Standard` |
+| `task edit` | Customize task | `task edit` |
+
+### Maintenance Commands
+
+| Command | Purpose | Frequency |
+|---------|---------|-----------|
+| `task update` | Update library index | Monthly |
+| `task sync` | Check for updates | Weekly |
+| `task diagnose` | Health check | Before big runs |
+| `task diff <name>` | Compare versions | Before updating |
+
+### Management Commands
+
+| Command | Purpose | When to Use |
+|---------|---------|-------------|
+| `task install <source>` | Universal installer | Advanced control |
+| `task delete <name>` | Remove task | Clean up |
+| `task copy <src> <dst>` | Duplicate task | Create variants |
+| `task explore` | Open folder | Browse files |
+
+---
+
+## Environment Variables
+
+### `EDITOR`
+
+Set your preferred text editor for `task edit`:
+
+```bash
+# Bash/Zsh
+export EDITOR=nano
+export EDITOR=vim
+export EDITOR=code  # VS Code
+
+# Use in current session
+EDITOR=nano autocleaneeg-pipeline task edit
+```
+
+### `AUTOCLEAN_WORKSPACE`
+
+Override default workspace location:
+
+```bash
+export AUTOCLEAN_WORKSPACE=/custom/path/to/workspace
+```
+
+---
+
+## Exit Codes
+
+All task commands return standard exit codes:
+
+| Code | Meaning |
+|------|---------|
+| `0` | Success |
+| `1` | General error |
+| `2` | Invalid arguments |
+
+**Example usage in scripts:**
+```bash
+if autocleaneeg-pipeline task use ASSR_40Hz; then
+    echo "Task activated successfully"
+    autocleaneeg-pipeline process data.raw
+else
+    echo "Failed to activate task"
+    exit 1
+fi
+```
+
+---
 
 ## Next Steps
 
 <CardGroup cols={2}>
-
-<Card title="Input Management" icon="file-import" href="/input-management">
-  Learn how to configure input files and batch processing.
+<Card title="Getting Started" icon="rocket" href="/tasks/task-getting-started">
+  New to tasks? Start here for a gentle introduction.
 </Card>
 
-<Card title="Pipeline Execution" icon="play" href="/pipeline-execution">  
-  Execute tasks and monitor processing progress.
+<Card title="Common Workflows" icon="list-check" href="/tasks/task-workflows">
+  Learn typical workflows for using tasks in research.
 </Card>
 
-<Card title="Custom Task Development" icon="code" href="/custom-tasks">
-  Create advanced custom processing pipelines.
+<Card title="Customization Guide" icon="pen-to-square" href="/tasks/task-customization">
+  Learn how to modify tasks for your specific needs.
 </Card>
 
-<Card title="Quality Control" icon="shield-check" href="/quality-control">
-  Review and validate processing outputs.
+<Card title="Troubleshooting" icon="life-ring" href="/tasks/task-troubleshooting">
+  Solutions to common problems and questions.
 </Card>
-
 </CardGroup>

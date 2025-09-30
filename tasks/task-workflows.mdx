@@ -1,0 +1,615 @@
+---
+title: "Common Task Workflows"
+sidebarTitle: "Workflows"
+description: "Practical workflows for using tasks in your EEG research"
+---
+
+## Overview
+
+This guide walks through common scenarios EEG researchers encounter when working with tasks. Each workflow is designed to be practical and copy-paste ready for your research.
+
+<Note>
+**Choose your workflow based on your needs:**
+- 🎯 **New to AutoCleanEEG?** Start with Workflow 1
+- 📊 **Processing clinical data?** See Workflow 3
+- 🔧 **Need customization?** Jump to Workflow 4
+- 👥 **Working with a team?** Check Workflow 6
+</Note>
+
+## Workflow 1: Quick Start (First-Time User)
+
+**Scenario**: You have resting-state EEG data and want to process it quickly.
+
+**Time**: ~10 minutes
+
+<Steps>
+<Step title="Find the Right Task">
+Search for resting-state tasks:
+
+```bash
+autocleaneeg-pipeline task search resting
+```
+
+You'll see available options like:
+- `RestingEyesOpen` - Eyes-open protocol
+- `RestingEyesClosed` - Eyes-closed protocol
+- `BiotrialResting1020` - 10-20 system protocol
+</Step>
+
+<Step title="Install and Activate">
+Use the one-step command:
+
+```bash
+autocleaneeg-pipeline task use RestingEyesOpen
+```
+
+✓ Task installed and activated in one command!
+</Step>
+
+<Step title="Process Your Data">
+Run processing on your EEG file:
+
+```bash
+autocleaneeg-pipeline process /path/to/your/resting_data.raw
+```
+
+The task will:
+- Load your data
+- Apply all preprocessing steps
+- Generate quality control reports
+- Save results to your workspace
+</Step>
+
+<Step title="Review Results">
+Open the interactive reviewer:
+
+```bash
+autocleaneeg-pipeline review
+```
+
+Check the before/after comparison and quality metrics.
+</Step>
+</Steps>
+
+<Tip>
+**Pro tip**: Once a task is set as active, you can just run `autocleaneeg-pipeline process <file>` without specifying the task name every time!
+</Tip>
+
+---
+
+## Workflow 2: Processing Multiple Subjects
+
+**Scenario**: You have a folder with 20 subjects' EEG data, all using the same protocol.
+
+**Time**: ~5 minutes setup + processing time
+
+<Steps>
+<Step title="Set Up Active Task">
+Install and activate the appropriate task:
+
+```bash
+autocleaneeg-pipeline task use ASSR_40Hz
+```
+</Step>
+
+<Step title="Configure Input Folder">
+Point to your data folder:
+
+```bash
+autocleaneeg-pipeline input set /path/to/subjects/folder/
+```
+</Step>
+
+<Step title="Batch Process">
+Process all files in the folder:
+
+```bash
+autocleaneeg-pipeline process
+```
+
+AutoCleanEEG will:
+- Find all EEG files in the folder
+- Process each subject with the same task
+- Generate individual reports
+- Save organized outputs for each subject
+</Step>
+
+<Step title="Review Quality Control">
+After processing completes, review all subjects:
+
+```bash
+autocleaneeg-pipeline review --output /path/to/output/
+```
+
+Navigate between subjects to check quality.
+</Step>
+</Steps>
+
+<Info>
+**Batch processing features:**
+- Automatic file discovery
+- Parallel processing (if configured)
+- Individual QC reports per subject
+- BIDS-compliant output organization
+- Error handling (continues if one file fails)
+</Info>
+
+---
+
+## Workflow 3: Clinical Study with Custom Parameters
+
+**Scenario**: Running a clinical study with specific filtering requirements different from defaults.
+
+**Time**: ~20 minutes setup + processing
+
+<Steps>
+<Step title="Install Base Task">
+Start with the closest library task:
+
+```bash
+autocleaneeg-pipeline task install RestingEyesOpen --name ClinicalResting
+```
+
+Note: Using `--name` creates a copy so you can customize without affecting the original.
+</Step>
+
+<Step title="Edit Parameters">
+Open the task for editing:
+
+```bash
+autocleaneeg-pipeline task set ClinicalResting
+autocleaneeg-pipeline task edit
+```
+
+Modify the configuration section. For example, change filtering:
+
+```python
+config = {
+    # ... other settings ...
+    "filtering": {
+        "enabled": True,
+        "value": {
+            "l_freq": 0.5,      # Change from 1 Hz to 0.5 Hz
+            "h_freq": 45,       # Change from 100 Hz to 45 Hz
+            "notch_freqs": [60, 120]
+        }
+    },
+    # ... other settings ...
+}
+```
+
+Save and close your editor.
+</Step>
+
+<Step title="Test on One Subject">
+Verify your customizations work:
+
+```bash
+autocleaneeg-pipeline process /path/to/test_subject.raw
+```
+
+Check the outputs and reports.
+</Step>
+
+<Step title="Batch Process">
+Once satisfied, process all subjects:
+
+```bash
+autocleaneeg-pipeline input set /path/to/all_subjects/
+autocleaneeg-pipeline process
+```
+</Step>
+</Steps>
+
+<Warning>
+**Document your customizations!** Add a comment in the task file explaining why you changed parameters. This is crucial for reproducibility and publications.
+</Warning>
+
+---
+
+## Workflow 4: Comparing Different Processing Approaches
+
+**Scenario**: Testing different preprocessing strategies to see which works best for your data.
+
+**Time**: ~30 minutes setup
+
+<Steps>
+<Step title="Install Multiple Variants">
+Create different versions of the same task:
+
+```bash
+# Standard approach
+autocleaneeg-pipeline task install RestingEyesOpen --name Resting_Standard
+
+# Aggressive filtering
+autocleaneeg-pipeline task install RestingEyesOpen --name Resting_Aggressive
+
+# Minimal processing
+autocleaneeg-pipeline task install RestingEyesOpen --name Resting_Minimal
+```
+</Step>
+
+<Step title="Customize Each Variant">
+Edit each task with different parameters:
+
+```bash
+# Edit first variant
+autocleaneeg-pipeline task edit Resting_Standard
+# Keep defaults
+
+# Edit second variant
+autocleaneeg-pipeline task edit Resting_Aggressive
+# Increase ICA components removal, stricter thresholds
+
+# Edit third variant
+autocleaneeg-pipeline task edit Resting_Minimal
+# Reduce processing steps, gentler filtering
+```
+</Step>
+
+<Step title="Process with Each Variant">
+Process the same test subject with all three:
+
+```bash
+# Approach 1
+autocleaneeg-pipeline task set Resting_Standard
+autocleaneeg-pipeline process /path/to/test_subject.raw
+
+# Approach 2
+autocleaneeg-pipeline task set Resting_Aggressive
+autocleaneeg-pipeline process /path/to/test_subject.raw
+
+# Approach 3
+autocleaneeg-pipeline task set Resting_Minimal
+autocleaneeg-pipeline process /path/to/test_subject.raw
+```
+</Step>
+
+<Step title="Compare Results">
+Review all three processing approaches:
+
+```bash
+autocleaneeg-pipeline review
+```
+
+Compare:
+- Data quality metrics
+- Number of artifacts removed
+- Signal-to-noise ratio
+- Spectral power distributions
+</Step>
+</Steps>
+
+<Tip>
+**Keep notes!** Document which approach works best for your data type. You can reference this for future studies.
+</Tip>
+
+---
+
+## Workflow 5: Updating Tasks Mid-Study
+
+**Scenario**: You're mid-study when a task update is released with important bug fixes.
+
+**Time**: ~15 minutes
+
+<Steps>
+<Step title="Check for Updates">
+See if updates are available:
+
+```bash
+autocleaneeg-pipeline task update
+autocleaneeg-pipeline task sync
+```
+
+Output shows which tasks have updates.
+</Step>
+
+<Step title="Preview Changes">
+See what changed:
+
+```bash
+autocleaneeg-pipeline task diff YourTaskName
+```
+
+Review the differences carefully.
+</Step>
+
+<Step title="Backup Current Version">
+Before updating, the system automatically creates backups, but you can manually backup too:
+
+```bash
+# The task file is at:
+# ~/Documents/Autoclean-EEG/tasks/YourTaskName.py
+
+# Manual backup (optional):
+cp ~/Documents/Autoclean-EEG/tasks/YourTaskName.py ~/YourTaskName_backup_v1.py
+```
+</Step>
+
+<Step title="Update Task">
+Apply the update:
+
+```bash
+autocleaneeg-pipeline task sync --update
+```
+
+This creates an automatic timestamped backup (e.g., `YourTaskName.backup.2025-09-29.py`).
+</Step>
+
+<Step title="Reprocess Critical Subjects">
+**Important decision point:**
+
+**Option A - Reprocess all subjects** (recommended for consistency):
+```bash
+autocleaneeg-pipeline process  # Reprocesses entire batch
+```
+
+**Option B - Continue with new subjects only** (if update is minor):
+- Note in your methods which subjects used which version
+- Document the differences for transparency
+</Step>
+</Steps>
+
+<Warning>
+**For publications**: Always document exact task versions used. Keep the task files in your project folder for reproducibility.
+</Warning>
+
+---
+
+## Workflow 6: Team Collaboration
+
+**Scenario**: Multiple researchers processing data for the same project with identical pipelines.
+
+**Time**: ~10 minutes setup per team member
+
+<Steps>
+<Step title="Team Lead: Prepare Task">
+One person sets up the task:
+
+```bash
+autocleaneeg-pipeline task install ASSR_40Hz --name ProjectX_ASSR
+autocleaneeg-pipeline task edit ProjectX_ASSR
+# Customize as needed for your project
+```
+</Step>
+
+<Step title="Team Lead: Share Task File">
+The task file is located at:
+```
+~/Documents/Autoclean-EEG/tasks/ProjectX_ASSR.py
+```
+
+Share this file with your team via:
+- Email
+- Shared drive
+- Version control (Git)
+- Cloud storage
+</Step>
+
+<Step title="Team Members: Install Task">
+Each team member installs the shared task:
+
+```bash
+autocleaneeg-pipeline task install /path/to/shared/ProjectX_ASSR.py
+autocleaneeg-pipeline task set ProjectX_ASSR
+```
+
+✓ Everyone now has identical processing pipelines!
+</Step>
+
+<Step title="Verify Consistency">
+Team lead can verify everyone's using the same version:
+
+```bash
+autocleaneeg-pipeline task show ProjectX_ASSR
+```
+
+Compare the configuration hash or parameters.
+</Step>
+</Steps>
+
+<Tip>
+**Version control best practice**: Store your project task files in a Git repository. This provides:
+- Version history
+- Easy sharing
+- Change tracking
+- Rollback capability
+</Tip>
+
+---
+
+## Workflow 7: Workspace Health Maintenance
+
+**Scenario**: Periodic maintenance to keep your workspace organized and healthy.
+
+**Time**: ~5 minutes monthly
+
+<Steps>
+<Step title="Check Workspace Health">
+Run diagnostics:
+
+```bash
+autocleaneeg-pipeline task diagnose
+```
+
+This checks:
+- Task file validity
+- Sync status with library
+- Workspace configuration
+- Cache health
+- Network connectivity
+</Step>
+
+<Step title="Clean Up Orphaned Tasks">
+If you have orphaned tasks (removed from library):
+
+```bash
+# List orphaned tasks
+autocleaneeg-pipeline task sync
+
+# Remove specific orphaned task
+autocleaneeg-pipeline task delete OldTaskName
+```
+</Step>
+
+<Step title="Update Library Index">
+Refresh your library index:
+
+```bash
+autocleaneeg-pipeline task update
+```
+</Step>
+
+<Step title="Check for Outdated Tasks">
+See if your installed tasks need updates:
+
+```bash
+autocleaneeg-pipeline task sync
+```
+
+If updates are available:
+```bash
+# Preview changes first
+autocleaneeg-pipeline task diff TaskName
+
+# Update if desired
+autocleaneeg-pipeline task sync --update
+```
+</Step>
+</Steps>
+
+<Info>
+**Recommended schedule:**
+- **Weekly**: Check `task diagnose` if actively processing
+- **Monthly**: Run `task update` and `task sync`
+- **Before major processing runs**: Verify task health
+- **After software updates**: Run diagnostics
+</Info>
+
+---
+
+## Workflow 8: Troubleshooting Processing Issues
+
+**Scenario**: Your processing fails or produces unexpected results.
+
+**Time**: Variable
+
+<Steps>
+<Step title="Check Task Status">
+Verify your task is healthy:
+
+```bash
+autocleaneeg-pipeline task diagnose
+autocleaneeg-pipeline task show
+```
+</Step>
+
+<Step title="Verify Task Selection">
+Confirm you're using the intended task:
+
+```bash
+autocleaneeg-pipeline task show
+```
+
+Check that the active task matches what you expect.
+</Step>
+
+<Step title="Test with Sample Data">
+Process a single known-good file:
+
+```bash
+autocleaneeg-pipeline process /path/to/test_file.raw
+```
+
+Check if the issue is task-related or data-related.
+</Step>
+
+<Step title="Check for Customizations">
+See if you've modified the task:
+
+```bash
+autocleaneeg-pipeline task list --status=customized
+```
+
+If customized, compare to the original:
+```bash
+autocleaneeg-pipeline task diff YourTaskName
+```
+</Step>
+
+<Step title="Reset to Original">
+If needed, reinstall the original task:
+
+```bash
+# Backup your current version first
+autocleaneeg-pipeline task explore  # Opens folder, manually copy file
+
+# Reinstall from library
+autocleaneeg-pipeline task install TaskName --force
+```
+</Step>
+</Steps>
+
+<Warning>
+**Common issues:**
+- Wrong task activated (check with `task show`)
+- Outdated task version (run `task sync`)
+- Corrupted task file (reinstall with `--force`)
+- Customizations causing conflicts (compare with `task diff`)
+</Warning>
+
+---
+
+## Quick Reference: Workflow Cheat Sheet
+
+| Scenario | Key Commands |
+|----------|--------------|
+| **First time user** | `task search` → `task use` → `process` |
+| **Batch processing** | `task use` → `input set` → `process` |
+| **Customization** | `task install --name` → `task edit` → `process` |
+| **Comparison testing** | Install variants → customize each → compare results |
+| **Mid-study update** | `task diff` → backup → `task sync --update` |
+| **Team sharing** | Create task → share file → team installs |
+| **Maintenance** | `task diagnose` → `task update` → `task sync` |
+| **Troubleshooting** | `task show` → `task diagnose` → reinstall if needed |
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Task Library" icon="books" href="/tasks/task-library">
+  Browse all available pre-built tasks and their descriptions.
+</Card>
+
+<Card title="Customization Guide" icon="pen-to-square" href="/tasks/task-customization">
+  Learn how to modify tasks for your specific research needs.
+</Card>
+
+<Card title="Command Reference" icon="terminal" href="/tasks/task-management">
+  Complete reference of all task commands and options.
+</Card>
+
+<Card title="Troubleshooting" icon="life-ring" href="/tasks/task-troubleshooting">
+  Solutions to common problems and questions.
+</Card>
+</CardGroup>
+
+## Best Practices Summary
+
+✅ **DO**:
+- Start with library tasks before customizing
+- Document all customizations in task files
+- Test on sample data before batch processing
+- Keep task files under version control for team projects
+- Run `task diagnose` regularly
+- Update library index monthly
+- Share task files with collaborators
+
+❌ **DON'T**:
+- Modify library tasks directly (install first!)
+- Skip testing after customization
+- Process entire dataset without testing first
+- Ignore outdated task warnings
+- Forget to document parameter changes
+- Mix task versions mid-study without noting differences

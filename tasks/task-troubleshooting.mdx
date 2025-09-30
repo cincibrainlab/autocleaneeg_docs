@@ -1,0 +1,1293 @@
+---
+title: "Task Troubleshooting & FAQ"
+sidebarTitle: "Troubleshooting"
+description: "Solutions to common problems and frequently asked questions"
+---
+
+## Quick Diagnostics
+
+Having issues? Start here with automated diagnostics:
+
+```bash
+autocleaneeg-pipeline task diagnose
+```
+
+This checks:
+- ✅ All installed tasks are valid Python files
+- ✅ Active task is set and loadable
+- ✅ Workspace is configured correctly
+- ✅ Library connection and cache status
+- ⚠️ Any issues requiring attention
+
+<CodeGroup>
+```bash Healthy Output
+✓ Workspace health check passed
+✓ Active task: RestingEyesOpen
+✓ 5 tasks installed, all valid
+✓ Library cache updated 2 days ago
+✓ No issues detected
+```
+
+```bash Problem Detected
+⚠ Workspace health check found issues:
+
+Issues found:
+  • Task file 'BrokenTask.py' has syntax errors
+  • Active task not set
+  • Library cache outdated (45 days old)
+
+Recommendations:
+  1. Run: autocleaneeg-pipeline task set <taskname>
+  2. Run: autocleaneeg-pipeline task update
+  3. Fix or delete BrokenTask.py
+```
+</CodeGroup>
+
+---
+
+## Common Error Messages
+
+<AccordionGroup>
+<Accordion title="'No active task set'" icon="triangle-exclamation">
+**Full error**:
+```
+Error: No active task set. Use 'task set <name>' to activate a task.
+```
+
+**What it means**: You haven't selected which task to use for processing.
+
+**Solution**:
+```bash
+# See available tasks
+autocleaneeg-pipeline task list
+
+# Set one as active
+autocleaneeg-pipeline task set RestingEyesOpen
+```
+
+**Why it happens**:
+- First time using the system
+- Recently cleared workspace
+- Deleted the active task
+
+<Tip>
+**Quick fix**: Use `task use <name>` to install and activate in one command!
+</Tip>
+</Accordion>
+
+<Accordion title="'Task not found'" icon="magnifying-glass">
+**Full error**:
+```
+Error: Task 'TaskName' not found in workspace or library.
+```
+
+**What it means**: The task doesn't exist or isn't installed.
+
+**Solutions**:
+
+1. **Check spelling and list available tasks**:
+```bash
+autocleaneeg-pipeline task list --source=library
+autocleaneeg-pipeline task search <keyword>
+```
+
+2. **Install the task if it's in the library**:
+```bash
+autocleaneeg-pipeline task use TaskName
+```
+
+3. **Check if it's a custom task with different name**:
+```bash
+autocleaneeg-pipeline task list
+```
+
+**Common mistakes**:
+- Typo in task name (case-sensitive!)
+- Task was renamed or removed from library
+- Looking for built-in task that doesn't exist
+</Accordion>
+
+<Accordion title="'Syntax error in task file'" icon="code">
+**Full error**:
+```
+SyntaxError: invalid syntax in task file MyTask.py (line 42)
+```
+
+**What it means**: The task file has Python syntax errors (usually from manual editing).
+
+**Solutions**:
+
+1. **Restore from backup**:
+```bash
+# List backups
+ls ~/Documents/Autoclean-EEG/tasks/*.backup.*
+
+# Restore
+cp ~/Documents/Autoclean-EEG/tasks/MyTask.backup.2025-09-29.py \
+   ~/Documents/Autoclean-EEG/tasks/MyTask.py
+```
+
+2. **Reinstall from library**:
+```bash
+autocleaneeg-pipeline task install MyTask --force
+```
+
+3. **Fix the error manually**:
+```bash
+autocleaneeg-pipeline task edit
+# Check line 42, look for:
+# - Missing commas, brackets, quotes
+# - Incorrect indentation
+# - Unmatched parentheses
+```
+
+<Warning>
+**Common Python syntax issues**:
+- Missing comma after dictionary entries
+- Mismatched quotes: `"value': "test"` (wrong) → `"value": "test"` (correct)
+- Wrong indentation (Python is whitespace-sensitive!)
+</Warning>
+</Accordion>
+
+<Accordion title="'Library connection failed'" icon="wifi-slash">
+**Full error**:
+```
+Warning: Could not connect to task library. Using cached index.
+```
+
+**What it means**: Can't reach GitHub to check for task updates.
+
+**Impact**: You can still use installed tasks, but can't see new updates or install new tasks from library.
+
+**Solutions**:
+
+1. **Check internet connection**
+2. **Retry with longer timeout**:
+```bash
+autocleaneeg-pipeline task update
+```
+
+3. **Work offline** (if temporary):
+```bash
+# Continue using installed tasks
+autocleaneeg-pipeline task list
+autocleaneeg-pipeline task set <installed_task>
+```
+
+4. **Clear cache and retry** (if persistent):
+```bash
+rm -rf ~/.autoclean/task_cache/
+autocleaneeg-pipeline task update
+```
+
+<Note>
+**Offline mode**: You can always use tasks you've already installed, even without internet. You just won't see library updates.
+</Note>
+</Accordion>
+
+<Accordion title="'Task file has been modified'" icon="pen">
+**Full error**:
+```
+Warning: Task 'MyTask' has been customized and differs from library version.
+```
+
+**What it means**: You've edited the task, so it no longer matches the library version.
+
+**This is usually fine!** The warning just informs you that:
+- Updates won't auto-apply without overwriting your changes
+- You're using a custom version
+
+**Actions**:
+
+**No action needed** if you intentionally customized the task.
+
+**To see what changed**:
+```bash
+autocleaneeg-pipeline task diff MyTask
+```
+
+**To update and lose customizations**:
+```bash
+# Backup first!
+autocleaneeg-pipeline task sync --update
+# Your custom version is saved as MyTask.backup.TIMESTAMP.py
+```
+
+**To update and keep customizations**:
+1. Update to new library version
+2. Manually re-apply your customizations
+3. Document the changes
+</Accordion>
+
+<Accordion title="'Processing failed at step X'" icon="x">
+**Full error**:
+```
+Error: Processing failed at step 'run_ica'
+[detailed error trace]
+```
+
+**What it means**: Something went wrong during a specific processing step.
+
+**Troubleshooting steps**:
+
+1. **Check your data file**:
+```bash
+# Try with a known-good test file
+autocleaneeg-pipeline process /path/to/test_data.raw
+```
+
+2. **Check task parameters**:
+```bash
+autocleaneeg-pipeline task show
+# Look for impossible values:
+# - l_freq > h_freq
+# - Negative thresholds
+# - Incompatible parameters
+```
+
+3. **Try a simpler task**:
+```bash
+# Use a minimal built-in task to test
+autocleaneeg-pipeline task use RestingEyesOpen
+autocleaneeg-pipeline process /path/to/data.raw
+```
+
+4. **Check logs for details**:
+```bash
+# Processing logs are in output directory
+cat output/processing.log
+```
+
+5. **Report with details**:
+   - Task name and version
+   - Data file format and size
+   - Full error message
+   - Steps that succeeded before failure
+</Accordion>
+
+<Accordion title="'Montage not recognized'" icon="map">
+**Full error**:
+```
+Error: Montage 'MyMontage' not recognized by MNE
+```
+
+**What it means**: The electrode layout name isn't valid.
+
+**Solutions**:
+
+1. **See available montages**:
+```python
+import mne
+print(mne.channels.get_builtin_montages())
+```
+
+2. **Use correct name**:
+```bash
+autocleaneeg-pipeline task edit
+```
+
+Common montage names:
+- `GSN-HydroCel-129` (EGI 129-channel)
+- `GSN-HydroCel-256` (EGI 256-channel)
+- `standard_1020` (10-20 system)
+- `biosemi64` (BioSemi 64-channel)
+- `easycap-M1` (EasyCap)
+
+3. **Use custom montage file**:
+```python
+config = {
+    "montage": {
+        "enabled": True,
+        "value": "/path/to/custom_montage.sfp"
+    }
+}
+```
+
+<Tip>
+**Can't find your montage?** Check the manufacturer's website for electrode position files (.sfp, .elc, .txt formats).
+</Tip>
+</Accordion>
+
+<Accordion title="'All epochs rejected'" icon="ban">
+**Full error**:
+```
+Warning: 0 epochs remaining after rejection (100% rejected)
+Error: Cannot continue with no valid epochs
+```
+
+**What it means**: All trials were rejected due to artifacts exceeding thresholds.
+
+**Common causes**:
+1. Rejection thresholds too strict
+2. Data quality issues (excessive noise)
+3. Wrong montage (incorrect channel positions)
+4. Filtering artifacts
+
+**Solutions**:
+
+1. **Relax rejection thresholds**:
+```bash
+autocleaneeg-pipeline task edit
+```
+```python
+"reject": {
+    "eeg": 200e-6  # Increase from 150e-6
+}
+```
+
+2. **Check data quality**:
+```bash
+# Inspect raw data before processing
+autocleaneeg-pipeline review --raw /path/to/data.raw
+```
+
+3. **Adjust filtering**:
+```python
+"filtering": {
+    "value": {
+        "l_freq": 0.5,  # Lower from 1.0 (less aggressive)
+        "h_freq": 100
+    }
+}
+```
+
+4. **Verify montage**:
+   - Ensure montage matches your cap system
+   - Check channel names match montage
+
+<Info>
+**Acceptable rejection rates**:
+- Good data: 10-20% rejection
+- Moderate: 20-40% rejection
+- High: 40-60% rejection (consider data quality)
+- Excessive: >60% rejection (investigate causes)
+</Info>
+</Accordion>
+</AccordionGroup>
+
+---
+
+## Frequently Asked Questions
+
+### Getting Started
+
+<AccordionGroup>
+<Accordion title="How do I know which task to use for my data?" icon="circle-question">
+**Use the search feature** to find tasks by keyword:
+
+```bash
+# Find resting-state tasks
+autocleaneeg-pipeline task search resting
+
+# Find auditory tasks
+autocleaneeg-pipeline task search auditory
+
+# Find ASSR tasks
+autocleaneeg-pipeline task search assr
+```
+
+**Match by paradigm**:
+- **Resting state** → `RestingEyesOpen` or `RestingEyesClosed`
+- **ASSR 40Hz** → `ASSR_40Hz`
+- **Chirp** → `Chirp_Default`
+- **MMN** → `MMN_Standard` or `HBCD_MMN`
+- **VEP** → `HBCD_VEP`
+
+**When in doubt**: Start with the closest match and customize if needed!
+
+<Tip>
+See [Task Library](/tasks/task-library) for complete list with descriptions.
+</Tip>
+</Accordion>
+
+<Accordion title="Can I use multiple tasks in the same project?" icon="layer-group">
+**Yes!** You can:
+1. Install multiple tasks
+2. Switch between them with `task set`
+3. Process different files with different tasks
+
+**Example workflow**:
+```bash
+# Install two tasks
+autocleaneeg-pipeline task use RestingEyesOpen
+autocleaneeg-pipeline task install ASSR_40Hz
+
+# Process resting data
+autocleaneeg-pipeline task set RestingEyesOpen
+autocleaneeg-pipeline process resting_*.raw
+
+# Switch to ASSR for auditory data
+autocleaneeg-pipeline task set ASSR_40Hz
+autocleaneeg-pipeline process assr_*.raw
+```
+
+**All tasks coexist** in your workspace. Switch freely!
+</Accordion>
+
+<Accordion title="Where are tasks stored on my computer?" icon="folder">
+**Workspace location**:
+
+**Mac/Linux**: `~/Documents/Autoclean-EEG/tasks/`
+
+**Windows**: `C:\Users\YourName\Documents\Autoclean-EEG\tasks\`
+
+**Quick access**:
+```bash
+# Open tasks folder in file browser
+autocleaneeg-pipeline task explore
+```
+
+**What's in there**:
+- `TaskName.py` - Your installed tasks
+- `TaskName.backup.*.py` - Automatic backups
+- Each file is a complete, self-contained task
+</Accordion>
+
+<Accordion title="Do I need Python knowledge to use tasks?" icon="python">
+**For basic usage: No!**
+
+You can:
+- ✅ Browse and install library tasks
+- ✅ Run processing with pre-built tasks
+- ✅ Switch between tasks
+- ✅ Update tasks
+
+**For customization: Some Python helps**
+
+You'll need minimal Python to:
+- Edit configuration parameters (mostly just numbers)
+- Understand basic syntax (commas, brackets, quotes)
+
+**For advanced customization: Yes**
+
+To modify workflows or add steps, you'll need:
+- Python programming experience
+- MNE-Python knowledge
+- Understanding of EEG processing concepts
+
+<Note>
+**90% of users never need to edit Python code!** Pre-built library tasks cover most common use cases.
+</Note>
+</Accordion>
+
+<Accordion title="What's the difference between 'task use' and 'task install'?" icon="download">
+**`task use`** (⭐ Recommended):
+```bash
+autocleaneeg-pipeline task use RestingEyesOpen
+```
+- Downloads from library
+- Installs to workspace
+- **Activates** immediately
+- Ready to process right away
+
+**`task install`**:
+```bash
+autocleaneeg-pipeline task install RestingEyesOpen
+```
+- Downloads from library
+- Installs to workspace
+- Does **not** activate
+- Need to run `task set` separately
+
+**When to use each**:
+- **Use `task use`** when you want to start processing immediately (most common)
+- **Use `task install`** when batch-installing multiple tasks for later use
+
+**Bottom line**: `task use` is simpler for most scenarios!
+</Accordion>
+</AccordionGroup>
+
+### Customization
+
+<AccordionGroup>
+<Accordion title="How do I change filtering settings?" icon="sliders">
+**Step-by-step**:
+
+1. **Open task for editing**:
+```bash
+autocleaneeg-pipeline task edit
+```
+
+2. **Find the filtering section**:
+```python
+config = {
+    # ...
+    "filtering": {
+        "enabled": True,
+        "value": {
+            "l_freq": 1.0,      # High-pass (change this)
+            "h_freq": 100.0,    # Low-pass (change this)
+            "notch_freqs": [60, 120]  # Line noise
+        }
+    }
+}
+```
+
+3. **Modify the values**:
+```python
+"l_freq": 0.5,   # Lower high-pass for slow waves
+"h_freq": 45.0,  # Lower low-pass to reduce noise
+```
+
+4. **Save and test**:
+```bash
+autocleaneeg-pipeline process /path/to/test_file.raw
+```
+
+See [Customization Guide](/tasks/task-customization#filtering-parameters) for more examples!
+</Accordion>
+
+<Accordion title="Can I customize a library task without breaking it?" icon="shield">
+**Yes!** Here's the safe way:
+
+1. **Install with a custom name** (keeps original intact):
+```bash
+autocleaneeg-pipeline task install RestingEyesOpen --name MyResting
+```
+
+2. **Customize your copy**:
+```bash
+autocleaneeg-pipeline task set MyResting
+autocleaneeg-pipeline task edit
+# Make changes
+```
+
+3. **Test thoroughly**:
+```bash
+autocleaneeg-pipeline process /path/to/test_data.raw
+```
+
+**Benefits**:
+- ✅ Original library task unchanged
+- ✅ Can compare original vs. customized
+- ✅ Easy to revert by switching back
+- ✅ Multiple variants possible
+
+**Backups**: The system automatically creates backups when you edit tasks (`TaskName.backup.TIMESTAMP.py`)
+</Accordion>
+
+<Accordion title="How do I compare different processing approaches?" icon="code-compare">
+**Strategy**: Create multiple variants and compare results
+
+1. **Install multiple variants**:
+```bash
+autocleaneeg-pipeline task install RestingEyesOpen --name Resting_Standard
+autocleaneeg-pipeline task install RestingEyesOpen --name Resting_Relaxed
+autocleaneeg-pipeline task install RestingEyesOpen --name Resting_Strict
+```
+
+2. **Customize each**:
+```bash
+# Variant 1: Standard (keep defaults)
+autocleaneeg-pipeline task set Resting_Standard
+
+# Variant 2: Relaxed (more lenient)
+autocleaneeg-pipeline task set Resting_Relaxed
+autocleaneeg-pipeline task edit
+# Set: reject=250µV, l_freq=0.5
+
+# Variant 3: Strict (stricter QC)
+autocleaneeg-pipeline task set Resting_Strict
+autocleaneeg-pipeline task edit
+# Set: reject=100µV, l_freq=1.5
+```
+
+3. **Process same data with all three**:
+```bash
+for task in Resting_Standard Resting_Relaxed Resting_Strict; do
+  autocleaneeg-pipeline task set $task
+  autocleaneeg-pipeline process test_subject.raw
+done
+```
+
+4. **Compare results** in the review GUI
+
+See [Workflow 4](/tasks/task-workflows#workflow-4-comparing-different-processing-approaches) for detailed example!
+</Accordion>
+
+<Accordion title="I broke my task. How do I fix it?" icon="wrench">
+**Option 1 - Restore from backup**:
+```bash
+# List backups
+ls ~/Documents/Autoclean-EEG/tasks/*.backup.*
+
+# Restore most recent
+cp ~/Documents/Autoclean-EEG/tasks/MyTask.backup.2025-09-29.py \
+   ~/Documents/Autoclean-EEG/tasks/MyTask.py
+```
+
+**Option 2 - Reinstall from library**:
+```bash
+autocleaneeg-pipeline task install MyTask --force
+# Warning: Overwrites customizations!
+```
+
+**Option 3 - Manually fix**:
+```bash
+autocleaneeg-pipeline task diagnose
+# Check error message for specific issue
+
+autocleaneeg-pipeline task edit
+# Fix the error (usually syntax issue)
+```
+
+**Prevention**:
+- Edit one thing at a time, test after each change
+- Keep manual backups before major changes: `cp MyTask.py MyTask_v1.py`
+- Use version control (Git) for serious projects
+
+<Tip>
+**Use a Python-aware text editor** (VS Code, Sublime, PyCharm) to catch syntax errors while typing!
+</Tip>
+</Accordion>
+</AccordionGroup>
+
+### Task Management
+
+<AccordionGroup>
+<Accordion title="How do I update tasks to the latest version?" icon="rotate">
+**Two-step process**:
+
+1. **Update library index** (check for updates):
+```bash
+autocleaneeg-pipeline task update
+```
+
+Output shows what's new or changed in the library.
+
+2. **Sync your workspace** (check what you have):
+```bash
+autocleaneeg-pipeline task sync
+```
+
+Output shows which of *your installed tasks* have updates available.
+
+**To apply updates**:
+```bash
+# Preview changes first
+autocleaneeg-pipeline task diff TaskName
+
+# Apply update
+autocleaneeg-pipeline task sync --update
+```
+
+<Warning>
+**Customized tasks**: If you've modified a task, `sync --update` will:
+1. Create backup: `TaskName.backup.TIMESTAMP.py`
+2. Install new library version
+3. You'll need to manually re-apply customizations
+</Warning>
+
+See [Workflow 5](/tasks/task-workflows#workflow-5-updating-tasks-mid-study) for detailed guidance!
+</Accordion>
+
+<Accordion title="Should I update tasks mid-study?" icon="calendar">
+**It depends on the update!**
+
+**Check what changed**:
+```bash
+autocleaneeg-pipeline task diff TaskName
+```
+
+**Decision guidelines**:
+
+**Update if**:
+- ✅ Bug fix for critical issue
+- ✅ Study hasn't started yet
+- ✅ Can reprocess all subjects
+
+**Don't update if**:
+- ❌ Study is partially complete
+- ❌ Changes affect core processing
+- ❌ Can't reprocess existing subjects
+
+**Mid-study strategy**:
+1. Note the update exists
+2. Continue with current version
+3. Process all subjects consistently
+4. Document exact version used in methods
+5. Keep task file for reproducibility
+
+**For publications**: Always include the exact task file version used!
+</Accordion>
+
+<Accordion title="How do I share tasks with collaborators?" icon="users">
+**Method 1 - Share the task file**:
+
+1. **Find your task**:
+```bash
+autocleaneeg-pipeline task explore
+# Opens: ~/Documents/Autoclean-EEG/tasks/
+```
+
+2. **Copy and share**: `MyTask.py`
+   - Email attachment
+   - Shared drive
+   - Cloud storage (Dropbox, Google Drive)
+
+3. **Collaborator installs**:
+```bash
+autocleaneeg-pipeline task install /path/to/MyTask.py
+```
+
+**Method 2 - Version control (recommended for teams)**:
+
+1. **Create Git repository** for project
+2. **Add task files** to repo
+3. **Team members clone** and install
+
+```bash
+git clone https://github.com/yourlab/project-tasks.git
+autocleaneeg-pipeline task install project-tasks/MyTask.py
+```
+
+**Benefits of Git**:
+- Track all changes
+- Version history
+- Easy updates for whole team
+- Permanent record for publications
+
+See [Workflow 6](/tasks/task-workflows#workflow-6-team-collaboration) for details!
+</Accordion>
+
+<Accordion title="How do I delete a task I no longer need?" icon="trash">
+**Delete a task**:
+```bash
+autocleaneeg-pipeline task delete TaskName
+```
+
+This removes `TaskName.py` from your workspace.
+
+**Safety check**: The command asks for confirmation before deleting.
+
+**If task is active**: You'll need to set a different active task:
+```bash
+# Check what's active
+autocleaneeg-pipeline task show
+
+# Set different task
+autocleaneeg-pipeline task set OtherTask
+
+# Now can delete
+autocleaneeg-pipeline task delete OldTask
+```
+
+**Recovery**: Deleted tasks can't be recovered unless you have backups. Reinstall from library if needed:
+```bash
+autocleaneeg-pipeline task use TaskName
+```
+
+<Tip>
+**Before deleting**: Consider if you might need it later. Disk space is cheap, redoing analysis is expensive!
+</Tip>
+</Accordion>
+
+<Accordion title="Can I rename a task?" icon="signature">
+**No direct rename command**, but you can copy and delete:
+
+**Method 1 - Copy and delete**:
+```bash
+# Copy with new name
+autocleaneeg-pipeline task copy OldName NewName
+
+# Delete old one
+autocleaneeg-pipeline task delete OldName
+```
+
+**Method 2 - Manual file rename**:
+```bash
+cd ~/Documents/Autoclean-EEG/tasks/
+mv OldName.py NewName.py
+```
+
+**Important**: If you manually rename, also update the class name inside the file to match:
+
+```python
+# Change this line to match new filename
+class NewName(Task):  # Was: class OldName(Task)
+    def run(self):
+        # ...
+```
+
+<Warning>
+**Active task**: If the renamed task was active, set it again:
+```bash
+autocleaneeg-pipeline task set NewName
+```
+</Warning>
+</Accordion>
+</AccordionGroup>
+
+### Processing Issues
+
+<AccordionGroup>
+<Accordion title="Processing is very slow. How can I speed it up?" icon="gauge">
+**Common bottlenecks and solutions**:
+
+**1. Large file size**
+- **Resample** to reduce data:
+```python
+"resample_step": {
+    "enabled": True,
+    "value": 250  # Lower from 500 or 1000
+}
+```
+
+**2. ICA computation**
+- **Reduce components**:
+```python
+"ica_step": {
+    "value": {
+        "n_components": 15  # Fixed number instead of 0.99
+    }
+}
+```
+
+**3. Many channels**
+- **Drop unnecessary channels** early:
+```python
+"drop_outer_layer": {
+    "enabled": True  # Removes edge channels
+}
+```
+
+**4. File I/O**
+- Use local disk (not network drive)
+- Use SSD instead of HDD
+
+**5. Hardware**
+- Close other applications
+- More RAM helps for large datasets
+- CPU cores used automatically
+
+**Typical processing times**:
+- 5-min resting: 2-5 minutes
+- 20-min ASSR: 5-15 minutes
+- 1-hour recording: 20-60 minutes
+</Accordion>
+
+<Accordion title="Why are some channels marked as 'bad'?" icon="circle-xmark">
+**Automatic bad channel detection** flags channels with:
+- Flatline (no signal)
+- Excessive noise (std dev too high)
+- Poor correlation with neighbors
+- Electrode bridging
+
+**This is normal and expected!** Typical: 2-5% of channels marked bad.
+
+**What happens to bad channels**:
+1. Marked as bad during processing
+2. Interpolated (reconstructed from neighbors)
+3. Included in final output
+
+**Review bad channels**:
+```bash
+# Check processing report
+autocleaneeg-pipeline review
+# Look for "Bad Channels" section
+```
+
+**Too many bad channels** (>10%):
+- Check electrode contact quality
+- Check reference electrode
+- Review raw data for systematic issues
+- May indicate poor recording quality
+
+**Override if needed**:
+```python
+"clean_bad_channels": {
+    "enabled": True,
+    "value": {
+        "method": "noisy",
+        "threshold": 5  # Increase from 3 (more lenient)
+    }
+}
+```
+</Accordion>
+
+<Accordion title="My data has muscle artifacts. How to handle?" icon="person-running">
+**Muscle artifacts** (high-frequency noise from movement):
+
+**Solution 1 - ICA removal** (recommended):
+```python
+"ica_step": {
+    "enabled": True,  # Should catch muscle artifacts
+    "value": {
+        "n_components": 0.95,
+        "method": "fastica"
+    }
+}
+```
+
+**Solution 2 - High-pass filtering**:
+```python
+"filtering": {
+    "value": {
+        "l_freq": 1.5,  # More aggressive high-pass
+        "h_freq": 45    # Lower low-pass to remove high-freq noise
+    }
+}
+```
+
+**Solution 3 - Epoch rejection**:
+```python
+"reject": {
+    "eeg": 100e-6  # Stricter threshold to reject noisy trials
+}
+```
+
+**Best practice**: Combine all three approaches
+- ICA catches systematic muscle artifacts
+- Filtering reduces high-frequency noise
+- Rejection removes remaining noisy trials
+
+<Note>
+**Prevention is best**: Instruct participants to relax, minimize movement, avoid jaw clenching during recording.
+</Note>
+</Accordion>
+
+<Accordion title="Output files: Where are they and what are they?" icon="file">
+**Default output location**: `output/` in current directory
+
+**Output structure** (BIDS derivatives format):
+```
+output/
+├── sub-001/
+│   ├── 01_import/
+│   │   └── sub-001_raw.fif
+│   ├── 02_resample/
+│   │   └── sub-001_resampled.fif
+│   ├── 03_filter/
+│   │   └── sub-001_filtered.fif
+│   ├── ...
+│   └── final/
+│       ├── sub-001_clean.fif       # Final cleaned data
+│       ├── sub-001_epochs.fif      # Epoched data
+│       └── sub-001_report.html     # QC report
+└── processing.log
+```
+
+**Key files**:
+- `*_clean.fif` - Final preprocessed continuous data
+- `*_epochs.fif` - Epoched data (if applicable)
+- `*_report.html` - Quality control report (open in browser)
+- `processing.log` - Detailed processing log
+
+**File formats**:
+- `.fif` - MNE-Python format (use with MNE)
+- `.html` - Reports (open in browser)
+- `.png` - Figures and plots
+
+**Change output location**:
+```bash
+autocleaneeg-pipeline process input.raw --output /path/to/output/
+```
+</Accordion>
+</AccordionGroup>
+
+### Advanced Topics
+
+<AccordionGroup>
+<Accordion title="How do I contribute a task to the library?" icon="upload">
+Want to share your task with the community?
+
+**Requirements**:
+1. ✅ Thoroughly tested on multiple datasets
+2. ✅ Clear documentation (what it does, when to use)
+3. ✅ Follows naming conventions
+4. ✅ Works with standard EEG formats
+
+**Contribution process**:
+
+1. **Prepare your task**:
+   - Add detailed docstring
+   - Document parameter choices
+   - Include example use case
+
+2. **Test thoroughly**:
+   - Multiple subjects
+   - Different data qualities
+   - Edge cases
+
+3. **Submit to registry**:
+   - Go to: https://github.com/cincibrainlab/autocleaneeg-task-registry
+   - Create pull request with your task file
+   - Include testing details
+
+4. **Community review**:
+   - Maintainers review code
+   - Test on their data
+   - Provide feedback
+
+5. **Added to library**:
+   - Included in next release
+   - Available to all users!
+
+See [contribution guidelines](https://github.com/cincibrainlab/autocleaneeg-task-registry/blob/main/CONTRIBUTING.md).
+</Accordion>
+
+<Accordion title="Can I use tasks in automated pipelines/scripts?" icon="robot">
+**Yes!** Tasks work great in automation:
+
+**Batch processing script**:
+```bash
+#!/bin/bash
+
+# Set task once
+autocleaneeg-pipeline task set RestingEyesOpen
+
+# Process all files
+for file in data/*.raw; do
+    autocleaneeg-pipeline process "$file"
+done
+```
+
+**Error handling**:
+```bash
+#!/bin/bash
+
+autocleaneeg-pipeline task set MyTask
+
+for file in data/*.raw; do
+    if autocleaneeg-pipeline process "$file"; then
+        echo "✓ $file processed successfully"
+    else
+        echo "✗ $file failed"
+        echo "$file" >> failed_files.txt
+    fi
+done
+```
+
+**Exit codes**: Commands return 0 on success, non-zero on failure
+
+**Logging**: Use `--verbose` flag for detailed logs:
+```bash
+autocleaneeg-pipeline process input.raw --verbose &> processing.log
+```
+
+**CI/CD integration**: Can be used in GitHub Actions, Jenkins, etc.
+</Accordion>
+
+<Accordion title="How do I use tasks programmatically in Python?" icon="code">
+**Import and use in Python scripts**:
+
+```python
+from autoclean.core.pipeline import Pipeline
+
+# Initialize pipeline
+pipeline = Pipeline(output_dir="/path/to/output")
+
+# Add and run task
+pipeline.add_task("/path/to/MyTask.py")
+pipeline.process_file("/path/to/data.raw", task="MyTask")
+```
+
+**Load task directly**:
+```python
+from autoclean.core.task import Task
+
+# Load task class
+task_class = Task.load_from_file("/path/to/MyTask.py")
+
+# Instantiate and configure
+task = task_class(
+    input_file="/path/to/data.raw",
+    output_dir="/path/to/output"
+)
+
+# Run processing
+task.run()
+```
+
+**Access processed data**:
+```python
+# After processing
+raw_clean = task.raw  # Access cleaned Raw object
+epochs = task.epochs  # Access epochs (if created)
+
+# Continue with custom analysis
+psd = raw_clean.compute_psd()
+# ...
+```
+
+See [API documentation](https://cincibrainlab.github.io/autoclean_pipeline/) for details.
+</Accordion>
+
+<Accordion title="Can I create task variants automatically?" icon="wand-magic-sparkles">
+**Yes, using TaskWizard** (web-based task generator):
+
+1. **Go to**: https://taskwizard.autocleaneeg.org
+
+2. **Select base task** from library
+
+3. **Customize** using visual interface:
+   - Adjust filtering sliders
+   - Set epoch parameters
+   - Configure ICA
+   - Preview changes
+
+4. **Download** generated task file
+
+5. **Install**:
+```bash
+autocleaneeg-pipeline task install ~/Downloads/MyCustomTask.py
+```
+
+**Benefits**:
+- Visual interface (no coding)
+- Parameter validation
+- Preview before download
+- Educational (see parameter effects)
+
+See [TaskWizard documentation](/tasks/taskwizard) for details.
+</Accordion>
+</AccordionGroup>
+
+---
+
+## Getting Help
+
+Still stuck? Here's where to get help:
+
+<CardGroup cols={2}>
+<Card title="Documentation" icon="book" href="/tasks/task-getting-started">
+  Start with Getting Started guide and work through the documentation.
+</Card>
+
+<Card title="Community Forums" icon="comments" href="https://github.com/cincibrainlab/autoclean_pipeline/discussions">
+  Ask questions and get help from other researchers and developers.
+</Card>
+
+<Card title="GitHub Issues" icon="github" href="https://github.com/cincibrainlab/autoclean_pipeline/issues">
+  Report bugs or request new features.
+</Card>
+
+<Card title="Task Registry" icon="book-open" href="https://github.com/cincibrainlab/autocleaneeg-task-registry">
+  Browse task source code and examples.
+</Card>
+</CardGroup>
+
+### When Reporting Issues
+
+**Include these details**:
+
+1. **Command you ran**:
+```bash
+autocleaneeg-pipeline task use RestingEyesOpen
+autocleaneeg-pipeline process /path/to/data.raw
+```
+
+2. **Full error message**:
+```
+Copy the entire error output
+```
+
+3. **System information**:
+```bash
+autocleaneeg-pipeline --version
+python --version
+```
+
+4. **Task information**:
+```bash
+autocleaneeg-pipeline task show
+```
+
+5. **What you've tried**: List troubleshooting steps already attempted
+
+**Good issue report example**:
+```
+Title: "Task fails at ICA step with XXX error"
+
+Description:
+- Command: autocleaneeg-pipeline process test.raw
+- Task: RestingEyesOpen (synced, not customized)
+- Error: [full error message]
+- System: macOS 14, Python 3.11, AutoCleanEEG 2.3.0
+- Tried: Resampling to lower rate, reinstalling task
+- Data: EGI 129-channel, 5 minutes, 1000 Hz
+
+The same file processes fine with an older task version.
+```
+
+---
+
+## Quick Diagnostic Checklist
+
+Use this checklist to systematically troubleshoot issues:
+
+<Steps>
+<Step title="Run Diagnostics">
+```bash
+autocleaneeg-pipeline task diagnose
+```
+Fix any reported issues before continuing.
+</Step>
+
+<Step title="Check Active Task">
+```bash
+autocleaneeg-pipeline task show
+```
+Verify correct task is active and parameters look right.
+</Step>
+
+<Step title="Test with Known-Good Data">
+```bash
+autocleaneeg-pipeline process /path/to/test_file.raw
+```
+Use a file that worked before to isolate data vs. system issues.
+</Step>
+
+<Step title="Try Minimal Task">
+```bash
+autocleaneeg-pipeline task use RestingEyesOpen --force
+autocleaneeg-pipeline process /path/to/data.raw
+```
+Use unmodified library task to rule out customization issues.
+</Step>
+
+<Step title="Check Logs">
+```bash
+cat output/processing.log
+```
+Review detailed logs for clues.
+</Step>
+
+<Step title="Update Library">
+```bash
+autocleaneeg-pipeline task update
+autocleaneeg-pipeline task sync
+```
+Ensure you're using latest task versions.
+</Step>
+</Steps>
+
+---
+
+## Related Documentation
+
+<CardGroup cols={2}>
+<Card title="Getting Started" icon="rocket" href="/tasks/task-getting-started">
+  New to tasks? Start here with the basics.
+</Card>
+
+<Card title="Task Library" icon="books" href="/tasks/task-library">
+  Browse all available pre-built tasks.
+</Card>
+
+<Card title="Workflows" icon="list-check" href="/tasks/task-workflows">
+  Common scenarios and how to handle them.
+</Card>
+
+<Card title="Customization" icon="pen-to-square" href="/tasks/task-customization">
+  Learn how to modify tasks for your needs.
+</Card>
+
+<Card title="Command Reference" icon="terminal" href="/tasks/task-management">
+  Complete reference of all task commands.
+</Card>
+
+<Card title="TaskWizard" icon="wand-magic-sparkles" href="/tasks/taskwizard">
+  Visual task generator and editor.
+</Card>
+</CardGroup>

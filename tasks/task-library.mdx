@@ -1,0 +1,522 @@
+---
+title: "Task Library Guide"
+sidebarTitle: "Task Library"
+description: "Browse and use pre-built EEG processing tasks from the AutoCleanEEG library"
+---
+
+## What is the Task Library?
+
+The **Task Library** is a curated collection of ready-to-use EEG processing pipelines maintained by the AutoCleanEEG team. Think of it as a cookbook of validated recipes for common EEG paradigms—resting state, event-related potentials, auditory protocols, and more.
+
+<Note>
+**Key Benefits:**
+- 📦 **Pre-configured**: All parameters optimized for each paradigm
+- ✅ **Validated**: Tested on real data across multiple labs
+- 🔄 **Updated**: Regular updates with improvements and bug fixes
+- 🆓 **Free**: Open-source and freely available to all users
+</Note>
+
+## Browsing the Library
+
+### See All Available Tasks
+
+View all tasks in the library:
+
+```bash
+autocleaneeg-pipeline task list --source=library
+```
+
+<CodeGroup>
+```bash Output
+Available to Install
+
+ Task Name                 Source      Description
+ RestingEyesOpen           📦 library  Standard resting-state eyes-open
+ ASSR_40Hz                 📦 library  Auditory steady-state at 40 Hz
+ Chirp_Default             📦 library  Chirp auditory stimulation
+ MMN_Standard              📦 library  Mismatch negativity protocol
+ HBCD_VEP                  📦 library  HBCD visual evoked potentials
+ HBCD_MMN                  📦 library  HBCD mismatch negativity
+ Mouse_XDAT_ASSR           📦 library  Mouse ASSR protocol
+ Mouse_XDAT_Resting        📦 library  Mouse resting-state
+ ...
+```
+</CodeGroup>
+
+### Search for Specific Tasks
+
+Find tasks by keyword:
+
+```bash
+# Find all resting-state tasks
+autocleaneeg-pipeline task search resting
+
+# Find auditory tasks
+autocleaneeg-pipeline task search auditory
+
+# Find mouse/rodent tasks
+autocleaneeg-pipeline task search mouse
+```
+
+<Tip>
+**Search is smart!** It looks through task names AND descriptions, so you can search by paradigm, method, or species.
+</Tip>
+
+## Task Categories
+
+The library is organized into categories based on experimental paradigm:
+
+<AccordionGroup>
+<Accordion title="🧘 Resting State" icon="brain">
+**For spontaneous EEG recordings without tasks**
+
+Ideal for: Baseline recordings, developmental studies, clinical assessments
+
+**Available Tasks:**
+- `RestingEyesOpen` - Standard eyes-open resting state
+- `RestingEyesClosed` - Standard eyes-closed resting state
+- `BiotrialResting1020` - 10-20 system resting protocol
+
+**Key Features:**
+- Continuous data processing
+- Optimal for spectral power analysis
+- Artifact removal tuned for resting data
+- Automated bad channel detection
+
+**Typical Use Cases:**
+- Developmental EEG (infants, children, adults)
+- Clinical populations (ADHD, autism, epilepsy)
+- Neurofeedback baseline assessments
+- Pharmaco-EEG studies
+</Accordion>
+
+<Accordion title="🎵 Auditory Protocols" icon="volume">
+**For sound-based stimulus paradigms**
+
+Ideal for: ASSR, chirp, MMN, auditory evoked potentials
+
+**Available Tasks:**
+- `ASSR_40Hz` - 40Hz auditory steady-state response
+- `Chirp_Default` - Frequency-modulated auditory stimulus
+- `MMN_Standard` - Mismatch negativity (oddball)
+- `BB_Long` - Long-duration broadband stimulation
+
+**Key Features:**
+- Event-triggered epoching
+- Optimized filtering for auditory frequencies
+- Automatic peak detection
+- Stimulus-locked averaging
+
+**Typical Use Cases:**
+- Hearing research
+- Auditory development studies
+- Clinical hearing assessments
+- Frequency-specific responses
+</Accordion>
+
+<Accordion title="👁️ Visual Protocols" icon="eye">
+**For visual stimulus paradigms**
+
+Ideal for: VEP, visual oddball, flash stimuli
+
+**Available Tasks:**
+- `HBCD_VEP` - HBCD study visual evoked potentials
+- `VEP_Standard` - Standard VEP protocol
+
+**Key Features:**
+- Visual artifact handling
+- Flash-locked averaging
+- Occipital channel focus
+- Pattern reversal optimization
+
+**Typical Use Cases:**
+- Visual system development
+- Clinical vision assessments
+- Cognitive paradigms with visual stimuli
+- Attent
+
+ion and perception studies
+</Accordion>
+
+<Accordion title="🐭 Rodent EEG" icon="dna">
+**For mouse and rat EEG recordings**
+
+Ideal for: Preclinical research, animal models
+
+**Available Tasks:**
+- `Mouse_XDAT_ASSR` - Mouse ASSR with correlation-based rejection
+- `Mouse_XDAT_Resting` - Mouse resting-state
+- `Mouse_XDAT_Chirp` - Mouse chirp protocol
+
+**Key Features:**
+- Species-specific montages
+- Correlation-based artifact removal
+- High-frequency optimization
+- Animal model best practices
+
+**Typical Use Cases:**
+- Preclinical drug studies
+- Animal models of neurological conditions
+- Developmental neuroscience (rodent)
+- Comparative neuroscience
+</Accordion>
+</AccordionGroup>
+
+## Installing Tasks from the Library
+
+### One-Step Install (Recommended)
+
+The fastest way to start using a library task:
+
+```bash
+autocleaneeg-pipeline task use ASSR_40Hz
+```
+
+This command:
+1. ✅ Downloads the task from the library
+2. ✅ Installs it to your workspace
+3. ✅ Sets it as your active task
+4. ✅ You're ready to process data immediately!
+
+<CodeGroup>
+```bash Example Output
+✓ ASSR_40Hz installed to /Users/you/Autoclean-EEG/tasks/ASSR_40Hz.py
+✓ Active task set to: ASSR_40Hz
+Ready to process: autocleaneeg-pipeline process <file>
+```
+</CodeGroup>
+
+### Install Without Activating
+
+Want to install a task but not activate it yet?
+
+```bash
+autocleaneeg-pipeline task install MMN_Standard
+```
+
+Then activate it later:
+
+```bash
+autocleaneeg-pipeline task set MMN_Standard
+```
+
+### Install with Custom Name
+
+Install a task with a different name (useful for variants):
+
+```bash
+autocleaneeg-pipeline task install ASSR_40Hz --name ASSR_Modified
+```
+
+<Info>
+**Why custom names?**
+- Create multiple variants of the same task
+- Compare different parameter sets
+- Keep original and modified versions separate
+</Info>
+
+## Understanding Task Status
+
+When you list tasks, you'll see status indicators:
+
+### Status Icons Explained
+
+| Icon | Status | Meaning |
+|------|--------|---------|
+| ✓ | **Synced** | Your workspace copy matches the library exactly |
+| ⚠ | **Customized** | You've modified this task locally |
+| ↻ | **Outdated** | A newer version is available in the library |
+| ✗ | **Orphaned** | Task was removed from the library |
+| 📦 | **Available** | Ready to install from the library |
+
+### Checking Your Installed Tasks
+
+See which tasks you have installed and their status:
+
+```bash
+autocleaneeg-pipeline task list --status=installed
+```
+
+<CodeGroup>
+```bash Example Output
+Installed Tasks (in workspace)
+
+ Task Name       Source   Status       Description
+ ASSR_40Hz       library  ✓ synced     Auditory steady-state at 40 Hz
+ RestingState    library  ⚠ customized Standard resting protocol (modified)
+ MyCustomTask    user     —            Your custom task
+```
+</CodeGroup>
+
+## Keeping Tasks Up to Date
+
+### Check for Library Updates
+
+See if new tasks or updates are available:
+
+```bash
+autocleaneeg-pipeline task update
+```
+
+This updates your local index of the task library from GitHub.
+
+<CodeGroup>
+```bash Example Output
+→ Updating task library from GitHub registry...
+
+✓ Found 3 change(s) in library
+
+ Task          Change
+ ASSR_40Hz     updated
+ NewMMN_Task   new
+ Old_Task      removed
+
+New tasks available:
+  • Run 'task list --source=library' to see all library tasks
+  • Run 'task use <name>' to install and activate a new task
+
+Tasks with updates:
+  • Run 'task sync' to check if your workspace tasks are outdated
+  • Run 'task sync --update' to automatically update outdated tasks
+```
+</CodeGroup>
+
+<Tip>
+**Run this monthly!** We regularly update tasks with improvements, bug fixes, and new features.
+</Tip>
+
+### Sync Your Workspace Tasks
+
+Check if your installed tasks need updates:
+
+```bash
+autocleaneeg-pipeline task sync
+```
+
+<CodeGroup>
+```bash Example Output
+→ Checking workspace tasks against sources...
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ SYNC STATUS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ ✓  ASSR_40Hz        [library]  up to date
+ ⚠  RestingState     [library]  customized
+ ↻  MMN_Standard     [library]  outdated
+
+Summary:
+  • 1 task has updates available
+  • 1 customized task
+
+Next steps:
+  • Run 'task sync --update' to apply updates (will backup customized tasks)
+  • Run 'task diff MMN_Standard' to preview changes
+```
+</CodeGroup>
+
+### Auto-Update Tasks
+
+Apply updates automatically (with backup):
+
+```bash
+autocleaneeg-pipeline task sync --update
+```
+
+<Warning>
+**Customized tasks**: If you've modified a task, `sync --update` will:
+1. Create a backup (e.g., `RestingState.backup.2025-09-29.py`)
+2. Install the new version from the library
+3. You'll need to manually re-apply your customizations if desired
+</Warning>
+
+## Comparing Task Versions
+
+### Preview Changes Before Updating
+
+See what changed between your version and the library:
+
+```bash
+autocleaneeg-pipeline task diff MMN_Standard
+```
+
+<CodeGroup>
+```bash Example Output (No Changes)
+✓ No differences - workspace copy matches library
+```
+
+```diff Example Output (With Changes)
+--- Workspace: MMN_Standard.py
++++ Library: MMN_Standard.py
+
+@@ -45,7 +45,7 @@
+     "filtering": {
+         "enabled": True,
+         "value": {
+-            "l_freq": 0.5,
++            "l_freq": 0.1,  # Improved low-frequency filtering
+             "h_freq": 100,
+             "notch_freqs": [60, 120]
+         }
+```
+</CodeGroup>
+
+This shows exactly what will change if you update.
+
+## Task Metadata and Documentation
+
+### View Task Details
+
+Get detailed information about a task:
+
+```bash
+autocleaneeg-pipeline task show ASSR_40Hz
+```
+
+This displays:
+- Task description
+- Configuration parameters
+- Processing steps included
+- Recommended use cases
+- Last update date
+
+### Task File Location
+
+All installed tasks are stored in your workspace:
+
+**Location**: `~/Documents/Autoclean-EEG/tasks/`
+
+**Open in file browser**:
+```bash
+autocleaneeg-pipeline task explore
+```
+
+## Best Practices
+
+### ✅ DO:
+
+<Steps>
+<Step title="Start with Library Tasks">
+Always check the library first before creating custom tasks. Most common paradigms are already available.
+</Step>
+
+<Step title="Update Regularly">
+Run `task update` monthly to get improvements and new features.
+</Step>
+
+<Step title="Use Descriptive Names">
+When installing with custom names, use clear, descriptive names: `ASSR_HighFreq`, `Resting_LongDuration`
+</Step>
+
+<Step title="Check Sync Status">
+Before big processing runs, check `task sync` to ensure you're using the latest versions.
+</Step>
+</Steps>
+
+### ❌ DON'T:
+
+<Warning>
+- **Don't edit library tasks directly**: Always install first, then customize
+- **Don't ignore outdated warnings**: Updates often include important bug fixes
+- **Don't forget to backup**: If you customize a task, keep a backup before updating
+- **Don't mix versions**: If working with collaborators, ensure everyone uses the same task version
+</Warning>
+
+## Integration with TaskWizard
+
+Library tasks can be generated or modified using [TaskWizard](https://taskwizard.autocleaneeg.org):
+
+1. **Start with library task** - Use it as a template in TaskWizard
+2. **Customize online** - Adjust parameters in the web interface
+3. **Download** - Get your customized task file
+4. **Install** - Use `task install <file>` to add it to your workspace
+
+<Card title="Try TaskWizard" icon="wand-magic-sparkles" href="https://taskwizard.autocleaneeg.org">
+  Generate custom task files with an intuitive web interface
+</Card>
+
+## Troubleshooting
+
+<AccordionGroup>
+<Accordion title="Task not found in library" icon="magnifying-glass">
+**Problem**: `task use TaskName` says task not found
+
+**Solutions**:
+1. Update the library index: `task update`
+2. Check spelling: `task list --source=library`
+3. Search for similar names: `task search TaskName`
+4. Task might have been renamed or removed (check release notes)
+</Accordion>
+
+<Accordion title="Can't update - customized task" icon="triangle-exclamation">
+**Problem**: `task sync --update` warns about customized tasks
+
+**Solutions**:
+1. Preview changes: `task diff TaskName`
+2. Backup your version: Copy the file manually or use the auto-backup feature
+3. Update and re-apply customizations: `task sync --update` then `task edit TaskName`
+4. Keep your version: Don't update if your customizations are critical
+</Accordion>
+
+<Accordion title="Library tasks missing after update" icon="wifi-slash">
+**Problem**: Network issues or cache problems
+
+**Solutions**:
+```bash
+# Force refresh the library
+task update
+
+# Check library health
+task diagnose
+
+# View cache status
+task list  # Shows cache age and status
+```
+</Accordion>
+
+<Accordion title="How to contribute to the library?" icon="code-pull-request">
+Want to contribute your task to the library?
+
+1. Test your task thoroughly
+2. Document it clearly
+3. Submit to: https://github.com/cincibrainlab/autocleaneeg-task-registry
+4. Community review process
+5. Added to library in next release!
+
+See the [contribution guidelines](https://github.com/cincibrainlab/autocleaneeg-task-registry/blob/main/CONTRIBUTING.md) for details.
+</Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Common Workflows" icon="list-check" href="/tasks/task-workflows">
+  Learn typical workflows for using library tasks in your research.
+</Card>
+
+<Card title="Customize Tasks" icon="pen-to-square" href="/tasks/task-customization">
+  Learn how to modify library tasks for your specific needs.
+</Card>
+
+<Card title="Command Reference" icon="terminal" href="/tasks/task-management">
+  Complete reference of all task library commands.
+</Card>
+
+<Card title="Troubleshooting" icon="life-ring" href="/tasks/task-troubleshooting">
+  Solutions to common issues and questions.
+</Card>
+</CardGroup>
+
+## Quick Command Reference
+
+| Action | Command |
+|--------|---------|
+| Browse library | `task list --source=library` |
+| Search library | `task search <keyword>` |
+| Install + activate | `task use <name>` 🎯 |
+| Just install | `task install <name>` |
+| Check for updates | `task update` |
+| Check sync status | `task sync` |
+| Auto-update | `task sync --update` |
+| Compare versions | `task diff <name>` |
+| View task details | `task show <name>` |

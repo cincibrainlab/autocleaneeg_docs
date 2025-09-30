@@ -86,20 +86,27 @@ Navigate through 9 intuitive steps:
     Save the generated `task_script.py` file to your local machine
   </Step>
   
-  <Step title="Import into AutoCleanEEG">
-    Use the pipeline's import command to add your custom task:
-    
+  <Step title="Install into AutoCleanEEG">
+    Install your custom task from the downloaded file:
+
     ```bash
-    autocleaneeg-pipeline import task_script.py
+    autocleaneeg-pipeline task install ~/Downloads/task_script.py
     ```
+
+    This copies the task to your workspace and makes it available for use.
   </Step>
-  
-  <Step title="Run Your Custom Pipeline">
-    Your task is now available in the pipeline's task list:
-    
+
+  <Step title="Activate and Run">
+    Set your task as active and start processing:
+
     ```bash
-    autocleaneeg-pipeline task list
     autocleaneeg-pipeline task set YourCustomTask
+    autocleaneeg-pipeline process /path/to/your/data.raw
+    ```
+
+    Or use the one-step command:
+    ```bash
+    autocleaneeg-pipeline task use YourCustomTask
     ```
   </Step>
 </Steps>
@@ -169,25 +176,49 @@ TaskWizard-generated tasks include comprehensive QC features:
 TaskWizard-generated files seamlessly integrate with your existing workflow:
 
 ```bash
-# Import your custom task
-autocleaneeg-pipeline import my_custom_task.py
+# Install your custom task
+autocleaneeg-pipeline task install ~/Downloads/my_custom_task.py
 
 # Verify it's available
 autocleaneeg-pipeline task list
 
-# Set as active task
-autocleaneeg-pipeline task set MyCustomTask
-
-# Process data
-autocleaneeg-pipeline process
+# Activate and process in one step
+autocleaneeg-pipeline task use MyCustomTask
+autocleaneeg-pipeline process /path/to/data.raw
 ```
 
-The generated tasks include all the same features as built-in tasks:
-- **Quality control reporting**
-- **BIDS-compliant outputs**  
-- **Processing logs and metadata**
-- **Automatic backup systems**
+<Tip>
+**Quick start**: Use `task use` after downloading to install and activate in one command!
+</Tip>
+
+The generated tasks include all the same features as built-in and library tasks:
+- **Quality control reporting** with before/after visualizations
+- **BIDS-compliant outputs** for data sharing
+- **Processing logs and metadata** for reproducibility
+- **Automatic backup systems** when you edit them
 
 <Info>
 TaskWizard generates production-ready task files that follow AutoCleanEEG best practices for reproducible research and quality control.
 </Info>
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Getting Started" icon="rocket" href="/tasks/task-getting-started">
+  Learn the basics of working with tasks in AutoCleanEEG.
+</Card>
+
+<Card title="Task Library" icon="books" href="/tasks/task-library">
+  Browse pre-built tasks before creating custom ones.
+</Card>
+
+<Card title="Customization" icon="pen-to-square" href="/tasks/task-customization">
+  Learn how to modify TaskWizard-generated tasks.
+</Card>
+
+<Card title="Command Reference" icon="terminal" href="/tasks/task-management">
+  Complete guide to all task management commands.
+</Card>
+</CardGroup>

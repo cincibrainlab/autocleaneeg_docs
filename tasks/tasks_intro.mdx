@@ -55,6 +55,143 @@ class RestingState_Basic(Task):
         self.run_ica()
         self.create_regular_epochs(export=True)
         self.generate_reports()
-````
+```
 
+---
+
+## Task File Sources
+
+AutoCleanEEG provides tasks from three sources:
+
+<AccordionGroup>
+<Accordion title="📦 Task Library (Recommended)" icon="books">
+Pre-built, validated tasks for common EEG paradigms maintained by the AutoCleanEEG team.
+
+**Examples**: RestingEyesOpen, ASSR_40Hz, MMN_Standard, Chirp_Default
+
+**How to use**:
+```bash
+autocleaneeg-pipeline task use RestingEyesOpen
+```
+
+See [Task Library](/tasks/task-library) for the complete catalog.
+</Accordion>
+
+<Accordion title="🏭 Built-in Tasks" icon="box">
+Core tasks that come pre-installed with AutoCleanEEG.
+
+**How to view**:
+```bash
+autocleaneeg-pipeline task list --source=builtin
+```
+</Accordion>
+
+<Accordion title="🔧 Custom Tasks" icon="pen-to-square">
+Tasks you create or customize yourself, stored in your workspace.
+
+**How to create**:
+- Customize library tasks: [Customization Guide](/tasks/task-customization)
+- Generate with TaskWizard: [TaskWizard](/tasks/taskwizard)
+- Write from scratch using Task API
+
+**Location**: `~/Documents/Autoclean-EEG/tasks/`
+</Accordion>
+</AccordionGroup>
+
+---
+
+## Working with Task Files
+
+### Quick Start
+
+If you're new to tasks, start here:
+
+<Steps>
+<Step title="Browse Available Tasks">
+```bash
+autocleaneeg-pipeline task list --source=library
+```
+</Step>
+
+<Step title="Install and Activate">
+```bash
+autocleaneeg-pipeline task use RestingEyesOpen
+```
+</Step>
+
+<Step title="Process Your Data">
+```bash
+autocleaneeg-pipeline process /path/to/data.raw
+```
+</Step>
+</Steps>
+
+See [Getting Started Guide](/tasks/task-getting-started) for a complete walkthrough.
+
+### Common Commands
+
+| Action | Command |
+|--------|---------|
+| Browse library | `task list --source=library` |
+| Search for tasks | `task search <keyword>` |
+| Install and activate | `task use <name>` |
+| Switch tasks | `task set <name>` |
+| Edit a task | `task edit` |
+| Check health | `task diagnose` |
+
+See [Command Reference](/tasks/task-management) for complete documentation.
+
+---
+
+## Learn More
+
+<CardGroup cols={2}>
+<Card title="Getting Started" icon="rocket" href="/tasks/task-getting-started">
+  New to tasks? Start here with a 5-minute walkthrough.
+</Card>
+
+<Card title="Task Library" icon="books" href="/tasks/task-library">
+  Browse pre-built tasks for common EEG paradigms.
+</Card>
+
+<Card title="Common Workflows" icon="list-check" href="/tasks/task-workflows">
+  Practical examples for typical research scenarios.
+</Card>
+
+<Card title="Customization Guide" icon="pen-to-square" href="/tasks/task-customization">
+  Learn how to modify tasks for your specific needs.
+</Card>
+
+<Card title="TaskWizard" icon="wand-magic-sparkles" href="/tasks/taskwizard">
+  Generate custom tasks with a visual web interface.
+</Card>
+
+<Card title="Command Reference" icon="terminal" href="/tasks/task-management">
+  Complete reference for all task management commands.
+</Card>
+
+<Card title="Troubleshooting" icon="life-ring" href="/tasks/task-troubleshooting">
+  Solutions to common problems and FAQ.
+</Card>
+
+<Card title="Task Class Reference" icon="code" href="/tasks/task_class">
+  Technical reference for task file structure and methods.
+</Card>
+</CardGroup>
+
+---
+
+## Key Concepts
+
+<Tip>
+**Task files are self-contained**: Each `.py` file includes both configuration and processing logic. This makes them easy to share, version control, and reproduce.
+</Tip>
+
+<Info>
+**Most users never write code**: The task library covers 90% of use cases. When needed, customization is as simple as changing a few numbers in the `config` section.
+</Info>
+
+<Warning>
+**Task files are Python code**: While designed to be user-friendly, syntax errors can break tasks. Always test changes on sample data first, and use the `task diagnose` command to check for issues.
+</Warning>
 
