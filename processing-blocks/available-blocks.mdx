@@ -120,6 +120,294 @@ icon: "books"
 
 ---
 
+## Analysis Blocks 🧪
+
+<Card title="source_localization" icon="location-dot" href="/processing-blocks/source-localization/overview">
+  **MNE source localization for projecting sensor-space EEG to cortical sources**
+
+  <Accordion title="Details" icon="info">
+  **Version**: 1.0.0 (Stable)
+
+  **Category**: Analysis
+
+  **Purpose**: Estimate cortical sources from sensor-space EEG using minimum norm estimation (MNE) with fsaverage template
+
+  **Best For**:
+  - ROI-based power spectral density analysis
+  - Functional connectivity studies
+  - Network analysis of brain dynamics
+  - Localization of evoked responses
+  - Source-level time-frequency analysis
+
+  **Limitations**:
+  - Requires high-density EEG (minimum 19 channels, optimal 64+)
+  - Computationally intensive (2-5 minutes per subject)
+  - Uses template brain (fsaverage), not subject-specific anatomy
+  - Large file sizes for STC output (~2.3GB for Raw, ~78MB per epoch)
+
+  **Scientific References**:
+  - Hämäläinen & Ilmoniemi (1994) - Minimum norm estimates
+  - Gramfort et al. (2013) - MNE-Python
+  - Fischl et al. (1999) - fsaverage template
+  - [DOI: 10.1007/BF02512476](https://doi.org/10.1007/BF02512476)
+
+  **Example Tasks**:
+  - `SourceLocalization_Raw` - Continuous data source localization
+  - `SourceLocalization_Epochs` - Epoched data source localization
+
+  **Configuration Example**:
+  ```python
+  "apply_source_localization": {
+      "enabled": True,
+      "value": {
+          "method": "MNE",
+          "lambda2": 0.111,
+          "pick_ori": "normal",
+          "n_jobs": 10,
+          "save_stc": False,  # STC files are large (2.3GB)
+          "convert_to_eeg": True  # 68-channel ROI .set file (3.9MB)
+      }
+  }
+  ```
+
+  **Method Call**: `self.apply_source_localization()`
+
+  **Output**:
+  - SourceEstimate objects (vertex-level, 10,242 vertices per hemisphere)
+  - Optional: 68-channel EEG .set files (Desikan-Killiany ROIs)
+  - ROI metadata (names, positions, hemispheres)
+  - Processing metadata (method, lambda2, timing)
+  </Accordion>
+</Card>
+
+<Card title="source_psd" icon="chart-line" href="/processing-blocks/source-psd/overview">
+  **Source-level power spectral density with ROI averaging using Desikan-Killiany atlas**
+
+  <Accordion title="Details" icon="info">
+  **Version**: 1.0.0 (Stable)
+
+  **Category**: Analysis
+
+  **Purpose**: Calculate frequency-resolved power spectral density from source estimates with anatomical ROI averaging
+
+  **Best For**:
+  - Regional spectral analysis (delta, theta, alpha, beta, gamma)
+  - Comparing power across brain regions
+  - Group-level statistical analyses
+  - Resting-state frequency band analysis
+  - Developmental/aging studies of regional power
+
+  **Limitations**:
+  - Requires prior source localization
+  - Memory intensive (8GB+ recommended)
+  - Computation time: 3-8 minutes per subject
+  - Uses fixed atlas (Desikan-Killiany, 68 ROIs)
+
+  **Scientific References**:
+  - Welch (1967) - PSD estimation method
+  - Desikan et al. (2006) - Anatomical atlas
+  - [DOI: 10.1109/TAU.1967.1161901](https://doi.org/10.1109/TAU.1967.1161901)
+
+  **Example Tasks**:
+  - `SourcePSD_Analysis` - Source-level spectral analysis
+
+  **Configuration Example**:
+  ```python
+  "apply_source_psd": {
+      "enabled": True,
+      "value": {
+          "segment_duration": 80,  # seconds
+          "n_jobs": 4,
+          "generate_plots": True
+      }
+  }
+  ```
+
+  **Method Call**: `self.apply_source_psd()`
+
+  **Output**:
+  - Parquet file: frequency-resolved PSD (0.5-45 Hz) for 68 ROIs
+  - CSV file: band power summaries (delta, theta, alpha, beta, gamma)
+  - PNG visualization: 4-panel diagnostic plot
+  - Processing metadata
+  </Accordion>
+</Card>
+
+<Card title="source_connectivity" icon="diagram-project" href="/processing-blocks/source-connectivity/overview">
+  **Functional connectivity and graph theory metrics from source-localized data**
+
+  <Accordion title="Details" icon="info">
+  **Version**: 1.0.0 (Stable)
+
+  **Category**: Analysis
+
+  **Purpose**: Calculate functional connectivity between brain regions using multiple methods and compute graph theory metrics
+
+  **Best For**:
+  - Brain network characterization
+  - Resting-state connectivity analysis
+  - Network dynamics across frequency bands
+  - Clinical biomarkers (connectivity fingerprints)
+  - Graph theory analysis (clustering, efficiency, modularity)
+
+  **Limitations**:
+  - Very memory intensive (16GB+ recommended)
+  - Long computation time (10-20 minutes per subject)
+  - Requires prior source localization
+  - Multiple connectivity methods increase computation
+
+  **Scientific References**:
+  - Vinck et al. (2011) - Weighted Phase Lag Index
+  - Rubinov & Sporns (2010) - Graph theory metrics
+  - [DOI: 10.1016/j.neuroimage.2010.01.073](https://doi.org/10.1016/j.neuroimage.2010.01.073)
+
+  **Connectivity Methods**:
+  - WPLI: Weighted phase lag index (volume conduction robust)
+  - PLV: Phase locking value
+  - Coherence: Magnitude-squared coherence
+  - PLI: Phase lag index (volume conduction robust)
+  - AEC: Amplitude envelope correlation
+
+  **Graph Metrics**:
+  - Clustering coefficient, Global efficiency
+  - Characteristic path length, Modularity
+  - Small-worldness, Assortativity
+
+  **Configuration Example**:
+  ```python
+  "apply_source_connectivity": {
+      "enabled": True,
+      "value": {
+          "epoch_length": 4.0,  # seconds
+          "n_epochs": 40,
+          "n_jobs": 4
+      }
+  }
+  ```
+
+  **Method Call**: `self.apply_source_connectivity()`
+
+  **Output**:
+  - CSV: Pairwise connectivity (all ROI pairs × methods × bands)
+  - CSV: Full connectivity matrices per method/band
+  - CSV: Graph theory metrics
+  - TXT: Detailed processing log
+  </Accordion>
+</Card>
+
+<Card title="fooof_aperiodic" icon="wave-square" href="/processing-blocks/fooof-aperiodic/overview">
+  **FOOOF aperiodic (1/f) parameter extraction from source-localized data**
+
+  <Accordion title="Details" icon="info">
+  **Version**: 1.0.0 (Stable)
+
+  **Category**: Analysis / Spectral Parameterization
+
+  **Purpose**: Extract aperiodic (1/f background) parameters from vertex-level source estimates using FOOOF algorithm
+
+  **Best For**:
+  - Excitation/inhibition (E/I) balance studies
+  - Developmental neuroscience (aperiodic changes across lifespan)
+  - Disease biomarkers (Alzheimer's, ADHD, schizophrenia)
+  - Medication effects on cortical excitability
+  - Comparing periodic vs aperiodic contributions
+
+  **Limitations**:
+  - Requires source localization first
+  - Memory intensive (2-4GB)
+  - Processing time: 3-5 minutes
+  - Requires broadband spectrum (not narrow-band filtered data)
+  - Minimum 60 seconds of clean data
+
+  **Scientific References**:
+  - Donoghue et al. (2020) - FOOOF method
+  - Voytek & Knight (2015) - Aperiodic activity and cognition
+  - [DOI: 10.1038/s41593-020-00744-x](https://doi.org/10.1038/s41593-020-00744-x)
+
+  **Parameters Extracted**:
+  - Offset: Broadband power level
+  - Exponent: Spectral slope (1/f)
+  - Knee: Knee frequency (if using knee mode)
+  - R²: Goodness of fit
+  - Error: Fitting error
+
+  **Configuration Example**:
+  ```python
+  "apply_fooof_aperiodic": {
+      "enabled": True,
+      "value": {
+          "fmin": 1.0,
+          "fmax": 45.0,
+          "n_jobs": 10,
+          "aperiodic_mode": "knee"
+      }
+  }
+  ```
+
+  **Method Call**: `self.apply_fooof_aperiodic()`
+
+  **Output**:
+  - Parquet: Aperiodic parameters for all 20,484 vertices
+  - CSV: Same data in CSV format
+  - H5: PSD data for verification
+  </Accordion>
+</Card>
+
+<Card title="fooof_periodic" icon="chart-scatter" href="/processing-blocks/fooof-periodic/overview">
+  **FOOOF periodic (oscillatory peak) detection from source-localized data**
+
+  <Accordion title="Details" icon="info">
+  **Version**: 1.0.0 (Stable)
+
+  **Category**: Analysis / Spectral Parameterization
+
+  **Purpose**: Detect and characterize oscillatory peaks (alpha, beta, theta, etc.) after removing aperiodic component
+
+  **Best For**:
+  - Oscillatory biomarker discovery
+  - Peak frequency analysis (individual alpha frequency)
+  - Peak power quantification
+  - Frequency band specificity studies
+  - Separating rhythmic from arrhythmic activity
+
+  **Limitations**:
+  - Same as fooof_aperiodic block
+  - May not detect peaks in all vertices/subjects
+  - Requires sufficient peak prominence
+
+  **Scientific References**:
+  - Donoghue et al. (2020) - FOOOF method
+  - [DOI: 10.1038/s41593-020-00744-x](https://doi.org/10.1038/s41593-020-00744-x)
+
+  **Parameters Extracted (per peak)**:
+  - Center frequency (Hz)
+  - Power (amplitude)
+  - Bandwidth (full-width half-maximum)
+
+  **Configuration Example**:
+  ```python
+  "apply_fooof_periodic": {
+      "enabled": True,
+      "value": {
+          "fmin": 1.0,
+          "fmax": 45.0,
+          "n_jobs": 10,
+          "aperiodic_mode": "knee"
+      }
+  }
+  ```
+
+  **Method Call**: `self.apply_fooof_periodic()`
+
+  **Output**:
+  - Parquet: Detected peaks for all vertices
+  - CSV: Same data in CSV format
+  - Multiple peaks per vertex possible
+  </Accordion>
+</Card>
+
+---
+
 ## Coming Soon 🔄
 
 ### Priority 1: High-Impact Blocks (Q1 2026)
@@ -208,32 +496,6 @@ icon: "books"
 **Planned Timeline**: Q2 2026
 </Accordion>
 
-<Accordion title="connectivity - Functional Connectivity Measures" icon="diagram-project">
-**Network analysis and connectivity metrics**
-
-**Status**: Planned | **Priority**: ⭐⭐⭐
-
-**Purpose**: Calculate functional connectivity and network metrics from EEG data
-
-**Features**:
-- **Phase connectivity**: PLI, wPLI, PLV
-- **Amplitude connectivity**: Coherence, partial coherence
-- **Graph metrics**: Clustering, path length, modularity
-- **Time-resolved**: Dynamic connectivity over time
-- **Source space**: Connectivity in source-reconstructed space
-
-**Use Cases**:
-- Network neuroscience studies
-- Resting-state connectivity
-- Task-related network changes
-- Clinical biomarker research
-
-**Scientific References**:
-- Stam et al. (2007) - Graph theoretical analysis
-- Vinck et al. (2011) - PLI methods
-
-**Planned Timeline**: Q2 2026
-</Accordion>
 </AccordionGroup>
 
 ### Priority 3: Emerging Methods (Q3 2026+)
@@ -261,27 +523,6 @@ icon: "books"
 **Planned Timeline**: Q3 2026
 </Accordion>
 
-<Accordion title="source_localization - EEG Source Estimation" icon="location-dot">
-**Distributed source reconstruction methods**
-
-**Status**: Under Consideration | **Priority**: ⭐⭐
-
-**Purpose**: Estimate cortical sources of EEG activity using distributed inverse solutions
-
-**Features**:
-- **Multiple methods**: MNE, dSPM, sLORETA, eLORETA
-- **Forward models**: Standard head models or individualized
-- **Visualization**: Brain plots and source time courses
-- **ROI analysis**: Extract activity from regions of interest
-
-**Use Cases**:
-- Source-level analysis
-- Localization studies
-- Clinical epilepsy mapping
-- Cognitive neuroscience research
-
-**Planned Timeline**: Q4 2026
-</Accordion>
 
 <Accordion title="microstate - EEG Microstate Analysis" icon="layer-group">
 **Temporal segmentation into quasi-stable states**
@@ -388,27 +629,35 @@ Not sure which block to use? Use this decision tree:
 
 ```mermaid
 graph TD
-    Start{What type of<br/>artifact?}
+    Start{What do you<br/>need?}
 
-    Start -->|Transient, high-amp| Wavelet[wavelet_threshold]
-    Start -->|Stationary, repeating| ICA[advanced_ica]
-    Start -->|Bad epochs| AutoReject[autoreject]
-    Start -->|Time segments| Segment[segment_rejection]
+    Start -->|Remove artifacts| Artifact{Artifact Type}
+    Start -->|Analyze data| Analysis{Analysis Type}
 
-    Start -->|Analysis method?| Analysis{Analysis Type}
+    Artifact -->|Transient, high-amp| Wavelet[wavelet_threshold]
+    Artifact -->|Stationary, repeating| ICA[advanced_ica - planned]
+    Artifact -->|Bad epochs| AutoReject[autoreject]
+    Artifact -->|Time segments| Segment[segment_rejection - planned]
 
-    Analysis -->|Connectivity| Conn[connectivity]
-    Analysis -->|Time-frequency| ITCE[statistical_learning_itc]
-    Analysis -->|Source space| Source[source_localization]
-    Analysis -->|Microstates| Micro[microstate]
+    Analysis -->|Source estimation| SourceLoc[source_localization]
+    SourceLoc -->|Regional PSD?| SourcePSD[source_psd]
+    SourceLoc -->|Connectivity?| SourceConn[source_connectivity]
+    SourceLoc -->|1/f parameters?| FOOOF_A[fooof_aperiodic]
+    SourceLoc -->|Oscillatory peaks?| FOOOF_P[fooof_periodic]
+
+    Analysis -->|Time-frequency| ITC[statistical_learning_itc - planned]
+    Analysis -->|Microstates| Micro[microstate - planned]
 
     style Wavelet fill:#90EE90,stroke:#2F4F2F,stroke-width:2px
+    style AutoReject fill:#90EE90,stroke:#2F4F2F,stroke-width:2px
+    style SourceLoc fill:#90EE90,stroke:#2F4F2F,stroke-width:2px
+    style SourcePSD fill:#90EE90,stroke:#2F4F2F,stroke-width:2px
+    style SourceConn fill:#90EE90,stroke:#2F4F2F,stroke-width:2px
+    style FOOOF_A fill:#90EE90,stroke:#2F4F2F,stroke-width:2px
+    style FOOOF_P fill:#90EE90,stroke:#2F4F2F,stroke-width:2px
     style ICA fill:#e1f5ff,stroke:#0078d4
-    style AutoReject fill:#e1f5ff,stroke:#0078d4
     style Segment fill:#e1f5ff,stroke:#0078d4
-    style Conn fill:#fffacd,stroke:#daa520
-    style ITCE fill:#fffacd,stroke:#daa520
-    style Source fill:#fffacd,stroke:#daa520
+    style ITC fill:#fffacd,stroke:#daa520
     style Micro fill:#fffacd,stroke:#daa520
 ```
 
@@ -429,10 +678,13 @@ graph TD
 
 | Block | Purpose | Input | Output | Computational Cost |
 |-------|---------|-------|--------|-------------------|
-| **statistical_learning_itc** | Time-frequency | Epochs | ITC/ERSP maps | 🐌🐌 |
-| **connectivity** | Networks | Continuous/Epochs | Connectivity matrices | 🐌🐌 |
-| **source_localization** | Source estimation | Continuous/Epochs | Source time courses | 🐌🐌🐌 |
-| **microstate** | State dynamics | Continuous | Microstate sequences | 🐌🐌 |
+| **source_localization** | Source estimation | Raw/Epochs | SourceEstimate objects | 🐌🐌 |
+| **source_psd** | Regional PSD | SourceEstimate | ROI PSD dataframes | 🐌🐌 |
+| **source_connectivity** | Brain networks | SourceEstimate | Connectivity matrices + graphs | 🐌🐌🐌 |
+| **fooof_aperiodic** | 1/f parameters | SourceEstimate | Aperiodic params (20k vertices) | 🐌🐌 |
+| **fooof_periodic** | Oscillatory peaks | SourceEstimate | Peak parameters (frequency, power, BW) | 🐌🐌 |
+| **statistical_learning_itc** | Time-frequency | Epochs | ITC/ERSP maps | 🐌🐌 (planned) |
+| **microstate** | State dynamics | Continuous | Microstate sequences | 🐌🐌 (planned) |
 
 ---
 
@@ -464,6 +716,13 @@ graph TD
 This catalog is regularly updated as new blocks are developed and existing blocks are enhanced. Check the [Task Registry](https://github.com/cincibrainlab/autocleaneeg-task-registry) for the latest `blocks_registry.json` with current versions and status.
 </Note>
 
-**Last Updated**: 2025-09-29
+**Last Updated**: 2025-09-30
 
-**Next Planned Update**: Q1 2026 (advanced_ica and autoreject blocks)
+**Next Planned Update**: Q1 2026 (advanced_ica block)
+
+**Recent Additions** (2025-09-30):
+- ✅ source_localization: MNE source estimation with fsaverage
+- ✅ source_psd: Regional PSD with Desikan-Killiany atlas
+- ✅ source_connectivity: Functional connectivity + graph metrics
+- ✅ fooof_aperiodic: 1/f parameter extraction
+- ✅ fooof_periodic: Oscillatory peak detection
