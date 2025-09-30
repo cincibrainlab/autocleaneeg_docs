@@ -81,6 +81,12 @@
                 "pages": [
                   "processing-blocks/wavelet-threshold/overview"
                 ]
+              },
+              {
+                "group": "AutoReject",
+                "pages": [
+                  "processing-blocks/autoreject/overview"
+                ]
               }
             ]
           },

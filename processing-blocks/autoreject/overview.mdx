@@ -1,0 +1,1010 @@
+---
+title: "AutoReject Block"
+sidebarTitle: "Overview"
+description: "Machine learning-based automated artifact rejection and channel interpolation for EEG epochs"
+icon: "brain-circuit"
+---
+
+<Note>
+**Status**: Stable (v1.0.0) | **Category**: Signal Processing | **Registry**: [GitHub](https://github.com/cincibrainlab/autocleaneeg-task-registry/tree/main/blocks/signal_processing/autoreject)
+</Note>
+
+## What is AutoReject?
+
+**AutoReject** is a machine learning-based method for automated artifact rejection and channel interpolation in EEG epochs. Unlike traditional methods that rely on arbitrary, manually-set thresholds, AutoReject uses cross-validation to learn optimal, data-driven rejection thresholds for each channel individually.
+
+This implementation is based on the autoreject Python package by Jas et al. (2017), which has become a standard tool for objective quality control in EEG research pipelines.
+
+---
+
+## Scientific Background
+
+### How AutoReject Works
+
+AutoReject employs a sophisticated cross-validation approach to determine optimal rejection parameters:
+
+```mermaid
+flowchart TB
+    Epochs[Epoched EEG Data] --> Grid[Parameter Grid]
+    Grid --> CV[Cross-Validation]
+
+    Grid --> N[n_interpolate<br/>[1, 4, 8]]
+    Grid --> C[consensus<br/>[0.1, 0.5, 0.9]]
+
+    CV --> Fold1[Fold 1<br/>Train + Validate]
+    CV --> Fold2[Fold 2<br/>Train + Validate]
+    CV --> Fold3[Fold 3<br/>Train + Validate]
+    CV --> FoldN[Fold K<br/>Train + Validate]
+
+    Fold1 --> Score1[CV Score 1]
+    Fold2 --> Score2[CV Score 2]
+    Fold3 --> Score3[CV Score 3]
+    FoldN --> ScoreN[CV Score K]
+
+    Score1 --> Opt[Select Optimal<br/>Parameters]
+    Score2 --> Opt
+    Score3 --> Opt
+    ScoreN --> Opt
+
+    Opt --> Apply[Apply to Dataset]
+    Apply --> Interp[Interpolate<br/>Bad Channels]
+    Apply --> Reject[Reject<br/>Bad Epochs]
+
+    Interp --> Clean[Cleaned Epochs]
+    Reject --> Clean
+
+    style Epochs fill:#e1f5ff,stroke:#0078d4
+    style CV fill:#fff4e1,stroke:#ff8c00
+    style Opt fill:#e1ffe1,stroke:#00a000
+    style Clean fill:#90EE90,stroke:#2F4F2F,stroke-width:2px
+```
+
+### The AutoReject Algorithm
+
+1. **Parameter Grid Creation**: Define search space for `n_interpolate` (channels to interpolate) and `consensus` (threshold percentages)
+
+2. **Cross-Validation Loop**: For each parameter combination:
+   - Split data into K folds (default: 4-fold CV)
+   - Train on K-1 folds, validate on held-out fold
+   - Calculate reconstruction error
+
+3. **Optimal Selection**: Choose parameter combination with lowest cross-validation error
+
+4. **Data Cleaning**:
+   - Identify bad channels within each epoch
+   - Interpolate bad channels when possible
+   - Reject epochs that still exceed thresholds after interpolation
+
+### Key Advantages
+
+<CardGroup cols={2}>
+<Card title="Data-Driven" icon="chart-line">
+  Thresholds learned from your specific data characteristics, not arbitrary values
+</Card>
+
+<Card title="Per-Channel Optimization" icon="sliders">
+  Different thresholds for different channels account for regional variability
+</Card>
+
+<Card title="Objective & Reproducible" icon="check-double">
+  Reproducible decisions without manual inspection or subjective judgments
+</Card>
+
+<Card title="Repair, Not Just Reject" icon="screwdriver-wrench">
+  Interpolates bad channels when possible instead of always rejecting entire epochs
+</Card>
+</CardGroup>
+
+---
+
+## When to Use AutoReject
+
+### ✅ Ideal For:
+
+<AccordionGroup>
+<Accordion title="Event-Related Potentials (ERPs)" icon="waveform">
+- Preserve as many epochs as possible while maintaining quality
+- Critical for oddball paradigms with rare events
+- Data-driven approach ensures consistent quality across conditions
+
+**Why it works**: Every epoch is precious in ERP studies. AutoReject maximizes retention while objectively ensuring quality.
+</Accordion>
+
+<Accordion title="Multi-Site Studies" icon="globe">
+- Objective, reproducible criteria across labs
+- Eliminates experimenter bias in artifact rejection
+- Facilitates meta-analyses and data sharing
+
+**Why it works**: Manual rejection introduces inter-rater variability. AutoReject provides consistent, defensible criteria.
+</Accordion>
+
+<Accordion title="Large-Scale Analysis" icon="database">
+- Automated QC for hundreds or thousands of datasets
+- Batch processing without manual inspection
+- Consistent quality standards across entire cohort
+
+**Why it works**: Manual inspection doesn't scale. AutoReject provides efficient, consistent quality control.
+</Accordion>
+
+<Accordion title="Publication-Quality Data" icon="file-certificate">
+- Defendable, data-driven rejection criteria
+- Documented and reproducible methodology
+- Industry standard for objective quality control
+
+**Why it works**: Reviewers increasingly expect objective quality control methods with clear justification.
+</Accordion>
+
+<Accordion title="Clinical & Developmental Populations" icon="user-group">
+- Maintains sample size in high-artifact populations
+- Repairs artifacts when possible instead of rejection
+- Reduces bias from selective epoch loss
+
+**Why it works**: High artifact rates in pediatric/clinical data require sophisticated QC that maximizes data retention.
+</Accordion>
+</AccordionGroup>
+
+### ⚠️ Limitations:
+
+<Warning>
+**Less effective for:**
+- **Insufficient epochs**: Requires minimum 20-30 epochs, optimal 100+ for robust cross-validation
+- **Real-time processing**: Computation takes 1-10 minutes per dataset (use simple thresholding for online use)
+- **Continuous data**: Designed for epochs only (use wavelet threshold for continuous data)
+- **Very few epochs**: Manual inspection may be better with <20 epochs
+- **Speed-critical applications**: Fixed thresholds are much faster if acceptable
+</Warning>
+
+---
+
+## Comparison with Other Methods
+
+### AutoReject vs. Manual Rejection
+
+| Aspect | AutoReject | Manual Rejection |
+|--------|------------|------------------|
+| **Threshold** | Data-driven, per-channel | Subjective, experimenter-dependent |
+| **Reproducibility** | 🎯 Perfect (deterministic) | 🎲 Poor (inter-rater variability) |
+| **Time required** | ⚡ 1-10 minutes | 🐌 Hours per dataset |
+| **Scalability** | ✅ Excellent (automated) | ❌ Poor (manual labor) |
+| **Interpolation** | Automatic per epoch | Manual decision |
+| **Documentation** | Logged parameters | Often undocumented |
+| **Best for** | Batch processing, multi-site | Exploratory, small samples |
+
+### AutoReject vs. Fixed Thresholds
+
+| Aspect | AutoReject | Fixed Threshold |
+|--------|------------|-----------------|
+| **Threshold** | Learned from data | Arbitrary (e.g., ±100 μV) |
+| **Per-channel** | ✅ Yes | ❌ Global |
+| **Computation** | 🐌 Slow (1-10 min) | ⚡ Fast (seconds) |
+| **Interpolation** | ✅ Yes | ❌ No |
+| **Data quality** | 🟢 Optimal | 🟡 Acceptable |
+| **Best for** | Final analysis | Quick QC, pilot data |
+
+### AutoReject vs. Wavelet Threshold
+
+| Aspect | AutoReject | Wavelet Threshold |
+|--------|------------|-------------------|
+| **When applied** | Epoched data | Continuous data |
+| **Strategy** | Epoch/channel rejection | Signal reconstruction |
+| **Data loss** | 🟡 Can be substantial | 🟢 Minimal |
+| **Computation** | 🐌 Slow (1-10 min) | ⚡ Fast (seconds) |
+| **Artifacts** | Global epoch quality | Transient artifacts |
+| **Best for** | Epoch-level QC | Continuous data cleaning |
+
+<Tip>
+**Best practice**: Combine methods for comprehensive cleaning:
+1. **Wavelet threshold** on continuous data (removes transients)
+2. **Create epochs**
+3. **AutoReject** on epochs (removes remaining artifacts)
+
+This two-stage approach is often more effective than either method alone.
+</Tip>
+
+---
+
+## Basic Usage
+
+### Minimal Configuration
+
+```python
+from autoclean.core.task import Task
+
+config = {
+    # Enable AutoReject with defaults
+    "apply_autoreject": {
+        "enabled": True,
+        "value": {}  # Uses defaults
+    }
+}
+
+class ERP_With_AutoReject(Task):
+    def run(self):
+        self.import_raw()
+        self.filter_data()
+
+        # Create epochs first
+        self.create_eventid_epochs()
+
+        # Apply AutoReject
+        self.apply_autoreject()
+
+        # Continue with cleaned epochs
+        self.average_epochs(export=True)
+```
+
+### Recommended Configuration
+
+```python
+config = {
+    "apply_autoreject": {
+        "enabled": True,
+        "value": {
+            "n_interpolate": [1, 4, 8],              # Standard montage
+            "consensus": [0.1, 0.25, 0.5, 0.75, 0.9], # Full range
+            "n_jobs": 4,                              # Parallel processing
+            "cv": 4,                                  # 4-fold CV
+            "random_state": 42                        # Reproducibility
+        }
+    }
+}
+```
+
+### Recommended Pipeline Position
+
+```python
+def run(self):
+    # 1. Basic preprocessing
+    self.import_raw()
+    self.resample_data()
+    self.filter_data()              # FILTER FIRST
+    self.trim_edges()
+
+    # 2. Optional: Remove bad channels
+    self.clean_bad_channels()
+
+    # 3. Optional: ICA for stationary artifacts
+    self.run_ica()
+
+    # 4. Rereferencing
+    self.rereference_data()
+
+    # 5. Create epochs
+    self.create_eventid_epochs()    # MUST EPOCH BEFORE AUTOREJECT
+
+    # 6. Apply AutoReject
+    self.apply_autoreject()         # ← AutoReject here
+
+    # 7. Continue with clean data
+    self.average_epochs()
+    self.generate_reports()
+```
+
+<Info>
+**Important**: AutoReject operates on **epoched data only**. Always create epochs (via `create_eventid_epochs()` or `create_regular_epochs()`) before calling `apply_autoreject()`.
+</Info>
+
+---
+
+## Output and Quality Control
+
+### Generated Files
+
+The AutoReject block generates comprehensive outputs automatically:
+
+<Tabs>
+<Tab title="Cleaned Data">
+**Location**: `bids/derivatives/apply_autoreject/`
+
+**File**: `*_autoreject_epo.set`
+
+- Cleaned epoched data with artifacts removed
+- Bad channels interpolated within epochs
+- Metadata preserved in MNE format
+- Ready for downstream analysis
+</Tab>
+
+<Tab title="PDF Report (3 Pages)">
+**Location**: `reports/autoreject/`
+
+**File**: `*_autoreject.pdf`
+
+**Page 1: Overview & Statistics**
+- Rejection statistics (epochs before/after, percentage rejected)
+- Sampling rate, channel count
+- AutoReject parameters used
+- Interpolated channels list
+- Rejection rate pie chart
+- Top interpolated channels bar chart
+- Power Spectral Density comparison (before/after)
+
+**Page 2: Rejection Visualization**
+- Heatmap showing rejection log (good/interpolated/rejected per epoch)
+- Color-coded visualization (green=good, yellow=interpolated, red=rejected)
+- Per-epoch bad channel count bar chart
+- Identifies problematic epochs and channels
+
+**Page 3: Interpolation Heatmap**
+- Channel-by-channel interpolation frequency
+- Top 30 most-interpolated channels
+- Color-coded by frequency (identifies problematic channels)
+- Numeric interpolation counts per channel
+</Tab>
+
+<Tab title="Processing Metadata">
+**Location**: Logged to processing database
+
+**Recorded**:
+```json
+{
+  "initial_epochs": 150,
+  "final_epochs": 142,
+  "rejected_epochs": 8,
+  "rejection_percent": 5.33,
+  "epoch_duration": 1.0,
+  "samples_per_epoch": 250,
+  "total_duration_sec": 142.0,
+  "channel_count": 32,
+  "n_interpolate": [1, 4, 8],
+  "consensus": [0.1, 0.25, 0.5, 0.75, 0.9],
+  "n_jobs": 4,
+  "report_path": "reports/autoreject/sub-01_autoreject.pdf"
+}
+```
+</Tab>
+</Tabs>
+
+### Example Report Interpretation
+
+```
+=== AutoReject Summary ===
+Channels: 32 (EEG)
+Sampling rate: 250 Hz
+Epochs before: 150
+Epochs after: 142
+Rejected: 8 (5.3%)
+
+Interpolated channels (top 5):
+  Fp1: 23 interpolations
+  Fp2: 21 interpolations
+  F7:  12 interpolations
+  F8:  11 interpolations
+  T7:  8 interpolations
+
+Processing time: 4.2 minutes
+```
+
+**Interpretation**:
+- ✅ **5.3% rejection**: Excellent retention rate for typical ERP data
+- ✅ **Frontal channels interpolated**: Expected for eye-related artifacts
+- ✅ **Temporal channels**: Common for muscle artifacts
+- 📊 **Total duration**: 142 seconds of clean data retained
+
+---
+
+## Key Parameters
+
+### Core Parameters
+
+<ParamField path="n_interpolate" type="list[int]" default="[1, 4, 8]">
+  Number of channels to interpolate during parameter search
+
+  **Guidelines by montage**:
+  - **High-density (128+ channels)**: `[1, 4, 8, 16]`
+  - **Standard (32-64 channels)**: `[1, 4, 8]` (recommended)
+  - **Low-density (<32 channels)**: `[1, 2, 4]`
+
+  **Trade-off**: Higher values = more repair attempts, but risk over-interpolation
+
+  **Example**:
+  ```python
+  "n_interpolate": [1, 4, 8]  # Try interpolating 1, 4, or 8 channels
+  ```
+</ParamField>
+
+<ParamField path="consensus" type="list[float]" default="[0.1, 0.25, 0.5, 0.75, 0.9]">
+  Consensus percentages for determining bad epochs (0.0-1.0)
+
+  **Interpretation**:
+  - `0.1`: Liberal/aggressive (10% channels bad → reject epoch)
+  - `0.5`: Moderate/balanced (50% channels bad → reject epoch)
+  - `0.9`: Conservative (90% channels bad → reject epoch)
+
+  **Typical ranges**:
+  - **High-quality data**: `[0.5, 0.75, 0.9]`
+  - **Standard data**: `[0.1, 0.25, 0.5, 0.75, 0.9]` (recommended)
+  - **Noisy data**: `[0.1, 0.25, 0.5]`
+
+  **Example**:
+  ```python
+  "consensus": [0.1, 0.5, 0.9]  # Try liberal, moderate, conservative
+  ```
+</ParamField>
+
+<ParamField path="n_jobs" type="int" default="1">
+  Number of parallel jobs for cross-validation
+
+  **Recommended**: `4` to `-1` (all cores)
+
+  **Performance impact**:
+  - `1`: Single-threaded (slowest, lowest memory)
+  - `4`: 4-core parallel (good balance)
+  - `-1`: All available cores (fastest, highest memory)
+
+  **Example**:
+  ```python
+  "n_jobs": -1  # Use all CPU cores
+  ```
+</ParamField>
+
+### Advanced Parameters
+
+<ParamField path="cv" type="int" default="4">
+  Number of cross-validation folds
+
+  **Range**: `2-10`
+
+  **Guidelines**:
+  - Minimum 2 folds required
+  - 4-5 folds typical (good balance)
+  - More folds = more robust but slower
+  - Requires at least `cv` epochs in dataset
+
+  **Example**:
+  ```python
+  "cv": 4  # 4-fold cross-validation (standard)
+  ```
+</ParamField>
+
+<ParamField path="random_state" type="int | null" default="null">
+  Random seed for reproducible CV splits
+
+  **Default**: `null` (non-reproducible)
+
+  **Recommended**: Set to integer (e.g., `42`) for reproducibility
+
+  **Example**:
+  ```python
+  "random_state": 42  # Reproducible results
+  ```
+</ParamField>
+
+<ParamField path="picks" type="list[str] | null" default="null">
+  Channel names to include
+
+  **Default**: `null` (all EEG channels)
+
+  **When to use**:
+  - Focus quality control on specific regions
+  - Exclude non-EEG channels
+  - Process subset for speed
+
+  **Example**:
+  ```python
+  "picks": ["Fz", "Cz", "Pz", "Oz"]  # Midline channels only
+  ```
+</ParamField>
+
+<ParamField path="thresh_method" type="string" default="bayesian_optimization">
+  Threshold optimization method
+
+  **Options**:
+  - `"bayesian_optimization"`: Default, recommended (slower but optimal)
+  - `"random_search"`: Faster, less optimal
+
+  **Example**:
+  ```python
+  "thresh_method": "random_search"  # Faster for pilot data
+  ```
+</ParamField>
+
+---
+
+## Configuration Examples
+
+### Example 1: Standard ERP Analysis
+
+```python
+config = {
+    "resample_step": {"enabled": True, "value": 250},
+    "filtering": {
+        "enabled": True,
+        "value": {"l_freq": 0.1, "h_freq": 40}
+    },
+
+    # Create epochs for oddball task
+    "epoch_settings": {
+        "enabled": True,
+        "value": {"tmin": -0.2, "tmax": 0.8}
+    },
+
+    # Standard AutoReject configuration
+    "apply_autoreject": {
+        "enabled": True,
+        "value": {
+            "n_interpolate": [1, 4, 8],
+            "consensus": [0.1, 0.25, 0.5, 0.75, 0.9],
+            "n_jobs": 4,
+            "cv": 4,
+            "random_state": 42
+        }
+    }
+}
+
+class OddballERP(Task):
+    def run(self):
+        self.import_raw()
+        self.resample_data()
+        self.filter_data()
+        self.create_eventid_epochs()
+        self.apply_autoreject()
+        self.average_epochs(export=True)
+```
+
+### Example 2: High-Quality Data (Conservative)
+
+```python
+config = {
+    "apply_autoreject": {
+        "enabled": True,
+        "value": {
+            "n_interpolate": [1, 2, 4],        # Less interpolation
+            "consensus": [0.5, 0.75, 0.9],     # More conservative
+            "n_jobs": -1,
+            "cv": 5,                            # More robust CV
+            "random_state": 42
+        }
+    }
+}
+```
+
+### Example 3: Noisy Data (Aggressive)
+
+```python
+config = {
+    "apply_autoreject": {
+        "enabled": True,
+        "value": {
+            "n_interpolate": [1, 4, 8, 16],    # More interpolation options
+            "consensus": [0.1, 0.25, 0.5],     # More aggressive
+            "n_jobs": -1,
+            "cv": 4,
+            "random_state": 42
+        }
+    }
+}
+```
+
+### Example 4: Fast Processing (Pilot Data)
+
+```python
+config = {
+    "apply_autoreject": {
+        "enabled": True,
+        "value": {
+            "n_interpolate": [1, 4],           # Fewer options
+            "consensus": [0.25, 0.5, 0.75],    # Fewer options
+            "cv": 2,                           # Faster CV
+            "n_jobs": -1,
+            "thresh_method": "random_search"   # Faster method
+        }
+    }
+}
+```
+
+### Example 5: Resting State with Regular Epochs
+
+```python
+config = {
+    "resample_step": {"enabled": True, "value": 250},
+    "filtering": {
+        "enabled": True,
+        "value": {"l_freq": 1.0, "h_freq": 40.0}
+    },
+
+    # Create regular 2-second epochs from continuous resting data
+    "epoch_settings": {
+        "enabled": True,
+        "value": {"tmin": -1.0, "tmax": 1.0}
+    },
+
+    "apply_autoreject": {
+        "enabled": True,
+        "value": {
+            "n_interpolate": [1, 4, 8],
+            "consensus": [0.1, 0.5, 0.9],
+            "n_jobs": 4,
+            "cv": 4,
+            "random_state": 42
+        }
+    }
+}
+
+class RestingAutoReject(Task):
+    def run(self):
+        self.import_raw()
+        self.resample_data()
+        self.filter_data()
+        self.trim_edges()
+        self.rereference_data()
+
+        # Create regular epochs for resting data
+        self.create_regular_epochs()
+
+        # Apply AutoReject
+        self.apply_autoreject()
+
+        # Export cleaned epochs
+        self.create_regular_epochs(export=True)
+```
+
+---
+
+## Interpreting Results
+
+### Rejection Rate Guidelines
+
+<AccordionGroup>
+<Accordion title="< 10%: Excellent Quality" icon="check">
+**Interpretation**: Clean data with minimal artifacts
+
+**Action**: Proceed with confidence. No parameter adjustments needed.
+
+**Typical for**: Adult participants, controlled laboratory settings, high-quality montages
+</Accordion>
+
+<Accordion title="10-25%: Moderate Artifacts" icon="exclamation">
+**Interpretation**: Acceptable artifact levels, typical for many studies
+
+**Action**: Review report to ensure artifacts are legitimate. Consider whether rejection is concentrated in specific conditions.
+
+**Typical for**: Pediatric data, clinical populations, naturalistic settings
+</Accordion>
+
+<Accordion title="25-50%: High Artifacts" icon="triangle-exclamation">
+**Interpretation**: Substantial artifact burden
+
+**Action**:
+- Review preprocessing (filtering, bad channel removal)
+- Consider more conservative thresholds
+- Check for equipment issues or participant compliance problems
+- May need to adjust paradigm or instructions
+
+**Typical for**: Infant data, severe movement disorders, poor electrode contact
+</Accordion>
+
+<Accordion title="> 50%: Excessive Artifacts" icon="circle-xmark">
+**Interpretation**: Data quality concerns
+
+**Action**:
+- Review raw data for systematic issues
+- Check preprocessing pipeline
+- Consider alternative methods (manual inspection, wavelet threshold)
+- May indicate equipment malfunction or participant non-compliance
+- Consider excluding participant if quality cannot be improved
+
+**Next steps**: Investigate root causes before proceeding with analysis
+</Accordion>
+</AccordionGroup>
+
+### Interpolated Channels
+
+**Common patterns**:
+- **Fp1, Fp2**: Eye blinks and movements (expected)
+- **F7, F8, T7, T8**: Muscle tension, jaw clenching (common)
+- **Edge channels**: Poor electrode contact (check montage)
+- **Widespread interpolation**: May indicate systematic issues
+
+<Tip>
+**Normal vs. concerning**:
+- ✅ **Normal**: A few frontal/temporal channels interpolated occasionally
+- ⚠️ **Concerning**: Many channels interpolated across all epochs (suggests bad channel should have been removed earlier)
+- 🚨 **Critical**: Same channels interpolated in >50% of epochs (remove these channels and reprocess)
+</Tip>
+
+---
+
+## Troubleshooting
+
+### Not Enough Epochs for CV
+
+<AccordionGroup>
+<Accordion title="Error: Insufficient epochs for cross-validation" icon="circle-xmark">
+**Error message**: `ValueError: Need at least 4 epochs for 4-fold cross-validation`
+
+**Cause**: Too few epochs for the specified number of CV folds
+
+**Solutions**:
+```python
+# Option 1: Reduce CV folds
+"cv": 2  # Use 2-fold CV
+
+# Option 2: Create more epochs (if using regular epochs)
+"epoch_settings": {
+    "value": {"tmin": -0.5, "tmax": 0.5}  # Shorter epochs = more of them
+}
+
+# Option 3: Use simpler threshold-based rejection instead
+"threshold_rejection": {
+    "enabled": True,
+    "volt_threshold": {"eeg": 0.000125}
+}
+```
+</Accordion>
+</AccordionGroup>
+
+### High Rejection Rate (>50%)
+
+<AccordionGroup>
+<Accordion title="Too many epochs rejected" icon="triangle-exclamation">
+**Causes**:
+1. Poor data quality (check raw data)
+2. Too aggressive consensus thresholds
+3. Inadequate preprocessing (filtering, bad channels)
+4. Line noise not removed
+5. Insufficient bad channel removal before AutoReject
+
+**Solutions**:
+```python
+# More conservative thresholds
+"consensus": [0.5, 0.75, 0.9]
+
+# Less interpolation
+"n_interpolate": [1, 2, 4]
+
+# Review preprocessing steps
+# 1. Apply proper filtering first
+self.filter_data()  # Including notch filter!
+
+# 2. Remove obvious bad channels before AutoReject
+self.clean_bad_channels()
+
+# 3. Check for DC drifts
+# 4. Consider ICA before AutoReject
+self.run_ica()
+```
+</Accordion>
+</AccordionGroup>
+
+### Slow Processing
+
+<AccordionGroup>
+<Accordion title="AutoReject taking too long" icon="clock">
+**Causes**:
+- Large parameter grid
+- Many epochs/channels
+- Single-threaded processing
+- Many CV folds
+
+**Solutions**:
+```python
+# Use more CPU cores
+"n_jobs": -1  # All cores
+
+# Reduce parameter grid
+"n_interpolate": [1, 4],         # 2 options instead of 3
+"consensus": [0.25, 0.5, 0.75],  # 3 options instead of 5
+
+# Reduce CV folds
+"cv": 2,  # 2-fold CV instead of 4
+
+# Faster optimization method
+"thresh_method": "random_search"  # Instead of bayesian_optimization
+
+# For pilot data: Use fixed thresholds instead
+"threshold_rejection": {
+    "enabled": True,
+    "volt_threshold": {"eeg": 0.000125}
+}
+```
+</Accordion>
+</AccordionGroup>
+
+### Memory Errors
+
+<AccordionGroup>
+<Accordion title="Out of memory during processing" icon="memory">
+**Causes**:
+- Too many parallel jobs
+- Large epochs (long duration)
+- High-density montages
+- Many CV folds
+
+**Solutions**:
+```python
+# Reduce parallel jobs
+"n_jobs": 2  # Instead of -1
+
+# Reduce CV folds
+"cv": 2  # Instead of 4 or 5
+
+# Process fewer channels at once
+"picks": ["Fz", "Cz", "Pz"]  # Subset for testing
+
+# Shorter epochs if possible
+"epoch_settings": {
+    "value": {"tmin": -0.5, "tmax": 0.5}  # Instead of -1.0 to 1.0
+}
+
+# Downsample if appropriate
+"resample_step": {"enabled": True, "value": 250}  # Instead of 500+
+```
+</Accordion>
+</AccordionGroup>
+
+---
+
+## Integration with Other Processing Steps
+
+### Combining with ICA
+
+**Option A: ICA before AutoReject** (recommended for eye artifacts)
+```python
+def run(self):
+    self.filter_data()
+    self.run_ica()              # Remove eye movements, heartbeat
+    self.create_epochs()
+    self.apply_autoreject()     # Clean remaining artifacts
+```
+
+**Option B: AutoReject before ICA** (alternative)
+```python
+def run(self):
+    self.filter_data()
+    self.create_epochs()
+    self.apply_autoreject()     # Remove bad epochs first
+    # Note: Would need to convert back to continuous for ICA
+```
+
+<Tip>
+**Recommendation**: ICA before AutoReject is generally preferred. ICA handles stationary artifacts (eye movements, heartbeat), while AutoReject handles remaining transient artifacts in epochs.
+</Tip>
+
+### Combining with Wavelet Threshold
+
+```python
+def run(self):
+    self.filter_data()
+
+    # Wavelet removes transients in continuous data
+    self.apply_wavelet_threshold()
+
+    # Create epochs
+    self.create_epochs()
+
+    # AutoReject handles epoch-level QC
+    self.apply_autoreject()
+```
+
+### Complete Processing Pipeline
+
+```python
+def run(self):
+    # 1. Import and basic preprocessing
+    self.import_raw()
+    self.resample_data()
+
+    # 2. Filtering (critical step)
+    self.filter_data()              # Bandpass + notch
+
+    # 3. Remove transient artifacts (optional)
+    self.apply_wavelet_threshold()
+
+    # 4. Channel quality control
+    self.clean_bad_channels()       # Remove obvious bad channels
+
+    # 5. Stationary artifact removal
+    self.run_ica()                  # Eye movements, heartbeat
+
+    # 6. Rereferencing
+    self.rereference_data()
+
+    # 7. Epoching
+    self.create_eventid_epochs()    # REQUIRED before AutoReject
+
+    # 8. Epoch-level quality control
+    self.apply_autoreject()         # ← AutoReject here
+
+    # 9. Final processing
+    self.average_epochs(export=True)
+    self.generate_reports()
+```
+
+---
+
+## Scientific References
+
+### Primary Papers
+
+<AccordionGroup>
+<Accordion title="Jas et al. (2017) - NeuroImage" icon="book">
+**Jas, M., Engemann, D. A., Bekhti, Y., Raimondo, F., & Gramfort, A. (2017)**.
+Autoreject: Automated artifact rejection for MEG and EEG data.
+*NeuroImage*, 159, 417-429.
+
+[DOI: 10.1016/j.neuroimage.2017.06.030](https://doi.org/10.1016/j.neuroimage.2017.06.030)
+
+**Key contribution**: Introduced the AutoReject algorithm with cross-validation for optimal parameter selection. Demonstrated superior performance compared to manual and fixed-threshold methods.
+</Accordion>
+
+<Accordion title="Jas et al. (2016) - PRNI" icon="book">
+**Jas, M., Engemann, D. A., Raimondo, F., Bekhti, Y., & Gramfort, A. (2016)**.
+Automated rejection and repair of bad trials in MEG/EEG.
+*2016 International Workshop on Pattern Recognition in Neuroimaging (PRNI)*, 1-4.
+
+[DOI: 10.1109/PRNI.2016.7552336](https://doi.org/10.1109/PRNI.2016.7552336)
+
+**Key contribution**: Early presentation of the AutoReject concept with focus on channel interpolation strategy.
+</Accordion>
+</AccordionGroup>
+
+### Software & Documentation
+
+**AutoReject Package**
+- Official documentation: [https://autoreject.github.io/](https://autoreject.github.io/)
+- GitHub repository: [https://github.com/autoreject/autoreject](https://github.com/autoreject/autoreject)
+- PyPI package: `pip install autoreject`
+
+**MNE-Python Integration**
+- MNE-Python: [https://mne.tools/](https://mne.tools/)
+- AutoReject tutorial: [https://mne.tools/stable/auto_tutorials/preprocessing/50_artifact_correction_rejection.html](https://mne.tools/stable/auto_tutorials/preprocessing/50_artifact_correction_rejection.html)
+
+---
+
+## Learn More
+
+<CardGroup cols={3}>
+<Card title="Getting Started" icon="rocket" href="/processing-blocks/getting-started">
+  Quick start guide for processing blocks
+</Card>
+
+<Card title="Wavelet Threshold" icon="wave-square" href="/processing-blocks/wavelet-threshold/overview">
+  Complementary continuous data cleaning method
+</Card>
+
+<Card title="Task Library" icon="book-open" href="/tasks/task-library">
+  Pre-built tasks using AutoReject
+</Card>
+</CardGroup>
+
+---
+
+## Summary
+
+<Tip>
+**AutoReject** is the gold standard for objective, automated epoch quality control in EEG research. It eliminates subjective thresholding and provides data-driven, reproducible artifact rejection with channel interpolation.
+</Tip>
+
+<Info>
+**Start with defaults** and adjust based on the generated PDF report. The recommended configuration works well for most standard EEG datasets with 32-64 channels and 100+ epochs.
+</Info>
+
+<Warning>
+**Always preprocess first**: Apply filtering, bad channel removal, and ICA before AutoReject. Good preprocessing maximizes AutoReject's effectiveness and minimizes unnecessary epoch rejection.
+</Warning>
+
+---
+
+## Version History
+
+- **1.0.0** (2025-09-29): Initial release
+  - Core AutoReject implementation with cross-validation
+  - Channel interpolation and epoch rejection
+  - Comprehensive 3-page PDF reports
+  - Rejection log visualization and interpolation heatmaps
+  - Integration with AutoCleanEEG processing pipeline
+  - Metadata logging and BIDS-compatible outputs
+
+---
+
+## Need Help?
+
+<CardGroup cols={2}>
+<Card title="GitHub Issues" icon="github" href="https://github.com/cincibrainlab/autocleaneeg_pipeline/issues">
+  Report bugs or request features
+</Card>
+
+<Card title="Community Discussions" icon="comments" href="https://github.com/cincibrainlab/autocleaneeg_pipeline/discussions">
+  Ask questions and share experiences
+</Card>
+</CardGroup>

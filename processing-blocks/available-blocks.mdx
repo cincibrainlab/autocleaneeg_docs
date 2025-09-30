@@ -61,6 +61,63 @@ icon: "books"
   </Accordion>
 </Card>
 
+<Card title="autoreject" icon="brain-circuit" href="/processing-blocks/autoreject/overview">
+  **Machine learning-based automated artifact rejection and channel interpolation**
+
+  <Accordion title="Details" icon="info">
+  **Version**: 1.0.0 (Stable)
+
+  **Category**: Signal Processing
+
+  **Purpose**: Objective, data-driven rejection of bad epochs and channels using cross-validation, with automatic bad channel interpolation
+
+  **Best For**:
+  - Event-related potentials (ERPs) where every epoch matters
+  - Multi-site studies requiring reproducible criteria
+  - Large-scale analysis with automated QC
+  - Publication-quality data with defendable rejection criteria
+  - Clinical/developmental populations with high artifacts
+
+  **Limitations**:
+  - Requires sufficient epochs (minimum 20-30, optimal 100+)
+  - Computationally intensive (1-10 minutes per dataset)
+  - Only for epoched data (not continuous)
+  - Memory requirements scale with epochs × channels × CV folds
+
+  **Scientific References**:
+  - Jas et al. (2017) - AutoReject method
+  - Jas et al. (2016) - Automated rejection and repair
+  - [DOI: 10.1016/j.neuroimage.2017.06.030](https://doi.org/10.1016/j.neuroimage.2017.06.030)
+
+  **Example Tasks**:
+  - `AutorejectDemo_Resting` - Resting-state with regular epochs
+  - `ERP_With_AutoReject` - Event-related potential cleaning
+  - `OddballAutoReject` - Oddball paradigm with AutoReject
+
+  **Configuration Example**:
+  ```python
+  "apply_autoreject": {
+      "enabled": True,
+      "value": {
+          "n_interpolate": [1, 4, 8],
+          "consensus": [0.1, 0.25, 0.5, 0.75, 0.9],
+          "n_jobs": 4,
+          "cv": 4,
+          "random_state": 42
+      }
+  }
+  ```
+
+  **Method Call**: `self.apply_autoreject()`
+
+  **Output**:
+  - Cleaned epoched data with bad epochs removed
+  - Bad channels interpolated within epochs
+  - 3-page PDF report with rejection statistics, PSD comparisons, interpolation heatmaps
+  - Comprehensive processing metadata
+  </Accordion>
+</Card>
+
 ---
 
 ## Coming Soon 🔄
@@ -93,33 +150,6 @@ icon: "books"
 - Hyvärinen (1999) - FastICA
 - Ablin et al. (2018) - Picard
 - Palmer et al. (2011) - AMICA
-
-**Planned Timeline**: Q1 2026
-</Accordion>
-
-<Accordion title="autoreject - Data-Driven Epoch Rejection" icon="filter">
-**Automated bad epoch and channel detection** (estimated 315 lines)
-
-**Status**: Planned | **Priority**: ⭐⭐⭐⭐
-
-**Purpose**: Objective, data-driven rejection of bad epochs and channels using cross-validation
-
-**Features**:
-- **Cross-validation based**: Learns optimal thresholds from data
-- **Local vs. global rejection**: Channel-specific or epoch-wide decisions
-- **Interpolation decisions**: Automatic bad channel interpolation
-- **Transparent criteria**: Explainable rejection decisions
-- **Integration with MNE**: Leverages `autoreject` Python package
-
-**Use Cases**:
-- Objective quality control without manual inspection
-- Large-scale batch processing
-- Reproducible rejection criteria
-- Developmental data with variable quality
-
-**Scientific References**:
-- Jas et al. (2017) - AutoReject method
-- [DOI: 10.1016/j.neuroimage.2017.06.030](https://doi.org/10.1016/j.neuroimage.2017.06.030)
 
 **Planned Timeline**: Q1 2026
 </Accordion>
