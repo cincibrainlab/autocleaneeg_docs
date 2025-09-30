@@ -1,75 +1,106 @@
 ---
-title: "Derivatives: Intermediate Pipeline Steps"
-sidebarTitle: "Folder: Intermediate Steps"
-description: "Learn how AutoCleanEEG dynamically exports step-by-step intermediate outputs, depending on the preprocessing stages you enable."
+title: "Step-by-Step Derivatives"
+sidebarTitle: "Processing Steps"
+description: "Understand how AutoCleanEEG saves your data after each processing step"
 ---
 
-## The `intermediate/` Folder
+## Derivatives: Your Processing History
 
-The `intermediate/` folder is where AutoCleanEEG saves **step-by-step snapshots** of your preprocessing pipeline.
-These folders are **dynamically generated** — only the steps you enable and configure for export will appear here.
+AutoCleanEEG saves your data after each major processing step in numbered folders inside `bids/derivatives/`. This creates a complete audit trail from raw input to cleaned output.
 
-For example, if you skip ICA or don’t export filtering outputs, the corresponding step folder (`08_ica/` or `03_filter/`) won’t exist in your run.
+Each folder represents one operation in your pipeline—filtering, ICA, epoching, etc. You can open any step to see exactly what your data looked like at that moment.
 
-### Example Layout
+## The Numbered Folders
 
 ```
-intermediate/
-├── 01_import
-├── 02_resample
-├── 03_filter
-├── 04_trim
-├── 05_bad_channels
-├── 06_rereference
-├── 07_artifact_detection
-├── 08_ica
-├── 09_pre_ica
-├── 10_epochs
-├── 11_drop_bad_epochs
-├── 12_epochs
-├── 13_gfp_clean
-└── 14_comp
+bids/derivatives/
+├── 01_import/           # Data right after loading
+├── 02_resample/         # Resampled to target rate
+├── 03_drop_eog_channels/ # EOG channels removed
+├── 04_trim/             # Edge artifacts trimmed
+├── 05_filter/           # Filtering applied
+├── 06_bad_channels/     # Bad channels removed
+├── 07_rereference/      # Rereferencing applied
+├── 08_artifact_detection/ # Artifacts annotated
+├── 09_ica/              # ICA applied
+├── 10_pre_ica/          # Before ICA snapshot
+├── 11_epochs/           # Initial epochs created
+├── 12_drop_bad_epochs/  # Bad epochs removed
+├── 13_epochs/           # Final epochs
+├── 14_gfp_clean/        # GFP cleaning applied
+└── 15_comp/             # Final compiled output
 ```
-### How It Works
 
-* **Step numbering** reflects the pipeline order.
-* **Exported steps only**: If you request export after filtering but not after trimming, you’ll see `03_filter/` but not `04_trim/`.
-* **Flexible granularity**: This lets you save just the checkpoints you care about (for inspection or debugging), while avoiding unnecessary disk usage.
+The numbering shows the processing order. Lower numbers come earlier in the pipeline.
 
-### Step Highlights
+## What's Inside Each Folder
 
-| Folder                | Purpose                                                                    |
-| --------------------- | -------------------------------------------------------------------------- |
-| **01\_import**        | Original raw data converted into BIDS-compatible format.                   |
-| **02\_resample**      | Data resampled (e.g., 1000 Hz → 250 Hz).                                   |
-| **03\_filter**        | Filtered signals (HP, LP, notch).                                          |
-| **05\_bad\_channels** | Snapshot of data after noisy channels are dropped.                         |
-| **08\_ica**           | Data after ICA decomposition and component removal.                        |
-| **10\_epochs**        | Segmented data into epochs.                                                |
-| **13\_gfp\_clean**    | Epochs cleaned with Global Field Power metrics.                            |
-| **14\_comp**          | Final compiled output before writing to `derivatives/` and `final_files/`. |
+Each folder contains EEGLAB `.set` files—one for each recording you processed:
 
-<Info>
-### ICA Export Format
+```
+09_ica/
+├── recording1_ica_raw.set
+├── recording2_ica_raw.set
+└── recording3_ica_raw.set
+```
 
-The **ICA stage** is exported in both **EEGLAB (.set)** and **MNE (.fif)** formats.  
-This is a special case:
+These are complete EEG datasets you can open in EEGLAB or MNE-Python to inspect the data at that processing stage.
 
-- In **EEGLAB**, ICA weights are stored directly inside the `.set` dataset.  
-- In **MNE-Python**, ICA weights are stored separately from the EEG data (the `.fif` ICA file).  
+## Key Processing Steps
 
-This separation allows you to:
-- Reapply ICA weights later to the same dataset.  
-- Redo component artifact removal and continue the pipeline from that point (feature coming soon).  
-</Info>
+| Step | What Happened |
+|------|---------------|
+| **01_import** | Your original data, converted to pipeline format |
+| **05_filter** | High-pass, low-pass, and notch filters applied |
+| **06_bad_channels** | Problematic electrodes identified and removed |
+| **09_ica** | Artifacts removed using Independent Component Analysis |
+| **13_epochs** | Data segmented into analysis-ready time windows |
+| **15_comp** | Final cleaned output, ready for analysis |
 
+## ICA Files: Special Case
 
-### Why It Matters
+The `09_ica/` step contains both EEGLAB `.set` files and MNE `.fif` files:
 
-* **Customizable exports**: You decide which steps produce saved files.
-* **Debug-friendly**: Inspect any stage of the pipeline without re-running the entire process.
-* **Storage-aware**: Avoid large intermediate folders by disabling exports for steps you don’t need.
+**EEGLAB format (.set):** ICA weights embedded directly in the dataset
 
-<Info>
-Intermediate folders are **optional checkpoints**. You can enable or disable exports per step in your task configuration. Once validated, these folders can be safely deleted to reclaim space.
-</Info>
+**MNE format (.fif):** ICA weights saved separately (also in the `ica/` folder at the root level)
+
+This dual format lets you work with either EEGLAB or MNE-Python tools, and allows you to re-apply ICA weights to data if needed.
+
+## Dynamic Step Generation
+
+Your specific pipeline might not create all these folders. The steps that appear depend on your task configuration:
+
+- Skip ICA → no `09_ica/` folder
+- Skip trimming → no `04_trim/` folder
+- Add custom processing block → additional numbered folder appears
+
+Only the operations you actually run create folders.
+
+## Why This Matters
+
+**Debugging:** When results look unexpected, trace back through the steps to find where things changed.
+
+**Verification:** Confirm each operation did what you expected by comparing before/after folders.
+
+**Learning:** See the exact effect of each preprocessing operation on your data.
+
+**Documentation:** Complete record of transformations for methods sections and reproducibility.
+
+## Managing Storage
+
+These derivative files use disk space. After confirming your results look good:
+
+**Essential (keep these):**
+- Final data in `exports/` folder
+- BIDS subject folders (`bids/sub-*/`)
+- All reports and logs
+
+**Optional (can delete to save space):**
+- The numbered derivatives folders (01_import through 15_comp)
+
+Your final cleaned data is safe in multiple locations. The derivatives are primarily for verification and debugging.
+
+<Tip>
+If you need to check an intermediate step later, you can always re-run the pipeline. The processing is fast, and the task file with all parameters is saved in the `status/` folder.
+</Tip>

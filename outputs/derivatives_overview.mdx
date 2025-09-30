@@ -1,45 +1,86 @@
 ---
-title: "Derivatives Overview"
+title: "Derivatives: Step-by-Step Processing"
 sidebarTitle: "Folder: Derivatives"
-description: "Learn how AutoCleanEEG stores processed outputs in the BIDS derivatives folder, including metadata, intermediate files, and subject-level results."
+description: "Understand the numbered processing steps saved in the BIDS derivatives folder"
 ---
 
 ## The `derivatives/` Folder
 
-The `derivatives/` folder follows the [BIDS derivatives standard](https://bids.neuroimaging.io/), where processed data are kept separate from raw-like files.
-Each pipeline version creates its own subfolder, ensuring that outputs remain traceable to the exact software and parameters used.
+The `bids/derivatives/` folder contains numbered subfolders representing each step of your preprocessing pipeline. Each folder saves the data exactly as it exists after that particular operation.
 
-### Example Layout
+This gives you a complete record of how your data was transformed from raw input to final cleaned output.
+
+## Step-by-Step Structure
 
 ```
-bids/
-└── derivatives/
-    └── autoclean-v2.2.1/
-        ├── dataset_description.json
-        ├── metadata/          (pipeline-specific metadata)
-        ├── intermediate/      (temporary / intermediate outputs)
-        ├── logs/              (detailed run logs)
-        └── sub-451559/        (subject-level cleaned outputs)
+bids/derivatives/
+├── dataset_description.json      # BIDS derivatives metadata
+├── 01_import/                    # Data right after import
+├── 02_resample/                  # Resampled to target rate (e.g., 250 Hz)
+├── 03_drop_eog_channels/         # EOG channels removed
+├── 04_trim/                      # Edge artifacts trimmed
+├── 05_filter/                    # Filters applied (HP, LP, notch)
+├── 06_bad_channels/              # Bad channels identified and removed
+├── 07_rereference/               # Data rereferenced (e.g., average reference)
+├── 08_artifact_detection/        # Artifacts annotated
+├── 09_ica/                       # ICA artifact removal applied
+├── 10_pre_ica/                   # Snapshot before ICA
+├── 11_epochs/                    # Initial epoching
+├── 12_drop_bad_epochs/           # Bad epochs removed
+├── 13_epochs/                    # Final epoching
+├── 14_gfp_clean/                 # Global Field Power cleaning
+└── 15_comp/                      # Final compiled output
 ```
 
-### Key Components
+## What's in Each Folder
 
-| Item                           | Purpose                                                                                                             |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
-| **`autoclean-v2.2.1/`**        | Pipeline-specific derivatives folder, versioned for traceability.                                                   |
-| **`dataset_description.json`** | Required by BIDS derivatives. Documents the pipeline, version, and references.                                      |
-| **`metadata/`**                | Stores additional pipeline metadata (e.g., preprocessing settings, QC parameters).                                  |
-| **`intermediate/`**            | Temporary or step-wise files (not always needed for downstream analyses, but useful for debugging).                 |
-| **`logs/`**                    | Processing logs at the derivative level, providing more detail than the top-level workspace logs.                   |
-| **`sub-<ID>/`**                | Subject-level cleaned outputs, in BIDS derivative format (e.g., artifact-corrected EEG, ICA solutions, epoch sets). |
+Each numbered folder contains EEGLAB `.set` files for every recording processed. The files are named with the original filename plus the step name:
 
-### Why Derivatives Matter
+```
+05_filter/
+├── subject1_filter_raw.set       # Subject 1 after filtering
+└── subject2_filter_raw.set       # Subject 2 after filtering
+```
 
-* **Traceability**: Every derivative is tied to a pipeline version (`autoclean-v2.2.1`), making analyses reproducible.
-* **Separation of concerns**: Raw-like BIDS inputs are preserved, while processed data live here.
-* **Compatibility**: Other BIDS-aware tools know to look in `derivatives/` for cleaned or secondary outputs.
-* **Debugging**: `metadata/`, `logs/`, and `intermediate/` help you track down how results were produced.
+## Common Processing Steps
 
-<Info>
-If disk space is limited, you can archive or delete the **`intermediate/`** folder after successful runs. The **final cleaned outputs** will remain in `sub-<ID>/`.
-</Info>
+| Step | Name | What It Does |
+|------|------|--------------|
+| **01** | import | Loads raw data into pipeline format |
+| **02** | resample | Changes sampling rate (typically to 250 Hz) |
+| **05** | filter | Applies high-pass, low-pass, and notch filters |
+| **06** | bad_channels | Removes problematic electrodes |
+| **07** | rereference | Changes reference (usually to average) |
+| **09** | ica | Removes artifacts using ICA |
+| **11-13** | epochs | Segments data into analysis windows |
+| **15** | comp | Final cleaned and ready-to-analyze data |
+
+## Why Keep Derivatives?
+
+**Debugging:** If something looks wrong in your final data, you can check intermediate steps to see where the issue started.
+
+**Verification:** Want to see exactly what the filter did? Compare `04_trim/` with `05_filter/`.
+
+**Reprocessing:** You can restart the pipeline from any step if you want to change parameters later.
+
+**Documentation:** Complete record of every transformation applied to your data.
+
+## Storage Considerations
+
+These intermediate files consume disk space. Once you've verified your results:
+
+✅ **Keep:** Final outputs in `exports/` and `bids/sub-*/eeg/`
+✅ **Keep:** Reports in `reports/` and logs
+⚠️ **Optional:** The numbered derivatives folders can be deleted to save space
+
+The final cleaned data in the main BIDS structure and exports folder is preserved, so you can safely remove derivatives after confirming results.
+
+## Dynamic Step Numbering
+
+Not all tasks use all steps. Your pipeline might skip certain operations or add custom steps. The numbering reflects the actual sequence of operations in your specific task:
+
+- If you skip ICA, you won't have `09_ica/`
+- If you don't trim edges, `04_trim/` won't appear
+- Custom processing blocks add their own numbered folders
+
+This means the exact folders and numbering depend on your task configuration.

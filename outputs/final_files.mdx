@@ -1,35 +1,83 @@
 ---
-title: "Final Files Folder"
-sidebarTitle: "Folder: Final Files"
-description: "Learn about the convenience folder that collects cleaned and epoched EEG outputs along with processing logs."
+title: "Exports: Analysis-Ready Files"
+sidebarTitle: "Folder: Exports"
+description: "Your cleaned, epoched data ready to analyze immediately"
 ---
 
-## The `final_files/` Folder
+## The `exports/` Folder
 
-Although not part of the strict [BIDS standard](https://bids.neuroimaging.io/), AutoCleanEEG provides a **`final_files/`** folder inside the `bids/` directory.
-
-This folder is meant as a **convenience export**: it gathers the most useful processed outputs in one place, so users can quickly start analysis without digging through derivatives or raw-like structures.
+The `exports/` folder contains your final cleaned data in a format you can immediately load into analysis scripts. No need to navigate nested BIDS directories—grab these files and start analyzing.
 
 ```
-bids/
-└── final_files/
-    ├── 128_Rest_EyesOpen_D1004_processing_log.csv   (CSV summary of preprocessing)
-    ├── 128_Rest_EyesOpen_D1004_processing.log       (detailed step log)
-    └── 128_Rest_EyesOpen_D1004_comp_epo.set         (cleaned & epoched EEG dataset)
+exports/
+├── recording1_comp_epo.set           # Cleaned epochs (EEGLAB)
+├── recording1_processing_log.csv     # Processing record
+├── recording2_comp_epo.set           # Another file
+└── recording2_processing_log.csv     # Its processing log
 ```
 
-This shows the three main items that typically appear:
-* **`*_processing_log.csv`** → concise summary table of the preprocessing run
-* **`*_processing.log`** → step-by-step log output
-* **`*_comp_epo.set`** → final, artifact-cleaned and epoched EEG dataset (EEGLAB format)
+For each recording, you get:
+* **`*_comp_epo.set`** - Final cleaned, epoched EEG data (EEGLAB format)
+* **`*_processing_log.csv`** - Complete processing record (filters, bad channels, ICA, etc.)
 
-### Why it exists
+## File Format: EEGLAB
 
-* **Convenience**: Many users just want the “final” artifact-cleaned, epoched dataset without extra navigation.
-* **Reproducibility**: Logs are included alongside the cleaned files for transparency.
-* **Compatibility**: Outputs are still linked to the BIDS dataset, but collected in one easy-to-access folder.
+The `.set` files work with all major EEG tools:
 
-<Info>
-This folder is **not BIDS-compliant** and may not be recognized by external BIDS validators.  
-It is provided purely for user convenience. For strict BIDS workflows, always use the `sub-*/` and `derivatives/` folders instead.
-</Info>
+**EEGLAB (MATLAB):**
+```matlab
+EEG = pop_loadset('recording1_comp_epo.set');
+```
+
+**MNE-Python:**
+```python
+epochs = mne.io.read_epochs_eeglab('recording1_comp_epo.set')
+```
+
+**FieldTrip, BrainVision Analyzer, and most EEG software** also support EEGLAB format.
+
+## What's in the Processing Log
+
+Each `.csv` file records exactly what was done to that recording:
+- Filter settings (high-pass, low-pass, notch frequencies)
+- Bad channels identified and removed
+- ICA components removed
+- Epochs created and rejected
+- Data quality metrics
+
+Open it in Excel, Python (pandas), or R to review processing details or generate quality reports.
+
+## File Naming
+
+`recording1_comp_epo.set`:
+- **comp** = "compiled/complete" - final processed data
+- **epo** = "epochs" - segmented time windows
+
+This naming clearly identifies files as final, analysis-ready outputs.
+
+## Quick Analysis Examples
+
+**Python (MNE):**
+```python
+import mne
+epochs = mne.io.read_epochs_eeglab('recording1_comp_epo.set')
+evoked = epochs.average()
+evoked.plot()
+```
+
+**MATLAB (EEGLAB):**
+```matlab
+EEG = pop_loadset('recording1_comp_epo.set');
+figure; plot(mean(EEG.data, 3));
+```
+
+## Relationship to BIDS Structure
+
+The same cleaned data exists in multiple places:
+- **exports/** - Quick access (here)
+- **bids/derivatives/15_comp/** - Full processing chain
+- **bids/sub-*/eeg/** - BIDS-formatted version
+
+Use whichever is most convenient:
+- **exports/** for fast analysis
+- **bids/** for BIDS tools or data sharing

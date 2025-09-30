@@ -21,33 +21,73 @@ To see how subjects are linked to original recordings, check the **`participants
 </Tip>
 
 ```
-└── RestingStateTutorial/ 
-    └── bids/ 
-        ├── dataset_description.json 
-        ├── sub-451559/ 
-        ├── participants.tsv 
-        ├── participants.json 
-        ├── README 
-        ├── derivatives/ 
-        └── final_files/ 
-``` 
+output/bids/
+├── dataset_description.json      # Dataset metadata
+├── participants.tsv              # Subject list with demographics
+├── participants.json             # Column descriptions for participants.tsv
+├── README                        # Dataset documentation
+├── sub-001/                      # Subject folders
+│   ├── eeg/                      # EEG data in BIDS format
+│   └── sub-001_scans.tsv         # Scan inventory
+├── sub-002/
+│   ├── eeg/
+│   └── sub-002_scans.tsv
+└── derivatives/                  # Step-by-step processing outputs
+    ├── 01_import/
+    ├── 02_resample/
+    └── ... (15 processing steps)
+```
 
-## File and Folder Overview
+## What's Inside
 
-| File / Folder                  | Purpose                                                                                       |
-| ------------------------------ | --------------------------------------------------------------------------------------------- |
-| **`dataset_description.json`** | Required by BIDS. Records dataset name, pipeline version, and references.                     |
-| **`participants.tsv`**         | Table listing subjects and basic attributes (age, sex, etc.).                                 |
-| **`participants.json`**        | Sidecar describing the meaning, format, and units of each column in `participants.tsv`.       |
-| **`README`**                   | Free-text description of the dataset, study, or preprocessing notes.                          |
-| **`sub-<ID>/`**                | Per-subject folder (e.g., `sub-451559`) containing the actual EEG data and metadata.          |
-| **`derivatives/`**             | Preprocessed outputs from the pipeline (e.g., ICA-cleaned signals, epoched data, QC reports). |
-| **`final_files/`**             | Convenience folder with cleaned, ready-to-use outputs (e.g., epoched datasets).               |
+### Dataset Files
 
+| File | What It Contains |
+|------|------------------|
+| **dataset_description.json** | Dataset name, pipeline version, BIDS specification |
+| **participants.tsv** | List of subjects with demographics (age, sex, group) |
+| **participants.json** | Describes what each column in participants.tsv means |
+| **README** | Free-text description of your study and dataset |
 
-## What to Expect
+These files make your data machine-readable and ensure compatibility with BIDS tools.
 
-* **Raw-like cleaned EEG** lives under each subject folder (`sub-<ID>`).
-* **Metadata** (`dataset_description.json`, `participants.tsv/json`, `README`) ensures the dataset is machine-readable and human-readable.
-* **Processed derivatives** contain artifacts-removed signals and QC artifacts.
-* **Final files** provide shortcuts for quick analysis, without digging into the full BIDS tree.
+### Subject Folders
+
+Each subject gets a folder (`sub-001/`, `sub-002/`, etc.) containing:
+- **eeg/** - EEG data files in BIDS format (.vhdr, .eeg, .vmrk for BrainVision format)
+- **Sidecar JSON files** - Metadata about channels, coordinates, events
+- **scans.tsv** - Inventory linking BIDS files to original source files
+
+The subject ID might not match your original filename—check `participants.tsv` or the subject's `scans.tsv` to see the mapping.
+
+### Derivatives Folder
+
+The `derivatives/` folder contains numbered subfolders (01_import, 02_resample, etc.) showing your data after each processing step. See [Derivatives Overview](/outputs/derivatives_overview) for complete details.
+
+## BIDS Format Benefits
+
+**Tool Compatibility:** Works with MNE-Python, EEGLAB, FieldTrip, fMRIPrep, and hundreds of other tools
+
+**Data Sharing:** Other researchers can immediately understand and use your data
+
+**Validation:** Run the [BIDS Validator](https://bids-standard.github.io/bids-validator/) to check correctness
+
+**Long-term Storage:** Standard format means data remains accessible as tools evolve
+
+## Loading BIDS Data
+
+**MNE-Python:**
+```python
+from mne_bids import read_raw_bids
+bids_path = BIDSPath(subject='001', task='restingstate',
+                      root='output/bids')
+raw = read_raw_bids(bids_path)
+```
+
+**EEGLAB:** Use the BIDS-EEG-EEGLAB plugin
+
+**FieldTrip:** Use `ft_read_header` and `ft_read_data` on BIDS paths
+
+## Quick Access Alternative
+
+Don't want to deal with BIDS structure? The `exports/` folder (at the output root level) contains the same final cleaned data in a simple flat structure for immediate analysis. See [Exports Overview](/outputs/final_files) for details.

@@ -1,0 +1,195 @@
+---
+title: "Understanding Pipeline Outputs"
+sidebarTitle: "Overview"
+description: "A clear guide to what AutoCleanEEG produces and where to find it"
+---
+
+## What You Get After Processing
+
+When AutoCleanEEG finishes processing your data, it creates a well-organized output folder with everything you need: cleaned data files, quality control reports, processing logs, and step-by-step derivatives.
+
+Here's the complete structure using a real example (subject IDs anonymized):
+
+```
+output/
+├── bids/                           # BIDS-formatted data
+│   ├── dataset_description.json    # Dataset metadata
+│   ├── participants.tsv            # Subject list
+│   ├── README                      # Dataset documentation
+│   ├── sub-001/                    # Subject 1 data
+│   │   └── eeg/                    # EEG files in BIDS format
+│   ├── sub-002/                    # Subject 2 data
+│   │   └── eeg/                    # EEG files in BIDS format
+│   └── derivatives/                # Step-by-step derivatives
+│       ├── 01_import/              # Imported raw data
+│       ├── 02_resample/            # Resampled to target rate
+│       ├── 03_drop_eog_channels/   # EOG channels removed
+│       ├── 04_trim/                # Edge artifacts trimmed
+│       ├── 05_filter/              # Filtered data
+│       ├── 06_bad_channels/        # Bad channels removed
+│       ├── 07_rereference/         # Rereferenced data
+│       ├── 08_artifact_detection/  # Artifacts annotated
+│       ├── 09_ica/                 # ICA decomposition applied
+│       ├── 10_pre_ica/             # Pre-ICA snapshot
+│       ├── 11_epochs/              # Initial epoching
+│       ├── 12_drop_bad_epochs/     # Bad epochs removed
+│       ├── 13_epochs/              # Re-epoched data
+│       ├── 14_gfp_clean/           # GFP cleaning applied
+│       └── 15_comp/                # Final compiled epochs
+│
+├── exports/                        # Ready-to-use output files
+│   ├── subject1_comp_epo.set       # Final cleaned epochs (EEGLAB)
+│   └── subject1_processing_log.csv # Per-file processing log
+│
+├── ica/                            # ICA decompositions
+│   ├── subject1-ica.fif            # ICA weights (MNE format)
+│   └── ica_control_sheet.csv       # ICA summary across files
+│
+├── qa/                             # Quality assurance
+│   ├── subject1_fastplot_summary.png  # Quick visual QA
+│   └── qa_manifest.csv             # QA metrics summary
+│
+├── reports/                        # Detailed reports
+│   ├── ica_components/             # ICA component visualizations
+│   │   └── subject1_ica_components_all.pdf
+│   ├── psd_topo/                   # Power spectral density maps
+│   │   └── subject1_psd_topo_figure.png
+│   ├── raw_vs_cleaned_overlay/     # Before/after comparisons
+│   │   └── subject1_raw_vs_cleaned_overlay.png
+│   └── run_reports/                # Complete run documentation
+│       ├── subject1_autoclean_report.pdf
+│       ├── subject1_autoclean_metadata.json
+│       └── subject1_autoclean_report_flagged_channels.tsv
+│
+├── status/                         # Processing status
+│   ├── run_id1.json                # Run metadata
+│   ├── TaskName.py                 # Task file used
+│   └── pipeline.log                # Detailed execution log
+│
+└── preprocessing_log.csv           # Summary log for all processed files
+```
+
+## The Five Main Folders
+
+### 1. **bids/** - Your Data in Standard Format
+
+This folder contains your cleaned EEG data organized according to BIDS (Brain Imaging Data Structure), a widely-used standard that makes your data compatible with most neuroimaging tools.
+
+**What's inside:**
+- Subject folders (`sub-001/`, `sub-002/`, etc.) with cleaned EEG files
+- Participant information and dataset metadata
+- **derivatives/** subfolder with every processing step saved
+
+**Why it matters:** BIDS format means other researchers and tools can immediately work with your data. Tools like MNE-Python, EEGLAB, FieldTrip all understand this format.
+
+### 2. **exports/** - Ready-to-Use Files
+
+This is your quick-access folder. It contains the final cleaned and epoched data in EEGLAB .set format, ready to load into your analysis scripts.
+
+**What's inside:**
+- `*_comp_epo.set` - Cleaned, epoched data ready for analysis
+- `*_processing_log.csv` - Complete processing record for each file
+
+**Why it matters:** You can grab files from here and start analyzing immediately, without navigating the full BIDS structure.
+
+### 3. **reports/** - Quality Control Documentation
+
+Comprehensive visual reports showing what the pipeline did and how well it worked.
+
+**What's inside:**
+- **PDF reports** with complete preprocessing summaries
+- **Before/after comparison plots** showing data quality improvement
+- **ICA component visualizations** showing what was removed
+- **Power spectral density maps** comparing raw vs. cleaned data
+- **Flagged channels list** showing which electrodes had issues
+
+**Why it matters:** These reports let you verify data quality and justify preprocessing decisions in publications.
+
+### 4. **ica/** - ICA Decomposition Files
+
+Independent Component Analysis (ICA) weights and summaries.
+
+**What's inside:**
+- ICA weight matrices for each recording
+- Summary spreadsheet showing which components were removed
+
+**Why it matters:** You can re-apply ICA weights to data, adjust component rejection, or verify the artifact removal process.
+
+### 5. **qa/** - Quick Quality Assessment
+
+Fast visual summaries for rapid quality checking across multiple files.
+
+**What's inside:**
+- Quick summary plots for each file
+- QA metrics spreadsheet
+
+**Why it matters:** When processing many files, these quick plots help you spot problems without opening detailed reports.
+
+## Special Files
+
+### preprocessing_log.csv
+
+A single spreadsheet summarizing every file processed, with columns for:
+- Filter settings
+- Bad channels detected
+- ICA components removed
+- Epochs created and rejected
+- Data quality metrics
+
+This is your go-to file for aggregate quality control across an entire dataset.
+
+### status/pipeline.log
+
+The complete technical log of what happened during processing. Useful for debugging if something goes wrong.
+
+## BIDS Derivatives: Step-by-Step Snapshots
+
+The `bids/derivatives/` folder contains numbered subfolders (01_import, 02_resample, etc.) representing each processing step. Each folder saves the data at that exact moment in the pipeline.
+
+**Common steps:**
+- **01_import** - Data right after loading
+- **05_filter** - After applying filters
+- **09_ica** - After ICA artifact removal
+- **15_comp** - Final cleaned and epoched data
+
+**Why keep these?**
+- Debug issues by checking data at each step
+- Resume processing from a specific point
+- Understand exactly what each operation did
+
+**Storage note:** These intermediate files take up disk space. Once you've verified your results, you can safely delete the derivatives folder to save space—your final data is preserved in the main `bids/` and `exports/` folders.
+
+## Quick Reference: Where to Find Things
+
+| I want to... | Look here |
+|-------------|-----------|
+| **Start analyzing data immediately** | `exports/*.set` files |
+| **Verify data quality** | `reports/run_reports/*_autoclean_report.pdf` |
+| **Check which channels were bad** | `reports/run_reports/*_flagged_channels.tsv` |
+| **See before/after signal quality** | `reports/raw_vs_cleaned_overlay/*.png` |
+| **Review ICA components** | `reports/ica_components/*.pdf` |
+| **Get summary stats for all files** | `preprocessing_log.csv` (root level) |
+| **Load data in MNE-Python** | `bids/sub-*/eeg/*.vhdr` files |
+| **Debug processing issues** | `status/pipeline.log` |
+| **Check intermediate processing steps** | `bids/derivatives/XX_stepname/` |
+
+## What About Subject IDs?
+
+You'll notice that subject folders in the BIDS directory use IDs like `sub-583257` that don't match your original filenames. This is intentional:
+
+- **BIDS requires** standardized subject IDs
+- **participants.tsv** maps these IDs back to your original filenames and any demographic information
+- This separation protects participant privacy if you share data
+
+Check the `scans.tsv` file inside each subject folder to see the link between BIDS IDs and original filenames.
+
+## Summary: The Pipeline Produces
+
+✅ **Cleaned data** ready for analysis (exports/)
+✅ **BIDS-formatted** data for compatibility (bids/)
+✅ **Comprehensive reports** for QC (reports/)
+✅ **Quality metrics** for all files (preprocessing_log.csv)
+✅ **Step-by-step derivatives** for debugging (bids/derivatives/)
+✅ **ICA decompositions** for artifact validation (ica/)
+
+Everything is organized, documented, and ready to use. You can immediately load cleaned data into your analysis pipeline, or dive deep into the reports to verify every processing decision.
