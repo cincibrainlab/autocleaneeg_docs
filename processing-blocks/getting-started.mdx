@@ -1,560 +1,684 @@
 ---
 title: "Getting Started with Processing Blocks"
-sidebarTitle: "Getting Started"
-description: "Hands-on guide to discovering, installing, and using your first processing block"
+sidebarTitle: "Quick Start"
+description: "Get up and running with processing blocks in 10 minutes"
 icon: "rocket"
 ---
 
-## Quick Start (5 Minutes)
+<Note>
+**Already familiar with the concept?** Jump straight to [Using Blocks](#using-blocks-in-your-tasks) to see code examples. New to processing blocks? Start with the [Introduction](/processing-blocks/introduction) first.
+</Note>
 
-Get up and running with processing blocks in just a few steps:
+## 5-Minute Quick Start
 
-<Steps>
-<Step title="List Available Blocks">
-View all processing blocks in the task library:
-
-```bash
-autocleaneeg-pipeline task list --source=library
-```
-
-Look for tasks with block names in their descriptions (e.g., "WaveletBlock_Test", "RestingState_WaveletDemo")
-</Step>
-
-<Step title="Install a Demo Task">
-Install a pre-built task that demonstrates a processing block:
-
-```bash
-autocleaneeg-pipeline task use RestingState_WaveletDemo
-```
-
-This installs a task that uses the **wavelet_threshold** processing block
-</Step>
-
-<Step title="Process Sample Data">
-Run the task on your EEG data:
-
-```bash
-autocleaneeg-pipeline process /path/to/your/data.set
-```
-
-Or set it as your active task and use it repeatedly:
-
-```bash
-autocleaneeg-pipeline task set RestingState_WaveletDemo
-autocleaneeg-pipeline process /path/to/data.set
-```
-</Step>
-
-<Step title="Review the Output">
-Check the processing block's output:
-
-```bash
-# Open the output directory
-autocleaneeg-pipeline workspace explore
-
-# Navigate to:
-# output/RestingState_WaveletDemo/reports/wavelet_threshold/
-
-# Open the PDF report:
-# *_wavelet_threshold.pdf
-```
-
-This report shows before/after comparisons, artifact reduction metrics, and processing details
-</Step>
-
-<Step title="Examine the Task File">
-See how the block is configured:
-
-```bash
-autocleaneeg-pipeline task edit
-```
-
-Look for the `wavelet_threshold` configuration section and the `self.apply_wavelet_threshold()` method call
-</Step>
-</Steps>
-
----
-
-## Understanding Processing Block Workflow
-
-### The Big Picture
-
-```mermaid
-flowchart TD
-    Start[Your EEG Data] --> Task[Task File with Block Config]
-    Task --> Import[Standard Preprocessing]
-    Import --> Block[Processing Block Method]
-    Block --> Output1[Processed Data]
-    Block --> Output2[Block-Specific Report]
-    Block --> Output3[Processing Metadata]
-
-    style Block fill:#0078d4,stroke:#fff,stroke-width:2px,color:#fff
-    style Output2 fill:#90EE90,stroke:#2F4F2F,stroke-width:2px
-```
-
-### What Happens When You Use a Block
-
-1. **Discovery**: Block is registered in `blocks_registry.json`
-2. **Configuration**: You add block settings to task `config` dictionary
-3. **Execution**: You call the block's mixin method (e.g., `self.apply_wavelet_threshold()`)
-4. **Processing**: Block applies its algorithm to your data
-5. **Output**: Block generates:
-   - Modified EEG data (saved to derivatives)
-   - Block-specific report (PDF in reports directory)
-   - Processing metadata (logged to database)
-
----
-
-## Discovering Available Blocks
-
-### Method 1: Browse Task Library
-
-The easiest way to discover blocks is through example tasks:
-
-```bash
-# List all library tasks
-autocleaneeg-pipeline task list --source=library
-
-# Search for block-related tasks
-autocleaneeg-pipeline task search wavelet
-autocleaneeg-pipeline task search block
-```
-
-**Example output:**
-```
-Available to Install
-
- Task Name                     Source      Description
- WaveletBlock_Test             📦 library  Test task for wavelet_threshold processing block
- RestingState_WaveletDemo      📦 library  Resting-state demo using wavelet_threshold block
- RestingState_WaveletOnly      📦 library  Resting-state with wavelet-based denoising
-```
-
-### Method 2: Check Task Registry
-
-Browse the [AutoCleanEEG Task Registry](https://github.com/cincibrainlab/autocleaneeg-task-registry) on GitHub:
-
-```
-autocleaneeg-task-registry/
-├── blocks/                    # All processing blocks
-│   └── signal_processing/
-│       └── wavelet_threshold/
-├── blocks_registry.json       # Central block catalog
-└── tasks/                     # Example tasks using blocks
-```
-
-### Method 3: Read Documentation
-
-Visit the [Available Blocks](/processing-blocks/available-blocks) catalog page for:
-- Complete list of blocks
-- Status and versioning
-- Scientific references
-- Use case descriptions
-
----
-
-## Installing and Using Blocks
-
-### Automatic Installation (Recommended)
-
-Blocks are automatically available when you install or use a task from the library:
-
-```bash
-# Installing a task brings its required blocks
-autocleaneeg-pipeline task use RestingState_WaveletDemo
-
-# The wavelet_threshold block is now available
-```
-
-<Tip>
-**No separate block installation needed!** Blocks are distributed with task files from the task registry. When you install a task, you get all the blocks it uses.
-</Tip>
-
-### Manual Integration
-
-To add a block to your own custom task:
+Get hands-on with processing blocks immediately:
 
 <Steps>
-<Step title="Find the Block Documentation">
-Review the block's README in the task registry or on this documentation site
-
-**Example**: [Wavelet Threshold Overview](/processing-blocks/wavelet-threshold/overview)
-</Step>
-
-<Step title="Add Configuration">
-Copy the block's configuration to your task's `config` dictionary:
-
-```python
-config = {
-    # ... your existing config ...
-
-    "wavelet_threshold": {
-        "enabled": True,
-        "value": {
-            "wavelet": "sym4",
-            "level": 5,
-            "threshold_mode": "soft",
-            "threshold_scale": 1.0,
-            "is_erp": False,
-        }
-    },
-}
-```
-</Step>
-
-<Step title="Call the Method">
-Add the block's method call in your task's `run()` function:
-
-```python
-class MyCustomTask(Task):
-    def run(self):
-        self.import_raw()
-        self.resample_data()
-        self.filter_data()
-
-        # Call the processing block
-        self.apply_wavelet_threshold()  # ← Add this line
-
-        self.create_epochs()
-```
-</Step>
-
-<Step title="Test It">
-Process a file to verify the block works:
+<Step title="Check What's Available">
+See all blocks currently on your system:
 
 ```bash
-autocleaneeg-pipeline process --yes --file /path/to/test.set
+autocleaneeg-pipeline blocks list
 ```
 
-Check for the block's output report and processed data
+You should see 7 bundled blocks including `wavelet_threshold`, `zapline`, `autoreject`, and analysis blocks.
 </Step>
-</Steps>
 
----
-
-## Example Walkthrough: Wavelet Threshold
-
-Let's walk through using the **wavelet_threshold** block step-by-step.
-
-### Step 1: Install Example Task
+<Step title="Update to Latest Versions">
+Pull the most recent block definitions from GitHub:
 
 ```bash
-autocleaneeg-pipeline task use RestingState_WaveletDemo
+autocleaneeg-pipeline blocks update
 ```
 
-### Step 2: Examine the Task File
+This downloads new blocks and updates to your local cache (`~/.config/autocleaneeg/.block_cache/`).
+</Step>
+
+<Step title="Learn About a Block">
+Get detailed information before using:
 
 ```bash
-autocleaneeg-pipeline task edit
+autocleaneeg-pipeline blocks info zapline
 ```
 
-You'll see a task file like this:
+This shows what the block does, required packages, parameters, and scientific references.
+</Step>
+
+<Step title="Add to Your Task">
+Open your task file and add block configuration:
 
 ```python
 from autoclean.core.task import Task
 
 config = {
-    "schema_version": "2025.09",
-    "resample_step": {"enabled": True, "value": 250},
-    "filtering": {
+    "apply_zapline": {
         "enabled": True,
-        "value": {"l_freq": 1.0, "h_freq": 45.0, "notch_freqs": [60.0]}
-    },
-
-    # Processing block configuration
-    "wavelet_threshold": {
-        "enabled": True,
-        "value": {
-            "wavelet": "sym4",           # Wavelet basis function
-            "level": 5,                   # Decomposition depth
-            "threshold_mode": "soft",     # Thresholding type
-            "threshold_scale": 1.0,       # Threshold multiplier
-            "is_erp": False,              # ERP-preserving mode
-            "psd_fmax": 45.0,            # PSD analysis ceiling
-            "picks": "eeg",               # Channel selection
-        }
-    },
-
-    "reference_step": {"enabled": True, "value": "average"},
-    "ICA": {"enabled": False},  # Using wavelet instead
-    "epoch_settings": {
-        "enabled": True,
-        "value": {"tmin": -1.0, "tmax": 1.0}
-    },
+        "value": {"fline": 60, "nkeep": 1}
+    }
 }
 
-class RestingState_WaveletDemo(Task):
+class MyTask(Task):
+    def run(self):
+        self.import_raw()
+        self.filter_data()
+        self.apply_zapline()  # ← New block method
+        self.run_ica()
+        self.create_epochs()
+```
+</Step>
+
+<Step title="Process Data">
+Run your task normally:
+
+```bash
+autocleaneeg-pipeline process /path/to/data.set
+```
+
+The block runs automatically, generates reports, and logs quality metrics.
+</Step>
+</Steps>
+
+<Tip>
+**That's it!** No installation, no dependencies to manage manually, no complex setup. Blocks work out-of-the-box with sensible defaults.
+</Tip>
+
+---
+
+## Understanding the Workflow
+
+Here's what happens behind the scenes when you use a processing block:
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Task
+    participant BlockMixin
+    participant Algorithm
+    participant Output
+
+    User->>Task: Run task with block config
+    Task->>BlockMixin: Call self.apply_zapline()
+    BlockMixin->>BlockMixin: Check if enabled in config
+    BlockMixin->>BlockMixin: Extract parameters
+    BlockMixin->>BlockMixin: Validate inputs
+    BlockMixin->>BlockMixin: Measure quality before
+    BlockMixin->>Algorithm: apply_zapline_dss(data, params)
+    Algorithm-->>BlockMixin: cleaned_data, metadata
+    BlockMixin->>BlockMixin: Measure quality after
+    BlockMixin->>Output: Save derivatives/
+    BlockMixin->>Output: Generate report
+    BlockMixin->>Output: Log metadata
+    BlockMixin-->>Task: Return cleaned data
+    Task-->>User: Processing complete
+```
+
+**Key stages:**
+1. **Configuration check**: Is the block enabled?
+2. **Parameter extraction**: Get user settings or use defaults
+3. **Validation**: Check data compatibility, parameter ranges
+4. **Quality measurement**: Metrics before processing
+5. **Algorithm execution**: Pure signal processing logic
+6. **Quality verification**: Metrics after processing
+7. **Output generation**: Save data, reports, metadata
+
+---
+
+## Using Blocks in Your Tasks
+
+### Basic Pattern
+
+The standard pattern for all processing blocks:
+
+```python
+from autoclean.core.task import Task
+
+config = {
+    # Enable and configure the block
+    "<block_config_key>": {
+        "enabled": True,
+        "value": {
+            # Block-specific parameters
+            "param1": value1,
+            "param2": value2,
+        }
+    }
+}
+
+class MyTask(Task):
     def run(self):
         # Standard preprocessing
         self.import_raw()
         self.resample_data()
         self.filter_data()
 
-        # Apply processing block
-        self.apply_wavelet_threshold()  # ← The magic happens here
+        # Call block method
+        self.<block_method_name>()
 
-        # Post-processing
-        self.rereference_data()
+        # Continue with rest of pipeline
+        self.run_ica()
+        self.create_epochs()
+```
+
+### Example 1: Zapline for Line Noise
+
+Remove 60 Hz power line noise using spatial filtering:
+
+```python
+config = {
+    "resample_step": {"enabled": True, "value": 250},
+    "filtering": {
+        "enabled": True,
+        "value": {"l_freq": 1, "h_freq": 100, "notch_freqs": None}
+        # No notch filter - using Zapline instead!
+    },
+
+    "apply_zapline": {
+        "enabled": True,
+        "value": {
+            "fline": 60,          # Line frequency (50 for Europe/Asia)
+            "nkeep": 1,           # Remove primary component
+            "use_iter": False,    # Single-pass (fast)
+            "max_iter": 10        # Max iterations if iterative
+        }
+    }
+}
+
+class RestingWithZapline(Task):
+    def run(self):
+        self.import_raw()
+        self.resample_data()
+        self.filter_data()
+
+        # Remove line noise with spatial filtering
+        self.apply_zapline()
+
+        self.run_ica()
         self.create_regular_epochs(export=True)
 ```
 
-### Step 3: Set as Active Task
+**Console output you'll see:**
+```
+[INFO] Pre-Zapline: 65.3 dB at 60 Hz (SNR: 3.42)
+[HEADER] Applying Zapline (fline=60 Hz, nkeep=1, iter=False)...
+[INFO] Post-Zapline: 45.1 dB at 60 Hz (reduction: 20.2 dB, SNR: 0.98)
+[SUCCESS] Zapline complete (1 iterations)
+```
+
+### Example 2: Wavelet Thresholding for Artifacts
+
+Remove transient artifacts (eye blinks, muscle) using wavelets:
+
+```python
+config = {
+    "wavelet_threshold": {
+        "enabled": True,
+        "value": {
+            "wavelet": "sym4",         # Wavelet family
+            "level": 5,                # Decomposition depth
+            "threshold_mode": "soft",  # Smooth reconstruction
+            "threshold_scale": 1.0,    # Standard threshold
+            "is_erp": False            # ERP-preserving mode off
+        }
+    }
+}
+
+class DevelopmentalData(Task):
+    def run(self):
+        self.import_raw()
+        self.filter_data()
+
+        # Remove transient artifacts
+        self.apply_wavelet_threshold()
+
+        self.run_ica()  # Or skip ICA entirely
+        self.create_epochs()
+```
+
+**What gets generated:**
+- `derivatives/wavelet_threshold/sub-01_eeg.fif` (cleaned data)
+- `reports/wavelet_threshold/sub-01_report.pdf` (before/after comparison)
+- Logged metadata with artifact reduction percentages
+
+### Example 3: Combining Multiple Blocks
+
+Use multiple blocks in sequence:
+
+```python
+config = {
+    "apply_zapline": {
+        "enabled": True,
+        "value": {"fline": 60, "nkeep": 1}
+    },
+
+    "wavelet_threshold": {
+        "enabled": True,
+        "value": {"wavelet": "sym4", "level": 5}
+    },
+
+    "apply_autoreject": {
+        "enabled": True,
+        "value": {
+            "n_interpolate": [1, 4, 8],
+            "consensus": [0.2, 0.5, 1.0]
+        }
+    }
+}
+
+class ComprehensiveCleaning(Task):
+    def run(self):
+        self.import_raw()
+        self.filter_data()
+
+        # 1. Remove line noise spatially
+        self.apply_zapline()
+
+        # 2. Remove transient artifacts
+        self.apply_wavelet_threshold()
+
+        # 3. ICA for stationary artifacts
+        self.run_ica()
+
+        # 4. Epoch the data
+        self.create_regular_epochs()
+
+        # 5. ML-based epoch rejection
+        self.apply_autoreject()
+```
+
+<Warning>
+**Order matters!** Some blocks work on continuous data (Raw), others on epochs. Check block documentation for compatible data types:
+- **Raw blocks**: `apply_zapline`, `apply_wavelet_threshold`
+- **Epoch blocks**: `apply_autoreject`
+- **Source blocks**: `apply_source_localization`, `apply_source_psd`
+</Warning>
+
+---
+
+## Common Use Cases
+
+### For Developmental/Pediatric EEG
+
+High artifact rates require robust cleaning:
+
+```python
+config = {
+    "wavelet_threshold": {
+        "enabled": True,
+        "value": {
+            "threshold_mode": "soft",
+            "threshold_scale": 1.2  # Slightly more aggressive
+        }
+    },
+    "ICA": {"enabled": False}  # Wavelet often sufficient
+}
+
+class PediatricRestingState(Task):
+    def run(self):
+        self.import_raw()
+        self.filter_data()
+        self.apply_wavelet_threshold()  # Handles high artifact rates
+        self.create_epochs()
+```
+
+### For Spectral/Connectivity Analyses
+
+Line noise must be thoroughly removed:
+
+```python
+config = {
+    "apply_zapline": {
+        "enabled": True,
+        "value": {
+            "fline": 60,
+            "nkeep": 2,        # Remove main + first harmonic
+            "use_iter": True   # Iterative for thorough removal
+        }
+    }
+}
+
+class ConnectivityAnalysis(Task):
+    def run(self):
+        self.import_raw()
+        self.filter_data()
+        self.apply_zapline()  # Critical for frequency domain
+        self.apply_source_localization()
+        self.apply_source_connectivity()
+```
+
+### For Source-Level Analyses
+
+Complete pipeline from sensor to source:
+
+```python
+config = {
+    "apply_source_localization": {
+        "enabled": True,
+        "value": {
+            "method": "dSPM",
+            "lambda2": 1.0 / 9.0
+        }
+    },
+
+    "apply_source_psd": {
+        "enabled": True,
+        "value": {
+            "fmin": 1,
+            "fmax": 45,
+            "bandwidth": 4
+        }
+    }
+}
+
+class SourceSpaceAnalysis(Task):
+    def run(self):
+        self.import_raw()
+        self.filter_data()
+        self.run_ica()
+
+        # Project to source space
+        self.apply_source_localization()
+
+        # Compute source-level power
+        self.apply_source_psd()
+```
+
+---
+
+## Checking Block Output
+
+After running your task, verify block output:
+
+### Console Output
+
+Look for block-specific messages:
 
 ```bash
-autocleaneeg-pipeline task set RestingState_WaveletDemo
+[INFO] Pre-Zapline: 65.3 dB at 60 Hz (SNR: 3.42)
+[HEADER] Applying Zapline...
+[INFO] Post-Zapline: 45.1 dB at 60 Hz (reduction: 20.2 dB)
+[SUCCESS] Zapline complete
 ```
 
-### Step 4: Process Your Data
+### File System Output
+
+Blocks save multiple outputs:
 
 ```bash
-# Process a single file
-autocleaneeg-pipeline process /path/to/your/resting_EEG.set
-
-# Or batch process a folder
-autocleaneeg-pipeline input set /path/to/folder/
-autocleaneeg-pipeline process
+workspace/
+└── output/
+    └── MyTask/
+        ├── derivatives/
+        │   ├── zapline/
+        │   │   └── sub-01_task-rest_eeg.fif  # Cleaned data
+        │   └── wavelet_threshold/
+        │       └── sub-01_task-rest_eeg.fif
+        ├── reports/
+        │   ├── zapline/
+        │   │   └── sub-01_zapline.pdf  # Quality metrics
+        │   └── wavelet_threshold/
+        │       └── sub-01_wavelet.pdf
+        └── metadata/
+            └── sub-01_processing.json  # Logged parameters
 ```
 
-### Step 5: Review the Output
+### Metadata Logging
 
-Navigate to your workspace output directory:
+Check processing details:
 
 ```bash
-autocleaneeg-pipeline workspace explore
+cat workspace/output/MyTask/metadata/sub-01_processing.json
 ```
 
-**Output structure:**
-```
-output/RestingState_WaveletDemo/
-├── bids/derivatives/
-│   └── 05_wavelet_threshold/     # Processed EEG data
-│       └── *_wavelet_threshold_raw.set
-│
-├── reports/
-│   └── wavelet_threshold/        # Block-specific report
-│       └── *_wavelet_threshold.pdf
-│
-└── exports/                       # Final processed files
-    └── *_comp_epo.set
-```
-
-### Step 6: Examine the Report
-
-Open the PDF report at:
-```
-reports/wavelet_threshold/*_wavelet_threshold.pdf
+```json
+{
+  "step_zapline": {
+    "block_name": "zapline",
+    "block_version": "1.0.0",
+    "parameters": {"fline": 60, "nkeep": 1},
+    "quality_metrics": {
+      "power_before_db": 65.3,
+      "power_after_db": 45.1,
+      "reduction_db": 20.2
+    }
+  }
+}
 ```
 
-The report includes:
-- **Summary table**: Channels, sampling rate, decomposition level, parameters
-- **Signal comparison**: Before/after waveforms for all channels
-- **Power spectral density**: Mean PSD changes across frequency bands
-- **Top channels table**: Most affected channels with reduction metrics
+---
+
+## Tuning Block Parameters
+
+### Start with Defaults
+
+All blocks have sensible defaults:
+
+```python
+# Minimal configuration (uses all defaults)
+config = {
+    "apply_zapline": {"enabled": True}
+}
+```
+
+### Adjust Based on Data Quality
+
+If defaults don't work, tune incrementally:
+
+<Tabs>
+<Tab title="Zapline Tuning">
+```python
+# Standard (good for most cases)
+"apply_zapline": {
+    "enabled": True,
+    "value": {"fline": 60, "nkeep": 1}
+}
+
+# Severe contamination
+"apply_zapline": {
+    "enabled": True,
+    "value": {
+        "fline": 60,
+        "nkeep": 2,        # Remove main + harmonic
+        "use_iter": True   # Iterative refinement
+    }
+}
+
+# Very aggressive (use cautiously)
+"apply_zapline": {
+    "enabled": True,
+    "value": {
+        "fline": 60,
+        "nkeep": 3,
+        "use_iter": True,
+        "max_iter": 20
+    }
+}
+```
+</Tab>
+
+<Tab title="Wavelet Tuning">
+```python
+# Standard (balanced)
+"wavelet_threshold": {
+    "enabled": True,
+    "value": {
+        "threshold_scale": 1.0,
+        "threshold_mode": "soft"
+    }
+}
+
+# High artifacts (more aggressive)
+"wavelet_threshold": {
+    "enabled": True,
+    "value": {
+        "threshold_scale": 1.5,  # More aggressive
+        "threshold_mode": "hard"  # HAPPE high-artifact mode
+    }
+}
+
+# Preserve ERP morphology
+"wavelet_threshold": {
+    "enabled": True,
+    "value": {
+        "threshold_scale": 1.0,
+        "threshold_mode": "soft",
+        "is_erp": True,          # ERP-preserving mode
+        "bandpass": (1.0, 30.0)  # ERP frequency range
+    }
+}
+```
+</Tab>
+</Tabs>
 
 <Tip>
-This report is automatically generated by the processing block. You don't need to create any custom reporting code!
+**Tuning Strategy**: Start conservative (defaults), process a few subjects, review quality metrics, adjust parameters, repeat. Blocks log metrics automatically, making it easy to compare settings.
 </Tip>
 
 ---
 
-## Configuration Tips
+## Troubleshooting Common Issues
 
-### Start with Defaults
+### Block Method Not Available
 
-Every block provides recommended default parameters. Start with these before customizing:
+**Error**: `AttributeError: 'MyTask' object has no attribute 'apply_zapline'`
 
+**Cause**: Block not discovered or cache/bundled out of sync
+
+**Fix**:
+```bash
+# Update blocks from registry
+autocleaneeg-pipeline blocks update
+
+# Verify block is available
+autocleaneeg-pipeline blocks list | grep zapline
+
+# Reinstall CLI if needed
+uv tool install --force --editable .
+```
+
+### Parameters Not Taking Effect
+
+**Symptom**: Block runs but uses different parameters than configured
+
+**Cause**: Typo in config key or nested structure incorrect
+
+**Fix**:
 ```python
-"wavelet_threshold": {
-    "enabled": True,
-    "value": {
-        "wavelet": "sym4",      # Recommended default
-        "level": 5,              # Recommended default
-        "threshold_mode": "soft", # Recommended default
-        "threshold_scale": 1.0,  # Recommended default
+# ❌ WRONG - Incorrect structure
+config = {
+    "zapline": {"fline": 60}  # Missing "enabled" and "value"
+}
+
+# ✅ CORRECT - Proper structure
+config = {
+    "apply_zapline": {
+        "enabled": True,
+        "value": {"fline": 60}
     }
 }
 ```
 
-### Adjust Based on Reports
+### Block Skipped Without Warning
 
-After processing, review the block's report and adjust if needed:
+**Symptom**: Block doesn't run, no error message
 
-- **Too much smoothing?** → Decrease `threshold_scale` (try 0.8)
-- **Artifacts remain?** → Increase `threshold_scale` (try 1.5)
-- **Need more aggressive?** → Try `threshold_mode: "hard"`
+**Cause**: Block disabled in config
 
-### Consult Block Documentation
-
-Each block has comprehensive parameter documentation:
-
+**Fix**:
 ```python
-# See detailed parameter guide:
-# /processing-blocks/wavelet-threshold/parameters
+# Check enabled flag
+config = {
+    "apply_zapline": {
+        "enabled": True,  # ← Make sure this is True!
+        "value": {"fline": 60}
+    }
+}
 ```
 
----
+### Quality Metrics Look Wrong
 
-## Common Workflows
+**Symptom**: Block reports unexpected results (e.g., "Reduction: 0.3 dB")
 
-### Workflow 1: Exploring a New Block
+**Possible causes**:
+1. Data already clean (nothing to remove)
+2. Wrong line frequency specified (using 60 Hz in Europe)
+3. Too few channels for spatial methods (Zapline needs 32+)
 
-<Steps>
-<Step title="Read Documentation">
-Start with the block's overview page to understand:
-- Scientific background
-- Use cases
-- When to use vs. alternatives
-</Step>
-
-<Step title="Install Demo Task">
-Get a working example:
-```bash
-autocleaneeg-pipeline task use WaveletBlock_Test
-```
-</Step>
-
-<Step title="Test with Sample Data">
-Process a small test file to see the block in action
-</Step>
-
-<Step title="Review Output">
-Study the generated report to understand the block's effect
-</Step>
-
-<Step title="Tune Parameters">
-Adjust settings based on your data characteristics
-</Step>
-</Steps>
-
-### Workflow 2: Adding Block to Custom Task
-
-<Steps>
-<Step title="Copy Existing Task">
-Start with a working task as template:
-```bash
-autocleaneeg-pipeline task copy RestingState_Basic MyCustomTask
-```
-</Step>
-
-<Step title="Add Block Configuration">
-Copy the block's config from documentation or example tasks
-</Step>
-
-<Step title="Add Method Call">
-Insert `self.apply_<block_name>()` at the desired point in your pipeline
-</Step>
-
-<Step title="Test and Iterate">
-Process test data and refine based on results
-</Step>
-</Steps>
-
-### Workflow 3: Comparing Blocks
-
-<Steps>
-<Step title="Create Two Task Variants">
-Make identical tasks except for the processing block:
-- `MyTask_Wavelet`: Uses wavelet_threshold
-- `MyTask_ICA`: Uses standard ICA
-</Step>
-
-<Step title="Process Same Data">
-Run both tasks on the same input file
-</Step>
-
-<Step title="Compare Reports">
-Review outputs side-by-side to determine which works better for your data
-</Step>
-</Steps>
-
----
-
-## Troubleshooting
-
-### Block Method Not Found
-
-**Error**: `AttributeError: 'MyTask' object has no attribute 'apply_wavelet_threshold'`
-
-**Solution**: Ensure you're using an up-to-date AutoCleanEEG Pipeline installation:
-```bash
-uv tool upgrade autocleaneeg-pipeline
-```
-
-The block mixins must be available in your installation.
-
-### Configuration Validation Errors
-
-**Error**: `Task config validation failed: Key 'wavelet_threshold' error`
-
-**Solution**: Check that your configuration has all required keys. Compare with the block's documentation or example task:
-
-```bash
-# View example task for correct config structure
-autocleaneeg-pipeline task use WaveletBlock_Test
-autocleaneeg-pipeline task edit
-```
-
-### Block Report Not Generated
-
-**Problem**: Processing completes but no block-specific report appears
-
-**Solution**: Check the logs for errors:
-```bash
-# View pipeline log
-cat ~/Documents/Autoclean-EEG/output/<task_name>/status/pipeline.log
-```
-
-Common causes:
-- Missing dependencies (e.g., `reportlab` for PDF generation)
-- Insufficient data (blocks may skip reporting if data is too short)
-- Disk space issues
-
-### Unexpected Results
-
-**Problem**: Block output doesn't match expectations
-
-**Solutions**:
-1. **Review parameter settings**: Compare your config with recommended defaults
-2. **Check input data quality**: Some blocks require pre-filtering or specific data types
-3. **Consult block documentation**: Review the troubleshooting section for the specific block
-4. **Examine the report**: Block reports often show diagnostic information
+**Fix**: Review block's console output and generated reports for clues.
 
 ---
 
 ## Next Steps
 
 <CardGroup cols={2}>
-<Card title="Wavelet Threshold Deep-Dive" icon="wave-square" href="/processing-blocks/wavelet-threshold/overview">
-  Comprehensive guide to our first processing block with parameter tuning and examples
+<Card title="Deep-Dive: Wavelet Block" icon="wave-square" href="/processing-blocks/wavelet-threshold/overview">
+  Complete parameter reference and tuning guide for wavelet thresholding
 </Card>
 
-<Card title="Using Blocks in Tasks" icon="puzzle-piece" href="/processing-blocks/using-blocks">
-  Best practices for integrating blocks into custom task files
+<Card title="Browse All Blocks" icon="list" href="/processing-blocks/available-blocks">
+  Full catalog of available processing blocks with use cases
 </Card>
 
-<Card title="Available Blocks Catalog" icon="books" href="/processing-blocks/available-blocks">
-  Browse all available processing blocks with status and scientific references
+<Card title="Create Your Own Block" icon="code" href="/processing-blocks/creating-blocks">
+  Developer guide for contributing new processing methods
 </Card>
 
-<Card title="Block Architecture" icon="cubes" href="/processing-blocks/block-architecture">
-  Technical details on manifests, registry, versioning, and the discovery system
+<Card title="Task Customization" icon="puzzle-piece" href="/tasks/task-customization">
+  Advanced patterns for combining blocks with custom logic
 </Card>
 </CardGroup>
 
 ---
 
-## Key Takeaways
+## Quick Reference
 
-<Tip>
-**Start simple**: Use example tasks first to understand how blocks work before customizing
-</Tip>
+### Essential Commands
+
+```bash
+# Discovery
+autocleaneeg-pipeline blocks list
+autocleaneeg-pipeline blocks info <name>
+
+# Updates
+autocleaneeg-pipeline blocks update
+autocleaneeg-pipeline blocks install <name>
+
+# Usage (in tasks)
+self.apply_zapline()
+self.apply_wavelet_threshold()
+self.apply_autoreject()
+```
+
+### Configuration Template
+
+```python
+from autoclean.core.task import Task
+
+config = {
+    "resample_step": {"enabled": True, "value": 250},
+    "filtering": {"enabled": True, "value": {"l_freq": 1, "h_freq": 100}},
+
+    # Add processing blocks here
+    "<block_config_key>": {
+        "enabled": True,
+        "value": {
+            # Parameters
+        }
+    }
+}
+
+class MyTask(Task):
+    def run(self):
+        self.import_raw()
+        self.resample_data()
+        self.filter_data()
+
+        # Call block methods
+        self.<block_method_name>()
+
+        self.run_ica()
+        self.create_epochs()
+```
 
 <Info>
-**Blocks are optional**: They enhance the pipeline but aren't required for standard preprocessing
+**Ready to dive deeper?** Each processing block has comprehensive documentation with scientific background, parameter tuning guides, comparison with alternatives, and troubleshooting. Start with [Wavelet Threshold](/processing-blocks/wavelet-threshold/overview) or [browse all blocks](/processing-blocks/available-blocks).
 </Info>
-
-<Warning>
-**Read the documentation**: Processing blocks are powerful but require understanding their parameters and appropriate use cases
-</Warning>
-
-Need help? Check the [Processing Blocks Introduction](/processing-blocks/introduction) or ask in [GitHub Discussions](https://github.com/cincibrainlab/autocleaneeg_pipeline/discussions).

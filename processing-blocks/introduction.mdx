@@ -1,617 +1,815 @@
 ---
 title: "Processing Blocks"
 sidebarTitle: "Introduction"
-description: "Modular, scientifically-validated signal processing methods for advanced EEG analysis"
+description: "Modular, scientifically-validated signal processing methods that update automatically from the community registry"
 icon: "cube"
 ---
 
 ## What are Processing Blocks?
 
-**Processing Blocks** are self-contained, scientifically-documented signal processing modules that extend AutoCleanEEG Pipeline with advanced analysis methods. Think of them as "Lego blocks" for your EEG processing pipeline—each block bundles together code, documentation, scientific references, and configuration in a single, discoverable package.
+**Processing Blocks** are self-contained signal processing modules that extend AutoCleanEEG Pipeline with advanced analysis methods. Think of them as scientifically-validated plugins: each block packages together an algorithm, documentation, references, and configuration into a single discoverable unit that integrates seamlessly into your tasks.
+
+Unlike traditional EEG software where advanced methods are either built-in (inflexible) or require custom code (unreproducible), processing blocks create a third path: **methods that are both cutting-edge and scientifically documented, that update independently yet integrate automatically**.
 
 <Note>
-**Key Concept**: While AutoCleanEEG's core methods (import, filter, resample, ICA, epoching) handle 90% of standard preprocessing, **Processing Blocks** provide specialized, cutting-edge methods that can evolve independently and be shared across the research community.
+**The Big Idea**: While AutoCleanEEG's core methods (import, filter, ICA, epoching) handle standard preprocessing, **Processing Blocks** provide specialized techniques—wavelet denoising, source localization, advanced connectivity—that researchers can discover, update, and contribute to the community.
 </Note>
 
----
+### What You Get from Blocks
 
-## Why Processing Blocks?
-
-### The Problem They Solve
-
-Traditional EEG preprocessing tools face a dilemma:
-- **Built-in methods** are stable but inflexible
-- **Custom code** is flexible but hard to share and validate
-- **Plugin systems** are powerful but lack scientific context
-
-Processing Blocks solve this by combining the best of all approaches:
-
-```mermaid
-graph LR
-    A[Stability] --> D[Processing Blocks]
-    B[Flexibility] --> D
-    C[Scientific Rigor] --> D
-
-    D --> E[Modular]
-    D --> F[Validated]
-    D --> G[Reproducible]
-
-    style D fill:#0078d4,stroke:#fff,stroke-width:2px,color:#fff
-    style E fill:#e1f5ff,stroke:#0078d4
-    style F fill:#e1f5ff,stroke:#0078d4
-    style G fill:#e1f5ff,stroke:#0078d4
-```
-
-### Benefits for Researchers
+When you call `self.apply_zapline()` or `self.apply_wavelet_threshold()` in your task, you're not just running a function. You're invoking a complete scientific workflow:
 
 <CardGroup cols={2}>
-<Card title="🔍 Discoverable" icon="magnifying-glass">
-  Browse available blocks with `task list --source=library`. Each block is cataloged with description, scientific references, and use cases.
+<Card title="📚 Scientifically Validated" icon="flask">
+  Every block cites peer-reviewed papers, includes parameter guidance from experts, and provides validation against published methods.
 </Card>
 
-<Card title="📚 Scientifically Documented" icon="book">
-  Every block includes literature references, parameter guidance, validation studies, and recommended settings from experts.
+<Card title="🔄 Always Up-to-Date" icon="rotate">
+  Run `blocks update` to pull the latest versions from GitHub. New features, bug fixes, and improvements flow automatically.
 </Card>
 
-<Card title="🔧 Easy Integration" icon="wrench">
-  Add to any task with a single line: `self.apply_wavelet_threshold()`. No complex installation or setup required.
+<Card title="📊 Complete Reporting" icon="chart-line">
+  Blocks generate comprehensive reports (PDFs, plots) showing before/after comparisons and quality metrics.
 </Card>
 
-<Card title="🔄 Independently Updated" icon="rotate">
-  Blocks have their own version numbers and update cycles, allowing rapid iteration without breaking your existing pipelines.
+<Card title="✅ Audit Trail Built-In" icon="file-lines">
+  All parameters, versions, and quality metrics logged automatically for reproducibility and peer review.
 </Card>
 
-<Card title="✅ Validated" icon="circle-check">
-  Each block includes test tasks and example data to verify correct operation and expected output.
+<Card title="🔧 Zero Configuration" icon="wrench">
+  Blocks work out-of-the-box with sensible defaults. Tune parameters only when needed for your specific use case.
 </Card>
 
-<Card title="🌍 Community-Driven" icon="users">
-  Contribute your own processing methods as blocks, complete with documentation, for the entire community to use.
+<Card title="🌍 Community Contributions" icon="users">
+  Anyone can contribute blocks to the registry. Your lab's novel method can become the community standard.
 </Card>
 </CardGroup>
 
 ---
 
-## How Processing Blocks Work
+## How the Block System Works
 
-Processing blocks are specialized methods built into AutoCleanEEG that extend your tasks with advanced signal processing capabilities. They're scientifically validated, well-documented, and work seamlessly with the core pipeline.
-
-**What you see:**
-```python
-class MyTask(Task):
-    def run(self):
-        self.import_raw()
-        self.filter_data()
-        self.apply_wavelet_threshold()  # ← Processing block method
-        self.create_epochs()
-```
-
-**What you get:**
-- ✅ Processed data with artifacts removed
-- ✅ Comprehensive PDF report showing before/after
-- ✅ Processing metadata automatically logged
-- ✅ BIDS-compliant derivatives saved
-
-That's it. No complex setup, no external dependencies to manage—just call the method and it works.
-
-### Three Types of Processing Blocks
-
-AutoCleanEEG supports three types of processing blocks, each serving a different purpose in the architecture:
-
-<Tabs>
-<Tab title="Bundled Blocks">
-**Shipped with the Pipeline** 📦
-
-**Bundled blocks** are processing blocks from the task-registry repository that are packaged and distributed with the pipeline itself.
-
-**Location:** `src/autoclean/blocks/`
-
-**Characteristics:**
-- ✅ Always available after installation
-- ✅ Task-registry is the source of truth
-- ✅ Versioned with the pipeline
-- ✅ Automatically discovered and loaded first (highest priority)
-- ✅ Include manifest.json with full metadata
-
-**Why Bundled?**
-These blocks are copied from the task-registry into the pipeline package during development, ensuring users get essential processing methods out-of-the-box without separate downloads. The task-registry remains the authoritative source, while bundling guarantees availability.
-
-**Currently Bundled (v2.4.0):**
-- `wavelet_threshold` - Wavelet-based artifact removal
-- `autoreject` - Data-driven epoch rejection
-- `source_localization` - MNE source estimation
-- `source_psd` - Source-level power spectral density
-- `source_connectivity` - Functional connectivity analysis
-- `specparam_analysis` - specparam spectral parameterization (aperiodic + periodic, formerly FOOOF)
-
-**CLI Commands:**
-```bash
-# List all bundled blocks
-autocleaneeg-pipeline blocks list
-
-# Get detailed info about a specific block
-autocleaneeg-pipeline blocks info wavelet_threshold
-
-# Check for updates (future feature)
-autocleaneeg-pipeline blocks update
-```
-</Tab>
-
-<Tab title="Internal Mixins">
-**Core Pipeline Methods** 🏗️
-
-**Internal mixins** are fundamental preprocessing methods built directly into the pipeline source code.
-
-**Location:** `src/autoclean/mixins/`
-
-**Characteristics:**
-- ✅ Core functionality (import, filter, ICA, epoch)
-- ✅ Stable, rarely changing API
-- ✅ Required for basic preprocessing
-- ✅ Thoroughly tested and validated
-- ✅ Not intended for independent distribution
-
-**Purpose:**
-These handle the 90% of standard preprocessing that every EEG analysis needs: loading data, filtering, rereferencing, ICA, epoching. They form the foundation on which processing blocks build.
-
-**Examples:**
-- `import_raw()` - Load EEG files
-- `resample_data()` - Change sampling rate
-- `filter_data()` - Band-pass/notch filtering
-- `rereference_data()` - Channel rereferencing
-- `run_ica()` - Independent component analysis
-- `create_epochs()` - Segment continuous data
-
-**Note:** Internal mixins are being gradually replaced by bundled blocks for advanced methods, maintaining clear separation between core functionality and extensible processing methods.
-</Tab>
-
-<Tab title="External Blocks">
-**User Plugins** 🔌
-
-**External blocks** are custom processing methods installed by users for specialized analyses or local extensions.
-
-**Location:** `~/.autoclean/blocks/` or workspace-specific directories
-
-**Characteristics:**
-- 🔧 User-installed
-- 🔧 Not part of the package
-- 🔧 Lowest priority (can override bundled/internal if needed)
-- 🔧 Custom extensions for specific research needs
-- 🔧 Can be shared as standalone plugins
-
-**Use Cases:**
-- Laboratory-specific processing methods
-- Experimental algorithms under development
-- Proprietary analyses not suitable for public release
-- Custom integrations with other tools
-
-**Installation:**
-```bash
-# Copy plugin to blocks directory
-cp my_custom_block.py ~/.autoclean/blocks/
-
-# Or install from git
-git clone https://github.com/lab/custom-block.git ~/.autoclean/blocks/custom_block
-```
-</Tab>
-</Tabs>
-
-### Block Discovery Priority
-
-When AutoCleanEEG starts, it discovers blocks in this priority order:
+Processing blocks use a **three-tier architecture** that balances availability, currency, and flexibility. Understanding this architecture helps you know where blocks come from and how they update.
 
 ```mermaid
-graph TB
-    Start[Pipeline Startup] --> Base[1. Load BaseMixin]
-    Base --> Bundled[2. Discover Bundled Blocks<br/>src/autoclean/blocks/]
-    Bundled --> Internal[3. Discover Internal Mixins<br/>src/autoclean/mixins/]
-    Internal --> External[4. Discover External Blocks<br/>~/.autoclean/blocks/]
-    External --> Combine[5. Combine All via MRO]
-    Combine --> Task[Task Class Ready]
+flowchart TD
+    GitHub[GitHub Task Registry<br/>github.com/.../task-registry] -->|blocks update| Cache[Local Cache<br/>~/.config/autocleaneeg/.block_cache/]
 
-    style Bundled fill:#90EE90,stroke:#2F4F2F,stroke-width:2px
-    style Internal fill:#FFD700,stroke:#B8860B,stroke-width:2px
-    style External fill:#87CEEB,stroke:#4682B4,stroke-width:2px
+    Cache -->|Priority 1| Discovery[Block Discovery System]
+    Bundle[Bundled with Pipeline<br/>src/autoclean/blocks/] -->|Priority 2| Discovery
+    GitHub -->|Fallback| Discovery
+
+    Discovery --> Task[Task Class<br/>self.apply_zapline available]
+
+    style GitHub fill:#e1f5ff,stroke:#0078d4
+    style Cache fill:#90EE90,stroke:#2F4F2F,stroke-width:2px
+    style Bundle fill:#FFD700,stroke:#B8860B
     style Task fill:#FF6B6B,stroke:#C92A2A,stroke-width:3px,color:#fff
 ```
 
-**What This Means:**
-- Bundled blocks take priority over internal mixins with the same method name
-- External blocks have lowest priority but can still override if placed correctly
-- Task-registry blocks (bundled) are always the source of truth for advanced methods
-- Core methods (internal mixins) provide stable foundation
+### The Three Tiers Explained
 
-<Note>
-**Version 2.4.0 Architecture**: The pipeline transitioned from internal mixins to bundled blocks for advanced processing methods. This creates clear separation:
-- **Internal mixins** = Core preprocessing (stable, built-in)
-- **Bundled blocks** = Advanced methods (task-registry, always available)
-- **External blocks** = User extensions (custom, optional)
-</Note>
+**Tier 1: Local Cache (Highest Priority)**
 
-**Example structure** for the wavelet_threshold block:
+When you run `autocleaneeg-pipeline blocks update`, the system downloads the latest block definitions from GitHub into a local cache directory (`~/.config/autocleaneeg/.block_cache/`). This cache takes priority over all other sources, ensuring you always use the most recent versions you've explicitly requested.
 
-```
-blocks/signal_processing/wavelet_threshold/
-├── mixin.py              # WaveletThresholdMixin class
-├── manifest.json         # Metadata, version, dependencies, references
-└── README.md             # Complete user documentation (600+ lines)
-```
+**Why this matters**: If a block is updated with a bug fix or new feature, running `blocks update` immediately makes it available without waiting for a new pipeline release.
 
-### Integration with Tasks
+**Tier 2: Bundled Blocks (Always Available)**
 
-Processing blocks integrate seamlessly into task files:
+Every AutoCleanEEG installation ships with a snapshot of essential blocks bundled directly into the package (`src/autoclean/blocks/`). These blocks are always available even if you're offline or have never run `blocks update`.
 
-<CodeGroup>
-```python Task with Wavelet Block
-from autoclean.core.task import Task
+**Why this matters**: You can start using processing blocks immediately after installation—no setup, no downloads, no configuration. The bundled blocks act as a safety net.
 
-config = {
-    "resample_step": {"enabled": True, "value": 250},
-    "filtering": {"enabled": True, "value": {"l_freq": 1, "h_freq": 45}},
+**Tier 3: Remote Registry (Fallback)**
 
-    # Add processing block configuration
-    "wavelet_threshold": {
-        "enabled": True,
-        "value": {
-            "wavelet": "sym4",
-            "level": 5,
-            "threshold_mode": "soft",
-            "threshold_scale": 1.0,
-        }
-    },
-}
+If a block isn't in your cache or bundled files (rare edge case), the system can fetch it directly from GitHub as a last resort. This ensures you never lose access to blocks even if your cache is corrupted.
 
-class MyTask(Task):
-    def run(self):
-        self.import_raw()
-        self.resample_data()
-        self.filter_data()
+**Why this matters**: The system gracefully degrades. Network issues or cache problems won't break your pipeline.
 
-        # Call processing block method
-        self.apply_wavelet_threshold()  # ← That's it!
+### Discovery Priority in Action
 
-        self.create_regular_epochs()
-```
-
-```python Traditional Approach (Without Blocks)
-from autoclean.core.task import Task
-import pywt
-import numpy as np
-# ... many more imports ...
-
-class MyTask(Task):
-    def run(self):
-        self.import_raw()
-        self.resample_data()
-        self.filter_data()
-
-        # Implement algorithm yourself (100+ lines)
-        for ch_idx in range(self.raw.get_data().shape[0]):
-            data = self.raw.get_data()[ch_idx]
-            coeffs = pywt.wavedec(data, 'sym4', level=5)
-            sigma = np.median(np.abs(coeffs[-1])) / 0.6745
-            # ... threshold calculation ...
-            # ... coefficient processing ...
-            # ... reconstruction ...
-            # ... reporting ...
-
-        self.create_regular_epochs()
-```
-</CodeGroup>
-
-<Info>
-**The power of blocks**: What would take 100+ lines of custom code, plus documentation research, plus validation testing, is reduced to a single method call with well-documented, scientifically-validated parameters.
-</Info>
-
----
-
-## Built-in Methods vs. Processing Blocks
-
-### When to Use Each
-
-<Tabs>
-<Tab title="Built-in Methods">
-**Use for standard preprocessing steps:**
-
-| Method | Purpose |
-|--------|---------|
-| `import_raw()` | Load EEG data |
-| `resample_data()` | Change sampling rate |
-| `filter_data()` | Apply band-pass/notch filters |
-| `rereference_data()` | Rereference channels |
-| `run_ica()` | Independent component analysis |
-| `create_epochs()` | Segment continuous data |
-
-**Characteristics:**
-- ✅ Stable API (rarely changes)
-- ✅ Always available
-- ✅ Thoroughly tested
-- ✅ Covers 90% of use cases
-- ✅ Required for basic preprocessing
-</Tab>
-
-<Tab title="Processing Blocks">
-**Use for advanced/specialized methods:**
-
-| Block | Purpose |
-|-------|---------|
-| `wavelet_threshold` | Transient artifact removal via DWT |
-| `advanced_ica` (planned) | Enhanced ICA with multiple algorithms |
-| `autoreject` (planned) | Data-driven epoch rejection |
-| `connectivity` (planned) | Functional connectivity measures |
-
-**Characteristics:**
-- 🔬 Cutting-edge methods
-- 📊 Research-validated
-- 📚 Scientifically documented
-- 🔄 Independently updated
-- 🎓 Require domain knowledge
-- 🧩 Optional enhancements
-</Tab>
-</Tabs>
-
-### Decision Tree
-
-```mermaid
-graph TD
-    Start{Need a processing method?}
-
-    Start -->|Import, Filter, Epoch, ICA| Builtin[Use Built-in Method]
-    Start -->|Advanced analysis| CheckBlock{Is there a<br/>Processing Block?}
-
-    CheckBlock -->|Yes| UseBlock[Use Processing Block]
-    CheckBlock -->|No| Options{Options}
-
-    Options --> CreateBlock[Create New Block]
-    Options --> CustomCode[Write Custom Code]
-
-    Builtin --> Done[✓ Done]
-    UseBlock --> Done
-    CreateBlock --> Share[Share with Community]
-    CustomCode --> Consider[Consider Contributing<br/>as Block]
-
-    style Builtin fill:#90EE90,stroke:#2F4F2F,stroke-width:2px
-    style UseBlock fill:#87CEEB,stroke:#00008B,stroke-width:2px
-    style CreateBlock fill:#FFD700,stroke:#B8860B,stroke-width:2px
-```
-
----
-
-## Example: Wavelet Thresholding Block
-
-Let's see a real-world example with the **wavelet_threshold** block—our first processing block implementation.
-
-### Scientific Context
-
-**Wavelet thresholding** uses discrete wavelet transform (DWT) to remove transient, high-amplitude artifacts (eye blinks, muscle twitches, electrode pops) while preserving underlying neural signals. This method is the cornerstone of the [HAPPE pipeline](https://github.com/PINE-Lab/HAPPE) for developmental EEG.
-
-**Key papers:**
-- Donoho & Johnstone (1994): Universal thresholding theory
-- Gabard-Durnam et al. (2018): HAPPE pipeline for high-artifact data
-
-### Using the Block
+Here's what happens when you import Task and call a block method:
 
 ```python
-config = {
-    "wavelet_threshold": {
-        "enabled": True,
-        "value": {
-            "wavelet": "sym4",           # Symlet-4 wavelet basis
-            "level": 5,                   # Decomposition depth
-            "threshold_mode": "soft",     # Soft thresholding (smoother)
-            "threshold_scale": 1.0,       # Universal threshold multiplier
-            "is_erp": False,              # ERP-preserving mode off
-        }
-    }
-}
+from autoclean.core.task import Task  # Triggers discovery
 
-class RestingWithWavelet(Task):
+class MyTask(Task):
     def run(self):
-        self.import_raw()
-        self.filter_data()
-
-        # Apply wavelet threshold
-        self.apply_wavelet_threshold()
-
-        self.create_epochs()
+        self.apply_zapline()  # ← How is this available?
 ```
 
-### What You Get
+**Behind the scenes**:
 
-- ✅ **Processed data**: Transient artifacts removed
-- ✅ **PDF report**: `*_wavelet_threshold.pdf` with:
-  - Before/after waveform comparisons
-  - Power spectral density changes
-  - Per-channel artifact reduction metrics
-  - Top 10 most affected channels
-- ✅ **Metadata**: Reduction percentages, effective decomposition level
-- ✅ **Derivatives**: Saved to `derivatives/05_wavelet_threshold/`
+1. Pipeline scans `~/.config/autocleaneeg/.block_cache/` (cache tier)
+2. For each block in cache, imports its `ZaplineMixin` class
+3. Falls back to `src/autoclean/blocks/` (bundled tier) for missing blocks
+4. Combines all mixin classes via multiple inheritance
+5. Task now has all block methods available as if they were built-in
+
+**The result**: `self.apply_zapline()`, `self.apply_wavelet_threshold()`, and all other block methods "just work" without any imports or setup.
 
 <Tip>
-See the [Wavelet Threshold Overview](/processing-blocks/wavelet-threshold/overview) for complete documentation, parameter tuning, and advanced usage patterns.
+**Mental Model**: Think of blocks like an app store. Bundled blocks are "pre-installed apps" that come with your phone. Running `blocks update` is like checking for app updates. The cache is your "updated apps" folder that overrides the pre-installed versions.
 </Tip>
 
 ---
 
-## Current and Planned Blocks
+## Using Processing Blocks (Quick Start)
 
-### Available Now ✅
+### Step 1: See What's Available
 
-<Card title="wavelet_threshold" icon="wave-square" href="/processing-blocks/wavelet-threshold/overview">
-  **Wavelet-based artifact removal** using discrete wavelet transform with universal thresholding.
+List all blocks currently available on your system:
 
-  - **Status**: Stable (v1.0.0)
-  - **Category**: Signal Processing
-  - **Use Cases**: Transient artifacts, developmental EEG, high-artifact data
-  - **References**: Donoho (1995), HAPPE (2018)
-</Card>
+```bash
+autocleaneeg-pipeline blocks list
+```
 
-### Coming Soon 🔄
+**Example output**:
+```
+Processing Blocks (7 total)
+
+                               Signal Processing
+┏━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Name              ┃ Version ┃ Source  ┃ Description                          ┃
+┡━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ wavelet_threshold │ 1.0.0   │ bundled │ Wavelet-based artifact removal       │
+│ autoreject        │ 1.0.0   │ bundled │ ML-based epoch rejection             │
+│ zapline           │ 1.0.0   │ bundled │ DSS line noise removal               │
+└───────────────────┴─────────┴─────────┴──────────────────────────────────────┘
+
+                                   Analysis
+┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Name                ┃ Version ┃ Source  ┃ Description                      ┃
+┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ fooof_analysis      │ 1.0.0   │ bundled │ Spectral parameterization        │
+│ source_localization │ 1.0.0   │ bundled │ MNE source estimation            │
+│ source_psd          │ 1.0.0   │ bundled │ Source-level power analysis      │
+│ source_connectivity │ 1.0.0   │ bundled │ Functional connectivity          │
+└─────────────────────┴─────────┴─────────┴──────────────────────────────────┘
+```
+
+**Note the "Source" column**:
+- `bundled`: Shipped with pipeline (always available)
+- `cache`: Downloaded via `blocks update` (overrides bundled)
+- `registry`: Available on GitHub but not yet cached
+
+### Step 2: Get Detailed Information
+
+Learn about a specific block before using it:
+
+```bash
+autocleaneeg-pipeline blocks info zapline
+```
+
+**Example output**:
+```
+╭───────────────────────────── Block Information ──────────────────────────────╮
+│ zapline v1.0.0                                                               │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+Description: Zapline DSS-based line noise removal using Denoising Source
+Separation for removing power line artifacts from EEG/MEG data
+
+Category: signal_processing
+Source: bundled
+Method: apply_zapline()
+Config Key: apply_zapline
+
+Required Packages:
+  mne >=1.10.0
+  meegkit >=0.1.9
+
+References:
+  - de Cheveigné, A. (2020). ZapLine: A simple and effective method to remove
+    power line artifacts. NeuroImage, 207, 116356.
+
+Tags: line-noise, 60Hz, 50Hz, dss, denoising
+```
+
+This tells you everything you need: what it does, what it requires, how to configure it, and the scientific references.
+
+### Step 3: Update Blocks from GitHub
+
+Pull the latest block versions from the community registry:
+
+```bash
+autocleaneeg-pipeline blocks update
+```
+
+**Example output**:
+```
+→ Updating blocks from GitHub registry...
+
+Block Library refreshed (version 8a3f21c).
+
+New blocks:
+  + zapline
+
+Updated blocks:
+  ↻ wavelet_threshold (1.0.0 → 1.1.0)
+```
+
+<Info>
+**When to update**: Run `blocks update` periodically (monthly) or when you see announcements about new blocks or bug fixes. Updates are backward-compatible—your existing tasks won't break.
+</Info>
+
+### Step 4: Use a Block in Your Task
+
+Add the block to your task configuration and call its method:
+
+```python
+from autoclean.core.task import Task
+
+config = {
+    "resample_step": {"enabled": True, "value": 250},
+    "filtering": {
+        "enabled": True,
+        "value": {"l_freq": 1, "h_freq": 100, "notch_freqs": [60]}
+    },
+
+    # Add block configuration
+    "apply_zapline": {
+        "enabled": True,
+        "value": {
+            "fline": 60,     # Line frequency (Hz)
+            "nkeep": 1,      # Components to remove
+            "use_iter": False # Single-pass mode
+        }
+    }
+}
+
+class MyRestingTask(Task):
+    def run(self):
+        self.import_raw()
+        self.resample_data()
+        self.filter_data()
+
+        # Apply Zapline block
+        self.apply_zapline()  # ← That's it!
+
+        self.run_ica()
+        self.create_regular_epochs(export=True)
+```
+
+**What happens when you run this**:
+
+1. Zapline checks if enabled in config (yes)
+2. Extracts parameters (`fline=60`, `nkeep=1`)
+3. Measures line noise power before processing
+4. Applies DSS algorithm to remove 60 Hz contamination
+5. Measures line noise power after processing
+6. Logs reduction metrics (e.g., "Reduced 60 Hz by 18.3 dB")
+7. Saves cleaned data to `derivatives/zapline/`
+8. Updates task metadata with processing details
+
+### Step 5: Review Block Output
+
+Blocks generate detailed reports and metrics:
+
+```bash
+# View output directory
+autocleaneeg-pipeline workspace explore
+
+# Look for:
+# - derivatives/zapline/sub-01_task-rest_eeg.fif (processed data)
+# - reports/zapline/sub-01_zapline_report.pdf (quality metrics)
+# - metadata/sub-01_processing.json (logged parameters)
+```
+
+The console output also shows real-time quality metrics:
+
+```
+[INFO] Pre-Zapline: 65.3 dB at 60 Hz (SNR: 3.42)
+[HEADER] Applying Zapline (fline=60 Hz, nkeep=1, iter=False)...
+[INFO] Post-Zapline: 45.1 dB at 60 Hz (reduction: 20.2 dB, SNR: 0.98)
+[SUCCESS] Zapline complete (1 iterations)
+```
+
+---
+
+## Built-In vs. Processing Blocks: When to Use Each
+
+Not everything is a processing block. AutoCleanEEG's architecture divides functionality between core methods and extensible blocks for good reasons.
+
+### Core Methods (Built Into Pipeline)
+
+These handle fundamental preprocessing that every analysis needs:
+
+| Method | Purpose | Stability |
+|--------|---------|-----------|
+| `import_raw()` | Load EEG files | Stable API, rarely changes |
+| `resample_data()` | Change sampling rate | Standard operation, well-tested |
+| `filter_data()` | Band-pass/notch filtering | MNE-based, thoroughly validated |
+| `rereference_data()` | Reference to average/mastoid | Core preprocessing step |
+| `run_ica()` | Independent component analysis | Established method, stable |
+| `create_epochs()` | Segment continuous data | Standard BIDS workflow |
+
+**When to use**: For standard preprocessing that appears in 90%+ of EEG studies. These methods are stable, well-tested, and rarely need updates.
+
+### Processing Blocks (Extensible Modules)
+
+These provide specialized, cutting-edge methods:
+
+| Block | Purpose | Update Frequency |
+|-------|---------|------------------|
+| `apply_zapline()` | DSS-based line noise removal | As algorithm improves |
+| `apply_wavelet_threshold()` | Wavelet denoising (HAPPE-style) | Parameter tuning, bug fixes |
+| `apply_autoreject()` | ML-based epoch rejection | Algorithm updates |
+| `apply_source_localization()` | Cortical source estimation | MNE updates, new methods |
+| `apply_source_connectivity()` | Functional connectivity | New connectivity measures |
+
+**When to use**: For advanced analyses beyond standard preprocessing, methods under active development, or techniques requiring domain expertise.
+
+### The Decision Tree
+
+```mermaid
+graph TD
+    Start{What do you need?}
+
+    Start -->|Load, filter, epoch,<br/>basic preprocessing| Core[Use Core Methods]
+    Start -->|Advanced analysis<br/>beyond basics| Check{Is there a<br/>Processing Block?}
+
+    Check -->|Yes| Block[Use Processing Block]
+    Check -->|No| Consider{Options}
+
+    Consider -->|Novel method| Create[Create New Block]
+    Consider -->|One-off analysis| Custom[Write Custom Code]
+    Consider -->|Published technique| Request[Request Block Creation]
+
+    Core --> Done[✓ Reliable, Stable]
+    Block --> Done2[✓ Validated, Updated]
+    Create --> Share[Consider Contributing]
+
+    style Core fill:#90EE90,stroke:#2F4F2F,stroke-width:2px
+    style Block fill:#87CEEB,stroke:#00008B,stroke-width:2px
+    style Create fill:#FFD700,stroke:#B8860B,stroke-width:2px
+```
+
+<Tip>
+**Rule of Thumb**: If the method appears in textbook EEG preprocessing chapters, it's probably a core method. If it appears in recent Nature Neuroscience papers, it's probably a processing block.
+</Tip>
+
+---
+
+## Current Processing Blocks
+
+### Signal Processing
 
 <AccordionGroup>
-<Accordion title="advanced_ica - Enhanced ICA Methods" icon="brain">
-**Multiple ICA algorithms with automated selection**
+<Accordion title="wavelet_threshold — Wavelet-Based Artifact Removal" icon="wave-square">
+**Remove transient artifacts using discrete wavelet transform**
 
-- Infomax, FastICA, Picard, Extended Infomax
-- Automatic algorithm selection based on data characteristics
-- Enhanced convergence diagnostics
-- Multiple component classification methods
+Implements the HAPPE pipeline approach for removing high-amplitude transients (eye blinks, muscle twitches, electrode pops) while preserving underlying neural signals.
 
-**Priority**: High | **Timeline**: Q1 2026
+**Key Features:**
+- Universal thresholding (Donoho & Johnstone, 1994)
+- Soft/hard thresholding modes
+- ERP-preserving option
+- Comprehensive PDF reports
+
+**Best For:**
+- Developmental EEG (high artifact rates)
+- Pediatric populations
+- Data with frequent motion artifacts
+- Alternative to ICA for transients
+
+**Status**: Stable (v1.0.0)
+
+**References**: Donoho (1995), Gabard-Durnam et al. (2018)
+
+[Complete Documentation →](/processing-blocks/wavelet-threshold/overview)
 </Accordion>
 
-<Accordion title="autoreject - Data-Driven Epoch Rejection" icon="filter">
-**Automated bad epoch and channel detection**
+<Accordion title="autoreject — ML-Based Epoch Rejection" icon="filter">
+**Data-driven automated artifact rejection using cross-validation**
 
+Automatically determines rejection thresholds and decides which epochs to reject vs. which channels to interpolate, using machine learning instead of arbitrary thresholds.
+
+**Key Features:**
 - Cross-validation based thresholding
 - Channel interpolation decisions
-- Global vs. local rejection strategies
+- Consensus rejection across sensors
 - Transparent rejection criteria
 
-**Priority**: High | **Timeline**: Q1 2026
+**Best For:**
+- Epoch-level quality control
+- Event-related analyses (ERP, ERN, P300)
+- Objective artifact rejection
+- Studies requiring reproducible QC
+
+**Status**: Stable (v1.0.0)
 
 **References**: Jas et al. (2017) NeuroImage
+
+[Complete Documentation →](/processing-blocks/autoreject/overview)
 </Accordion>
 
-<Accordion title="statistical_learning - ITC/ERSP Analysis" icon="chart-line">
-**Advanced time-frequency decomposition**
+<Accordion title="zapline — DSS Line Noise Removal" icon="wave-pulse">
+**Remove 50/60 Hz line noise using spatial filtering**
 
-- Inter-trial coherence (ITC)
-- Event-related spectral perturbation (ERSP)
-- Statistical learning paradigm support
-- Phase-amplitude coupling
+Uses Denoising Source Separation to remove power line artifacts by exploiting spatial consistency of noise across channels. Better signal preservation than traditional notch filters.
 
-**Priority**: Medium | **Timeline**: Q2 2026
+**Key Features:**
+- Single-pass or iterative modes
+- Automatic quality metrics (dB reduction, SNR)
+- Preserves neural signals at line frequency
+- Works with harmonics
+
+**Best For:**
+- Spectral analyses sensitive to line noise
+- Connectivity studies
+- Frequency domain analyses
+- Alternative to aggressive notch filtering
+
+**Status**: Stable (v1.0.0)
+
+**References**: de Cheveigné (2020) NeuroImage
+
+[Complete Documentation →](/processing-blocks/zapline/overview) *(coming soon)*
+</Accordion>
+</AccordionGroup>
+
+### Analysis Blocks
+
+<AccordionGroup>
+<Accordion title="source_localization — MNE Source Estimation" icon="brain">
+**Project sensor-space EEG to cortical sources**
+
+Implements minimum norm estimation to localize EEG activity to cortical surfaces using the fsaverage template brain.
+
+**Key Features:**
+- Multiple inverse methods (MNE, dSPM, sLORETA)
+- Forward model computation
+- Source space transformation
+- ROI extraction via atlases
+
+**Best For:**
+- Source-level analyses
+- Cortical mapping
+- Network connectivity
+- Region-of-interest studies
+
+**Status**: Stable (v1.0.0)
 </Accordion>
 
-<Accordion title="connectivity - Functional Connectivity" icon="diagram-project">
-**Network analysis and connectivity measures**
+<Accordion title="source_psd — Source-Level Power Analysis" icon="chart-line">
+**Compute power spectral density in source space**
 
-- Phase lag index (PLI)
-- Weighted phase lag index (wPLI)
-- Coherence and partial coherence
-- Graph theory metrics
+Calculate Welch PSD on cortical sources with automated ROI averaging using Desikan-Killiany atlas.
 
-**Priority**: Medium | **Timeline**: Q2 2026
+**Key Features:**
+- Frequency band power extraction
+- ROI-based averaging
+- Multiple atlas support
+- Vertex-level or parcel-level output
+
+**Best For:**
+- Oscillatory power analyses
+- Regional spectral profiles
+- Frequency band comparisons
+- Resting-state power studies
+
+**Status**: Stable (v1.0.0)
+</Accordion>
+
+<Accordion title="source_connectivity — Functional Connectivity" icon="diagram-project">
+**Measure functional connectivity between brain regions**
+
+Compute connectivity using multiple methods (wPLI, PLV, coherence, PLI, AEC) with graph theory metrics.
+
+**Key Features:**
+- 5 connectivity methods
+- Graph theory metrics (clustering, efficiency)
+- Frequency-specific connectivity
+- Network visualization support
+
+**Best For:**
+- Network neuroscience
+- Brain connectivity studies
+- Graph theory analyses
+- Resting-state networks
+
+**Status**: Stable (v1.0.0)
+</Accordion>
+
+<Accordion title="fooof_analysis — Spectral Parameterization" icon="wave-square">
+**Decompose power spectra into periodic and aperiodic components**
+
+Implements specparam (formerly FOOOF) to separate oscillatory peaks from 1/f background in source-localized data.
+
+**Key Features:**
+- Aperiodic component extraction (slope, offset)
+- Oscillatory peak detection
+- Vertex-level parameterization
+- Automated peak fitting
+
+**Best For:**
+- Separating oscillations from 1/f noise
+- Developmental studies (changing aperiodic slope)
+- Aging research
+- Cross-frequency comparisons
+
+**Status**: Stable (v1.0.0)
+
+**References**: Donoghue et al. (2020) Nature Neuroscience
 </Accordion>
 </AccordionGroup>
 
 ---
 
-## How to Get Started
+## CLI Reference
+
+Complete command reference for working with processing blocks:
+
+### Discovery Commands
+
+```bash
+# List all available blocks with source indicators
+autocleaneeg-pipeline blocks list
+
+# Get detailed info about a specific block
+autocleaneeg-pipeline blocks info <block_name>
+autocleaneeg-pipeline blocks info zapline
+
+# Show registry sync status
+autocleaneeg-pipeline blocks list  # Shows registry version at bottom
+```
+
+### Update Commands
+
+```bash
+# Update blocks from GitHub registry
+autocleaneeg-pipeline blocks update
+
+# Update with network disabled (use cache/bundled only)
+autocleaneeg-pipeline blocks update --no-network
+
+# Force cache refresh even if up-to-date
+autocleaneeg-pipeline blocks update --force
+```
+
+### Installation Commands
+
+```bash
+# Download a block to local cache for inspection
+autocleaneeg-pipeline blocks install <block_name>
+autocleaneeg-pipeline blocks install wavelet_threshold
+
+# Install all blocks from registry
+autocleaneeg-pipeline blocks install --all
+```
+
+<Note>
+**About "Installation"**: Unlike traditional plugins, blocks don't require explicit installation to *use*—they're automatically discovered from bundled sources. The `install` command downloads blocks to your cache so you can inspect their source code or ensure you have the latest version before `blocks update` runs.
+</Note>
+
+### Working Offline
+
+The three-tier architecture ensures blocks work offline:
+
+```bash
+# Bundled blocks always available (no network needed)
+autocleaneeg-pipeline blocks list
+
+# Use blocks from cache even if GitHub is unreachable
+autocleaneeg-pipeline process /path/to/data.set
+
+# Disable network access entirely
+autocleaneeg-pipeline blocks update --no-network
+```
+
+**Offline behavior**:
+- Bundled blocks always work (shipped with pipeline)
+- Cached blocks work (previously downloaded)
+- Remote registry fallback skipped if offline
+- No errors—graceful degradation
+
+---
+
+## Block Metadata and Reproducibility
+
+Every block includes rich metadata that gets logged automatically for reproducibility:
+
+### What Gets Logged
+
+When you run a block, AutoCleanEEG records:
+
+```json
+{
+  "step_zapline": {
+    "block_name": "zapline",
+    "block_version": "1.0.0",
+    "block_source": "cache",
+    "timestamp": "2025-10-01T14:32:18Z",
+    "parameters": {
+      "fline": 60,
+      "nkeep": 1,
+      "use_iter": false,
+      "max_iter": 10
+    },
+    "quality_metrics": {
+      "power_before_db": 65.3,
+      "power_after_db": 45.1,
+      "reduction_db": 20.2,
+      "snr_before": 3.42,
+      "snr_after": 0.98,
+      "iterations": 1
+    },
+    "method": "dss_line",
+    "n_channels": 64
+  }
+}
+```
+
+This metadata appears in:
+- **Subject JSON files** (`derivatives/sub-01_processing.json`)
+- **Database audit logs** (SQLite with tamper-proof hash chains)
+- **BIDS sidecar files** (`.json` accompanying `.fif` files)
+
+### Why This Matters for Science
+
+**Reproducibility**: Six months later, you can see exactly which block version, which parameters, and which quality metrics were used.
+
+**Peer Review**: Reviewers can verify your processing pipeline matches your methods section.
+
+**Debugging**: If results look wrong, metadata shows where processing diverged.
+
+**Method Comparisons**: Compare quality metrics across different parameter settings to optimize.
+
+---
+
+## Contributing Your Own Blocks
+
+Have a novel processing method you'd like to share with the community? Processing blocks are designed to be community-contributed.
 
 <Steps>
-<Step title="Browse Available Blocks">
-View all processing blocks in the task registry:
+<Step title="Develop Your Method">
+Create a new directory with the four required files:
+- `manifest.json` — Metadata, dependencies, references
+- `algorithm.py` — Pure signal processing functions
+- `mixin.py` — Task integration wrapper
+- `README.md` — Complete documentation
 
-```bash
-autocleaneeg-pipeline task list --source=library
-```
-
-Look for tasks tagged with block names (e.g., "WaveletBlock_Test")
+See the [Creating Blocks Guide](/processing-blocks/creating-blocks) for detailed instructions.
 </Step>
 
-<Step title="Review Block Documentation">
-Each block has comprehensive documentation:
-
-- Scientific background and use cases
-- Complete parameter reference
-- Usage examples for different scenarios
-- Troubleshooting and tuning guides
-
-See [Wavelet Threshold Overview](/processing-blocks/wavelet-threshold/overview) as an example
+<Step title="Test Locally">
+Test your block with real data to verify:
+- Algorithm correctness
+- Parameter sensitivity
+- Quality metrics
+- Error handling
+- Documentation clarity
 </Step>
 
-<Step title="Install Example Task">
-Start with a pre-built task demonstrating the block:
-
-```bash
-autocleaneeg-pipeline task use RestingState_WaveletDemo
-```
+<Step title="Submit to Registry">
+Fork the [task-registry repository](https://github.com/cincibrainlab/autocleaneeg-task-registry), add your block, and create a pull request with:
+- Complete block files
+- Test task demonstrating usage
+- Scientific references
+- Validation results
 </Step>
 
-<Step title="Test with Your Data">
-Process a sample file to see the block in action:
-
-```bash
-autocleaneeg-pipeline process /path/to/your/data.set
-```
-
-Check the generated report to understand the block's effect on your data
+<Step title="Code Review">
+Maintainers will review your submission for:
+- Scientific validity (methods match cited papers)
+- Code quality (docstrings, error handling)
+- Documentation completeness
+- Test coverage
 </Step>
 
-<Step title="Integrate into Custom Tasks">
-Once comfortable, add the block to your own task files. See [Using Processing Blocks](/processing-blocks/using-blocks) for integration patterns
+<Step title="Publication">
+After approval, your block becomes available to all AutoCleanEEG users via `blocks update`. Your contribution gets cited whenever someone uses the method!
 </Step>
 </Steps>
 
+**Requirements for new blocks**:
+- ✅ Based on peer-reviewed methodology
+- ✅ Complete documentation with parameter guidance
+- ✅ Scientific references with DOIs
+- ✅ Quality metrics and validation
+- ✅ Example task demonstrating usage
+- ✅ Clear use cases and limitations
+
 ---
 
-## Scientific Transparency
+## Advanced Topics
 
-All processing blocks maintain the highest standards of scientific transparency:
+### Block Versioning
+
+Blocks follow semantic versioning (major.minor.patch):
+
+- **Patch (1.0.0 → 1.0.1)**: Bug fixes, doc improvements (safe to update)
+- **Minor (1.0.0 → 1.1.0)**: New features, backward-compatible (safe to update)
+- **Major (1.0.0 → 2.0.0)**: Breaking API changes (review migration guide)
+
+The `blocks update` command shows version changes:
+```
+Updated blocks:
+  ↻ wavelet_threshold (1.0.0 → 1.1.0) - Added ERP-preserving mode
+```
+
+### Custom Block Locations
+
+Advanced users can add custom block directories:
+
+```python
+# In task file
+import sys
+sys.path.insert(0, '/path/to/my/custom/blocks')
+
+from autoclean.core.task import Task
+# Custom blocks now discoverable
+```
+
+Or set environment variable:
+```bash
+export AUTOCLEAN_BLOCKS_PATH="/path/to/custom/blocks:$HOME/.local/blocks"
+autocleaneeg-pipeline process data.set
+```
+
+### Block Priority and Overrides
+
+If multiple locations have blocks with the same name, priority is:
+
+1. **Local cache** (`~/.config/autocleaneeg/.block_cache/`)
+2. **Bundled** (`src/autoclean/blocks/`)
+3. **Remote registry** (GitHub fallback)
+4. **Custom paths** (if configured, lowest priority)
+
+This allows you to override bundled blocks with newer cached versions without modifying the pipeline installation.
+
+---
+
+## Troubleshooting
+
+### "Block not found" errors
+
+**Symptom**: `AttributeError: 'MyTask' object has no attribute 'apply_zapline'`
+
+**Solution**:
+```bash
+# Check if block is available
+autocleaneeg-pipeline blocks list | grep zapline
+
+# If not listed, update from registry
+autocleaneeg-pipeline blocks update
+
+# If still missing, check bundled blocks
+ls ~/.local/lib/python3.*/site-packages/autoclean/blocks/
+```
+
+### Outdated block versions
+
+**Symptom**: Missing features or bug present in newer versions
+
+**Solution**:
+```bash
+# Check current version
+autocleaneeg-pipeline blocks info wavelet_threshold
+
+# Update to latest
+autocleaneeg-pipeline blocks update
+
+# Verify update
+autocleaneeg-pipeline blocks list  # Check source column shows "cache"
+```
+
+### Network/offline issues
+
+**Symptom**: `blocks update` fails with connection errors
+
+**Solution**: Use bundled blocks (no network needed):
+```bash
+# Bundled blocks always available
+autocleaneeg-pipeline blocks list
+
+# Skip update, use existing blocks
+autocleaneeg-pipeline process data.set
+```
+
+Bundled blocks are snapshots from the last pipeline release. They work indefinitely offline.
+
+---
+
+## Next Steps
 
 <CardGroup cols={2}>
-<Card title="📄 Literature References" icon="book-open">
-  Every block cites foundational papers with DOI links in its manifest and documentation
+<Card title="Browse Available Blocks" icon="list" href="/processing-blocks/available-blocks">
+  Complete catalog of processing blocks with use cases and references
 </Card>
 
-<Card title="🔬 Validation Studies" icon="flask">
-  Blocks include validation against published methods and example datasets
+<Card title="Wavelet Threshold Deep-Dive" icon="wave-square" href="/processing-blocks/wavelet-threshold/overview">
+  Comprehensive guide to the wavelet_threshold block with parameter tuning
 </Card>
 
-<Card title="⚙️ Parameter Guidance" icon="sliders">
-  Recommended settings from domain experts with explanations of trade-offs
+<Card title="Create Your Own Block" icon="code" href="/processing-blocks/creating-blocks">
+  Developer guide: design, implement, and contribute new processing blocks
 </Card>
 
-<Card title="📊 Comparison Tables" icon="table">
-  When multiple methods exist (e.g., wavelet vs. ICA), clear comparison tables help you choose
-</Card>
-
-<Card title="✅ Test Tasks" icon="check">
-  Each block ships with test tasks demonstrating correct usage and expected output
-</Card>
-
-<Card title="📈 Reproducibility" icon="code-compare">
-  Complete source code, version tracking, and BIDS-compliant outputs ensure reproducibility
-</Card>
-</CardGroup>
-
----
-
-## Contributing New Blocks
-
-Have a processing method you'd like to share? Processing blocks are designed to be community-contributed!
-
-**Requirements for a block:**
-1. ✅ Mixin class with clear API
-2. ✅ Complete README (scientific background, parameters, examples)
-3. ✅ Manifest with metadata and references
-4. ✅ Test task demonstrating usage
-5. ✅ Literature citations with DOIs
-6. ✅ Validation against published method or example data
-
-See [Contributing Processing Blocks](/processing-blocks/contributing-blocks) for detailed guidelines.
-
----
-
-## Learn More
-
-<CardGroup cols={2}>
-<Card title="Getting Started" icon="rocket" href="/processing-blocks/getting-started">
-  Quick start guide: discover, install, and use your first processing block
-</Card>
-
-<Card title="Wavelet Threshold Block" icon="wave-square" href="/processing-blocks/wavelet-threshold/overview">
-  Deep-dive into our first processing block with complete parameter reference
-</Card>
-
-<Card title="Using Blocks in Tasks" icon="puzzle-piece" href="/processing-blocks/using-blocks">
-  Integration patterns and best practices for adding blocks to custom tasks
-</Card>
-
-<Card title="Block Architecture" icon="cubes" href="/processing-blocks/block-architecture">
-  Technical details: manifests, registry, versioning, and discovery system
+<Card title="Task Integration Patterns" icon="puzzle-piece" href="/tasks/task-customization">
+  Best practices for combining blocks with custom tasks
 </Card>
 </CardGroup>
 
@@ -620,13 +818,13 @@ See [Contributing Processing Blocks](/processing-blocks/contributing-blocks) for
 ## Key Takeaways
 
 <Tip>
-**Processing Blocks** transform AutoCleanEEG from a fixed pipeline tool into a flexible, extensible platform for cutting-edge EEG analysis—while maintaining the scientific rigor and reproducibility researchers demand.
+**Processing Blocks** transform AutoCleanEEG from a fixed pipeline into an extensible platform where cutting-edge methods stay scientifically validated, automatically updated, and community-contributed—without sacrificing reproducibility or ease of use.
 </Tip>
 
 <Info>
-**For most users**, built-in methods handle everything you need. Processing blocks are for researchers pushing the boundaries of EEG analysis or working with challenging data types (developmental EEG, high-artifact recordings, multi-modal integration).
+**For most researchers**, the built-in methods handle all standard preprocessing. Processing blocks become essential when you're working with challenging data (pediatric EEG, high artifacts), conducting advanced analyses (source localization, connectivity), or implementing novel published methods.
 </Info>
 
 <Warning>
-**Processing blocks require domain knowledge**. Always review the scientific documentation, parameter guidance, and example tasks before applying blocks to your own data. When in doubt, consult the literature or reach out to the community.
+**Always review block documentation** before applying to your data. Each block has specific use cases, parameter sensitivities, and assumptions. When in doubt, start with default parameters and consult the scientific references.
 </Warning>
