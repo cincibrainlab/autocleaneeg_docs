@@ -78,6 +78,7 @@
               "processing-blocks/introduction",
               "processing-blocks/getting-started",
               "processing-blocks/available-blocks",
+              "processing-blocks/creating-blocks",
               {
                 "group": "Wavelet Threshold",
                 "pages": [
