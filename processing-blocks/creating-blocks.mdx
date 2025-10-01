@@ -644,7 +644,7 @@ Now that you understand the architecture, let's walk through creating a complete
 
 Before writing any code, answer these foundational questions:
 
-**What problem does your block solve?** Be specific. "Remove artifacts" is too vague. "Remove slow drift artifacts (<0.1 Hz) caused by electrode gel drying or subject movement" is actionable.
+**What problem does your block solve?** Be specific. "Remove artifacts" is too vague. "Remove slow drift artifacts (&lt;0.1 Hz) caused by electrode gel drying or subject movement" is actionable.
 
 **What method will you implement?** Identify the specific paper or technique. For drift removal, we might implement: (1) Hamming-windowed FIR filter (Smith & Delorme, 2007), (2) Butter worth IIR with zero-phase (Widmann et al., 2015), or (3) Savitzky-Golay polynomial fit.
 
@@ -1040,7 +1040,7 @@ subject movement, or amplifier instability using adaptive high-pass filtering...
 
 ### What Causes Drift?
 
-Drift artifacts are slow (< 0.5 Hz) voltage changes that...
+Drift artifacts are slow (&lt; 0.5 Hz) voltage changes that...
 
 [Continue with comprehensive documentation following the Zapline README structure]
 ```
