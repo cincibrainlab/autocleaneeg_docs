@@ -1,10 +1,13 @@
-# The Art of Technical Documentation: A Philosophy and Practical Guide
-
-**Meta-document capturing the approach, style, and techniques for creating exceptional technical documentation**
-
-*Created: October 2025 | Based on: AutoCleanEEG Processing Blocks Developer Guide*
-
 ---
+title: "Documentation Philosophy & Style Guide"
+sidebarTitle: "Doc Style Guide"
+description: "A comprehensive guide to creating exceptional technical documentation using prose-first principles and strategic Mintlify components"
+icon: "book-open"
+---
+
+<Note>
+**For Documentation Contributors**: This guide captures the philosophy, techniques, and patterns used throughout AutoCleanEEG documentation. Use it as a reference when contributing new pages or improving existing ones.
+</Note>
 
 ## Table of Contents
 
@@ -490,29 +493,23 @@ The `api` section is critical for integration. Here's what each field controls:
 ```mdx
 <Tabs>
 <Tab title="Option A: Wavelet + ICA (Comprehensive)">
-```python
-def run(self):
-    self.import_raw()
-    self.apply_wavelet_threshold()  # Remove transients first
-    self.run_ica()                   # Then ICA for stationary artifacts
-```
+  def run(self):
+      self.import_raw()
+      self.apply_wavelet_threshold()  # Remove transients first
+      self.run_ica()                   # Then ICA for stationary artifacts
 </Tab>
 
 <Tab title="Option B: Wavelet Only (Fast)">
-```python
-def run(self):
-    self.import_raw()
-    self.apply_wavelet_threshold()  # Fast, good for developmental data
-```
+  def run(self):
+      self.import_raw()
+      self.apply_wavelet_threshold()  # Fast, good for developmental data
 </Tab>
 
 <Tab title="Option C: ICA + Wavelet (Alternative Ordering)">
-```python
-def run(self):
-    self.import_raw()
-    self.run_ica()                   # ICA first
-    self.apply_wavelet_threshold()   # Clean up remaining transients
-```
+  def run(self):
+      self.import_raw()
+      self.run_ica()                   # ICA first
+      self.apply_wavelet_threshold()   # Clean up remaining transients
 </Tab>
 </Tabs>
 ```
