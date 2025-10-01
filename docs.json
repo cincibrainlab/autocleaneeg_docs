@@ -38,12 +38,14 @@
           {
             "group": "Workspace",
             "pages": [
+              "workspace-overview",
               "outputs/open_workspace"
             ]
           },
           {
             "group": "Pipeline Outputs",
             "pages": [
+              "outputs/outputs_overview",
               "outputs/processing_log",
               "outputs/bids_overview",
               "outputs/subject_folders",
