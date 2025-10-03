@@ -1,0 +1,425 @@
+---
+title: "Discovering Events in Your Data"
+sidebarTitle: "Event Discovery"
+description: "Learn what event markers exist in your EEG data and configure epoching correctly"
+icon: "magnifying-glass"
+---
+
+## The Event Configuration Problem
+
+When you start working with event-related EEG data, you immediately face a chicken-and-egg problem: you need to configure `event_id` to create epochs, but you don't know what event codes exist in your data until you look. You might know the experiment used "standard" and "deviant" tones, but does the data file store these as strings like `"Standard"`, numeric codes like `1` and `2`, or something else entirely like `"DIN1"` and `"DIN2"`?
+
+The traditional solution is writing throwaway Python scripts to inspect `raw.annotations`, manually noting codes, then configuring your task. This wastes time and introduces errors—especially when codes change between recording sessions or file formats.
+
+**Event Discovery** solves this by automatically extracting, analyzing, and presenting all event information from your data in a single method call, complete with ready-to-use configuration examples.
+
+## How Event Discovery Works
+
+### The One-Line Solution
+
+```python
+class MyTask(Task):
+    def run(self):
+        self.import_raw()
+
+        # Discover what events exist in this data
+        self.print_discovered_events()
+```
+
+That's it. Run this task on your data file, and you'll see:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 DISCOVERED EVENTS IN YOUR DATA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Event Name              Code    Count     % of Total
+────────────────────────────────────────────────────────────────────
+Standard                1       800       66.7%
+Deviant                 2       200       16.7%
+Target                  3       200       16.7%
+
+Total stimulus events: 1200
+Excluded: BAD_boundary, BAD_edge (artifact markers)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+### What You Get
+
+Event discovery automatically provides:
+
+1. **Event inventory**: Complete list of all event markers found in your data
+2. **Occurrence statistics**: How many times each event appears and its percentage
+3. **Smart filtering**: Automatically excludes artifact markers (BAD_* events) and rare events
+4. **Ready-to-use config**: JSON snippets you can copy directly into your task
+
+The method extracts events from `raw.annotations`, counts occurrences, filters noise, and formats everything in an easy-to-understand table.
+
+## Using Discovered Events
+
+### Step 1: Discover
+
+Run event discovery on your data:
+
+```python
+class ExploreData(Task):
+    def run(self):
+        self.import_raw()
+        self.print_discovered_events()
+```
+
+### Step 2: Copy Configuration
+
+The output includes two configuration examples—basic and custom:
+
+**Basic Configuration** (uses codes as-is):
+```json
+{
+  "epoch_settings": {
+    "enabled": true,
+    "value": {"tmin": -0.5, "tmax": 2.0},
+    "event_id": {
+      "Standard": 1,
+      "Deviant": 2,
+      "Target": 3
+    }
+  }
+}
+```
+
+**Custom Configuration** (map to meaningful names):
+```json
+{
+  "epoch_settings": {
+    "enabled": true,
+    "value": {"tmin": -0.5, "tmax": 2.0},
+    "event_id": {
+      "frequent_tone": 1,
+      "rare_tone": 2,
+      "response_target": 3
+    }
+  }
+}
+```
+
+<Tip>
+**Recommended approach**: Use custom configuration with meaningful scientific names. This makes your analysis code self-documenting and easier to understand when you return to it months later. Compare `epochs['rare_tone']` versus `epochs['Deviant']`—the scientific meaning is immediately clear.
+</Tip>
+
+### Step 3: Apply to Your Task
+
+Add the configuration to your task file:
+
+```python
+config = {
+    "epoch_settings": {
+        "enabled": True,
+        "value": {"tmin": -0.5, "tmax": 2.0},
+        "event_id": {
+            "frequent_tone": 1,
+            "rare_tone": 2,
+            "response_target": 3
+        }
+    }
+}
+
+class MMNAnalysis(Task):
+    def run(self):
+        self.import_raw()
+        self.filter_data()
+        self.create_regular_epochs()  # Uses event_id from config
+```
+
+## Advanced Features
+
+### Filtering Rare Events
+
+By default, events appearing fewer than 5 times are excluded from the table (but shown in a separate list). This prevents clutter from one-off trigger glitches or rare experimental events.
+
+The output shows both included and excluded events:
+
+```
+Included in table:
+  Standard (n=800), Deviant (n=200), Target (n=200)
+
+Excluded (rare, < 5 occurrences):
+  Error_Trial (n=2), Calibration (n=1)
+```
+
+### Understanding Event Codes
+
+Different EEG systems store events differently:
+
+<CardGroup cols={2}>
+<Card title="Numeric Codes" icon="hashtag">
+**Format**: `1`, `2`, `3`
+
+Used by: Most research-grade EEG systems
+
+**Example**:
+```json
+"event_id": {"standard": 1, "deviant": 2}
+```
+</Card>
+
+<Card title="String Markers" icon="font">
+**Format**: `"Standard"`, `"Deviant"`
+
+Used by: BrainVision, some EDF files
+
+**Example**:
+```json
+"event_id": {"standard": "Standard"}
+```
+</Card>
+
+<Card title="DIN Triggers" icon="bolt">
+**Format**: `"DIN1"`, `"DIN2"`
+
+Used by: EGI Net Station
+
+**Example**:
+```json
+"event_id": {"standard": "DIN1"}
+```
+</Card>
+
+<Card title="Mixed Formats" icon="shuffle">
+**Format**: Combination of above
+
+Used by: Converted or merged datasets
+
+**Example**:
+```json
+"event_id": {"std": 1, "dev": "DIN2"}
+```
+</Card>
+</CardGroup>
+
+Event discovery handles all formats automatically—you just copy what you see.
+
+### Excluding Specific Events
+
+Sometimes you want to discover events but exclude certain categories from your analysis:
+
+```python
+# In your task's run() method
+self.print_discovered_events()
+
+# Then in config, only include events you want
+config = {
+    "epoch_settings": {
+        "enabled": True,
+        "value": {"tmin": -0.2, "tmax": 0.8},
+        "event_id": {
+            "stimulus_A": 1,
+            "stimulus_B": 2
+            # Deliberately omit "boundary" or "response" events
+        }
+    }
+}
+```
+
+MNE will automatically ignore event codes not listed in `event_id`, so you have full control over what gets epoched.
+
+## Real-World Workflows
+
+### Workflow 1: New Dataset Exploration
+
+When you receive a new dataset, start by discovering events:
+
+```python
+class DataExploration(Task):
+    config = {
+        # Minimal config just to load data
+        "import_settings": {
+            "enabled": True,
+            "value": {"eeg_system": "EGI", "montage": "GSN-HydroCel-129"}
+        }
+    }
+
+    def run(self):
+        self.import_raw()
+        print("\n🔍 Discovering events in your data...\n")
+        self.print_discovered_events()
+```
+
+Run this task, note the event codes, then create your analysis task with proper configuration.
+
+### Workflow 2: Verifying Event Coding
+
+Before running a full analysis, verify that event codes match what you expect:
+
+```python
+class VerifyEvents(Task):
+    def run(self):
+        self.import_raw()
+        self.print_discovered_events()
+
+        # Compare discovered events to expected protocol
+        expected_events = {"Standard": 1, "Deviant": 2}
+        print("\nExpected events for this paradigm:")
+        for name, code in expected_events.items():
+            print(f"  {name}: {code}")
+```
+
+This catches issues early—before you waste processing time on misconfigured epochs.
+
+### Workflow 3: Batch Processing Check
+
+When processing multiple files, verify they all use consistent event coding:
+
+```python
+class CheckEventConsistency(Task):
+    def run(self):
+        # Process first file
+        self.import_raw()
+        print(f"\nFile: {self.config['unprocessed_file'].name}")
+        self.print_discovered_events()
+```
+
+Run on a few representative files. If event codes vary across files, you'll need to handle this in your configuration.
+
+## Common Issues and Solutions
+
+<AccordionGroup>
+<Accordion title="Why don't I see any events?" icon="circle-question">
+**Possible causes**:
+
+1. **Events not loaded during import**: Some file formats (like raw CNT) require explicit event file loading
+2. **All events are rare**: Lower the minimum occurrence threshold
+3. **Events are in separate file**: You may need to merge event files with annotations
+
+**Solution**: Check `raw.annotations` directly after import:
+```python
+def run(self):
+    self.import_raw()
+    print(f"Found {len(self.raw.annotations)} annotations")
+    print(self.raw.annotations.description[:10])  # First 10
+```
+</Accordion>
+
+<Accordion title="Events show as 'BAD_boundary' or weird codes" icon="triangle-exclamation">
+**What's happening**: These are artifact annotations added by previous processing (like MaxFilter or automatic artifact detection).
+
+**Solution**: Event discovery automatically filters these out. Only stimulus/experimental events are shown in the main table. BAD_* events appear in the "excluded" list.
+</Accordion>
+
+<Accordion title="I see duplicate event names with different codes" icon="copy">
+**Example**: Both `"Standard"` (code 1) and `"standard"` (code 2)
+
+**What's happening**: Event names are case-sensitive. Your data has inconsistent capitalization.
+
+**Solution**: Use the numeric codes rather than names in your config:
+```json
+"event_id": {"standard_lowercase": 2, "standard_cap": 1}
+```
+Or clean the annotations before discovery.
+</Accordion>
+
+<Accordion title="Too many rare events clutter the output" icon="filter">
+**What's happening**: Experimental protocols sometimes have dozens of rare event codes (errors, practice trials, calibration pulses).
+
+**Solution**: The default threshold (5 occurrences) usually handles this, but you can adjust by modifying the source code or just ignore the "excluded" list in the output.
+</Accordion>
+</AccordionGroup>
+
+## Technical Details
+
+<Accordion title="How discovery extracts events" icon="code">
+The `print_discovered_events()` method:
+
+1. Extracts all annotations from `raw.annotations`
+2. Converts annotations to MNE events array (description → numeric code mapping)
+3. Counts occurrences of each event type
+4. Filters out:
+   - Events starting with "BAD_" (artifact markers)
+   - Events occurring < 5 times (rare/noise)
+5. Sorts by frequency (most common first)
+6. Formats as table with statistics
+7. Generates example configurations
+
+**Source location**: `src/autoclean/mixins/signal_processing/eventid_epochs.py`
+</Accordion>
+
+<Accordion title="Customizing the display" icon="sliders">
+The method is designed to be called as-is, but you can access the underlying data:
+
+```python
+def run(self):
+    self.import_raw()
+
+    # Get events and counts programmatically
+    events, event_id = mne.events_from_annotations(self.raw)
+
+    # Reverse the dict to get code -> name mapping
+    event_names = {v: k for k, v in event_id.items()}
+
+    # Count each event type
+    unique, counts = np.unique(events[:, 2], return_counts=True)
+
+    for event_code, count in zip(unique, counts):
+        name = event_names.get(event_code, "unknown")
+        print(f"{name}: {count} occurrences")
+```
+</Accordion>
+
+## Best Practices
+
+**1. Always discover events for new datasets**
+
+Don't assume event codes match across datasets, even from the same lab. File format conversions, system updates, or protocol changes can alter event coding.
+
+**2. Document event codes in your task file**
+
+Add comments explaining what each event represents:
+
+```python
+config = {
+    "epoch_settings": {
+        "enabled": True,
+        "value": {"tmin": -0.5, "tmax": 2.0},
+        "event_id": {
+            "frequent_tone": 1,    # Standard 1000 Hz tone (85% of trials)
+            "rare_tone": 2,        # Deviant 1200 Hz tone (15% of trials)
+        }
+    }
+}
+```
+
+**3. Keep discovery calls during development**
+
+Leave `print_discovered_events()` in your task during development. Comment it out only when moving to production batch processing:
+
+```python
+def run(self):
+    self.import_raw()
+    # self.print_discovered_events()  # Uncomment during development
+    self.filter_data()
+    self.create_regular_epochs()
+```
+
+**4. Use meaningful custom names**
+
+Map cryptic codes to scientific concepts:
+
+```python
+# ❌ Not helpful
+"event_id": {"DIN1": "DIN1", "DIN2": "DIN2"}
+
+# ✅ Scientific and clear
+"event_id": {"congruent_trial": "DIN1", "incongruent_trial": "DIN2"}
+```
+
+## What's Next?
+
+After discovering and configuring events, you'll likely want to:
+
+- **[Create epochs](/pipeline-steps/steps)**: Use `create_regular_epochs()` with your event configuration
+- **[Quality coaching](/event-handling/amplitude-quality)**: Get feedback on amplitude thresholds and data quality
+- **[Epoch customization](/tasks/task-customization)**: Advanced epoch selection and rejection strategies
+
+---
+
+**Key Takeaway**: Event discovery eliminates guesswork. Run it once per new dataset, copy the configuration, and move forward with confidence that your epoching will work correctly.

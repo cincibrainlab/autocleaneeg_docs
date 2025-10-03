@@ -95,6 +95,14 @@
             ]
           },
           {
+            "group": "Event Handling",
+            "pages": [
+              "event-handling/overview",
+              "event-handling/event-discovery",
+              "event-handling/amplitude-quality"
+            ]
+          },
+          {
             "group": "Input",
             "pages": [
               "input/batch_run"

@@ -1,0 +1,536 @@
+---
+title: "Amplitude Quality Coaching"
+sidebarTitle: "Amplitude Quality"
+description: "Get intelligent feedback on amplitude thresholds and data quality during epoch rejection"
+icon: "gauge-high"
+---
+
+## The Amplitude Threshold Problem
+
+When you configure amplitude-based epoch rejection, you face a frustrating dilemma: set thresholds too strict and you lose good data; set them too lenient and artifacts slip through. Traditional approaches give you no feedback—epochs are simply flagged and dropped, leaving you to wonder if your 200 µV threshold was appropriate or arbitrary.
+
+You might notice that 40% of your epochs were rejected and ask: "Is this normal? Should I adjust my threshold? Do I have bad channels? Or is this just noisy data?" Without interpretable diagnostics, you're flying blind.
+
+**Amplitude Quality Coaching** solves this by automatically analyzing your amplitude distributions, detecting patterns, and providing specific, actionable recommendations—all without requiring you to write any extra code.
+
+## How It Works: Always-On Analysis
+
+The amplitude quality coach runs automatically in two stages whenever you create epochs with amplitude rejection:
+
+### Stage 1: Preview Mode (Before Rejection)
+
+**When it runs**: Right after computing amplitudes but *before* rejecting any epochs
+
+**What it shows**:
+- Per-channel amplitude statistics
+- How your configured thresholds compare to actual data
+- Channels that exceed thresholds in >20% of epochs (problematic channels)
+- Specific suggestions for improving quality
+
+**Purpose**: Lets you see the *impact* of your thresholds before committing to rejection. If thresholds are too strict, you can adjust before losing data.
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 PREVIEW: Amplitude Quality Analysis (Before Rejection)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EEG Channels (n=128):
+────────────────────────────────────────────────────────────────────
+  Average mean amplitude: 0.000085 V
+  Maximum mean amplitude: 0.000320 V
+  Configured threshold:   0.000200 V
+
+  ⚠️  Channels exceeding threshold in >20% of epochs:
+    • E46: 28.3% of epochs (mean: 0.000245 V)
+    • E68: 24.7% of epochs (mean: 0.000230 V)
+
+💡 Suggestion: Consider marking E46 and E68 as bad channels instead of
+   rejecting many epochs. These channels consistently exceed thresholds,
+   suggesting electrode contact issues rather than transient artifacts.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+### Stage 2: Validation Mode (After Rejection)
+
+**When it runs**: After epochs are rejected based on amplitude
+
+**What it shows**:
+- Final data quality statistics
+- How many epochs were kept vs rejected
+- Confirmation that remaining data meets quality standards
+
+**Purpose**: Validates that rejection worked as intended and your final dataset is clean.
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ VALIDATION: Final Data Quality (After Rejection)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Epochs Kept: 856 / 1000 (85.6%)
+Epochs Rejected: 144 (14.4%)
+
+EEG Channels (n=126):  [Excluded: E46, E68]
+────────────────────────────────────────────────────────────────────
+  Average mean amplitude: 0.000072 V
+  Maximum mean amplitude: 0.000145 V
+  Configured threshold:   0.000200 V
+
+✅ All channels now within acceptable limits.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+## Understanding the Feedback
+
+The coach identifies specific patterns and provides targeted suggestions:
+
+<CardGroup cols={2}>
+<Card title="🎯 Thresholds Too Strict" icon="arrows-down-to-line">
+**Pattern**: Most channels well below threshold, but many epochs rejected
+
+**Feedback**:
+> Your thresholds may be too conservative. Average amplitudes are well below limits, but epochs are still rejected. Consider relaxing thresholds or check for brief transients.
+
+**Action**: Increase threshold value or inspect rejected epochs for short artifacts
+</Card>
+
+<Card title="⚠️ Problematic Channels" icon="exclamation-triangle">
+**Pattern**: Specific channels exceed threshold in >20% of epochs
+
+**Feedback**:
+> E46, E68 consistently exceed thresholds. Consider marking these as bad channels instead of rejecting epochs.
+
+**Action**: Add channels to bad channels list in your task configuration
+</Card>
+
+<Card title="📊 Normal Variation" icon="chart-line">
+**Pattern**: Occasional epochs rejected, most channels within limits
+
+**Feedback**:
+> Amplitude rejection is working as expected. Rejecting transient artifacts while preserving most data.
+
+**Action**: No changes needed—proceed with analysis
+</Card>
+
+<Card title="🔬 Systematic Noise" icon="wave-square">
+**Pattern**: All channels showing elevated amplitudes
+
+**Feedback**:
+> Globally elevated amplitudes suggest environmental noise or poor reference. Check recording environment and rereferencing strategy.
+
+**Action**: Review grounding, shielding, or try robust averaging reference
+</Card>
+</CardGroup>
+
+## Real-World Example: Developmental EEG
+
+Let's walk through a complete scenario with infant/child data (typically noisier than adult data):
+
+### Initial Configuration
+
+```python
+config = {
+    "epoch_settings": {
+        "enabled": True,
+        "value": {
+            "tmin": -0.2,
+            "tmax": 0.8,
+            "reject": {"eeg": 200e-6},  # 200 µV threshold
+            "event_id": {"standard": 1, "deviant": 2}
+        }
+    }
+}
+
+class ChildMMN(Task):
+    def run(self):
+        self.import_raw()
+        self.filter_data()
+        self.create_regular_epochs()  # Coach runs automatically here
+```
+
+### Preview Output Shows Problem
+
+```
+⚠️  Channels exceeding threshold in >20% of epochs:
+  • E17: 45.2% of epochs (mean: 0.000285 V)
+  • E126: 38.9% of epochs (mean: 0.000265 V)
+  • E127: 35.1% of epochs (mean: 0.000248 V)
+
+💡 Suggestion: These channels (likely at hairline/forehead) show persistent
+   high amplitudes. Mark as bad channels rather than losing half your epochs.
+```
+
+### Adjusted Configuration
+
+```python
+config = {
+    "bad_channels_manual": {
+        "enabled": True,
+        "value": ["E17", "E126", "E127"]  # Identified by coach
+    },
+    "epoch_settings": {
+        "enabled": True,
+        "value": {
+            "tmin": -0.2,
+            "tmax": 0.8,
+            "reject": {"eeg": 200e-6},
+            "event_id": {"standard": 1, "deviant": 2}
+        }
+    }
+}
+```
+
+### Validation Output Confirms
+
+```
+✅ All channels now within acceptable limits.
+Epochs Kept: 892 / 1000 (89.2%)
+
+Average mean amplitude: 0.000095 V
+Maximum mean amplitude: 0.000178 V
+```
+
+**Result**: By marking 3 bad channels, we recovered 40% more epochs (89% vs 50% retention) without compromising data quality.
+
+## Advanced Interpretation
+
+### Understanding Amplitude Units
+
+The coach reports amplitudes in volts (V):
+
+- **µV (microvolts)**: Standard EEG unit, 10⁻⁶ V
+  - `0.000200 V = 200 µV`
+  - `0.000100 V = 100 µV`
+
+- **Typical thresholds**:
+  - Adults: 100-150 µV (conservative) to 200 µV (lenient)
+  - Children: 150-250 µV
+  - Infants: 200-300 µV
+
+### Channel-Type Specific Analysis
+
+The coach analyzes different channel types separately:
+
+```
+EEG Channels (n=128):
+  Average mean amplitude: 0.000085 V
+  Maximum mean amplitude: 0.000320 V
+
+EOG Channels (n=4):
+  Average mean amplitude: 0.000450 V
+  Maximum mean amplitude: 0.001200 V
+```
+
+EOG channels naturally have higher amplitudes (eye movements are large electrical signals), so they're analyzed separately with different expectations.
+
+### The "20% Rule" for Bad Channels
+
+The coach flags channels exceeding thresholds in >20% of epochs because:
+
+- **<10% exceedances**: Normal variation—occasional artifacts in that channel
+- **10-20% exceedances**: Borderline—may indicate intermittent noise
+- **>20% exceedances**: Systematic problem—likely bad electrode contact
+
+This threshold balances sensitivity (catching bad channels) with specificity (not over-flagging).
+
+## Configuration Strategies
+
+### Strategy 1: Start Conservative, Then Relax
+
+Begin with strict thresholds and use coach feedback to adjust:
+
+```python
+# Initial attempt (conservative)
+config = {"epoch_settings": {"enabled": True, "value": {"reject": {"eeg": 100e-6}}}}
+
+# After seeing preview: "Thresholds too strict, rejecting 60% of epochs"
+
+# Adjusted (more realistic)
+config = {"epoch_settings": {"enabled": True, "value": {"reject": {"eeg": 150e-6}}}}
+```
+
+### Strategy 2: Remove Bad Channels First
+
+Use coaching to identify bad channels *before* final epoch rejection:
+
+```python
+class QualityCheck(Task):
+    """Step 1: Discover bad channels"""
+    def run(self):
+        self.import_raw()
+        self.filter_data()
+        self.create_regular_epochs()  # See which channels are problematic
+
+# Note bad channels from output, then:
+
+class CleanAnalysis(Task):
+    """Step 2: Process with bad channels removed"""
+    config = {
+        "bad_channels_manual": {"enabled": True, "value": ["E46", "E68"]},
+        ...
+    }
+```
+
+### Strategy 3: Channel-Specific Thresholds
+
+For datasets with high-impedance channels in specific regions:
+
+```python
+# MNE supports channel-specific rejection criteria
+config = {
+    "epoch_settings": {
+        "enabled": True,
+        "value": {
+            "reject": {
+                "eeg": 150e-6,  # Standard EEG channels
+            },
+            "flat": {
+                "eeg": 1e-6  # Also check for dead/flat channels
+            }
+        }
+    }
+}
+```
+
+## Common Patterns and Responses
+
+<AccordionGroup>
+<Accordion title="Pattern: High rejection rate (>30%)" icon="percent">
+**What it means**: Either thresholds are too strict OR data is genuinely noisy
+
+**Coach feedback will distinguish**:
+- If amplitudes << threshold: Thresholds too strict
+- If specific channels problematic: Bad channel issue
+- If all channels high: Systematic noise or grounding problem
+
+**Action steps**:
+1. Check preview mode suggestions
+2. Inspect a few rejected epochs visually
+3. Adjust thresholds or mark bad channels as recommended
+</Accordion>
+
+<Accordion title="Pattern: Very low rejection rate (<5%)" icon="check">
+**What it means**: Clean data OR thresholds too lenient
+
+**Coach feedback**:
+- "Rejection working as expected" → Proceed
+- "Consider stricter thresholds" → May be missing subtle artifacts
+
+**Action**: Usually fine to proceed, but spot-check a few epochs visually to ensure subtle artifacts aren't passing through
+</Accordion>
+
+<Accordion title="Pattern: Rejection rate varies across files" icon="shuffle">
+**What it means**: Different recording quality across sessions/participants
+
+**Solution**: Use coaching per-file to adjust thresholds adaptively:
+```python
+def run(self):
+    self.import_raw()
+    self.filter_data()
+
+    # Coach will show if this file needs different handling
+    self.create_regular_epochs()
+```
+
+For batch processing, you may need file-specific configurations based on coaching output.
+</Accordion>
+
+<Accordion title="Pattern: Frontal/edge channels always flagged" icon="location-dot">
+**What it means**: Expected—outer channels typically noisier (especially near hairline, ears)
+
+**Coach feedback**: Will recommend marking these as bad channels
+
+**Solution**: Many researchers routinely exclude outer-layer channels:
+```python
+config = {
+    "drop_outer_layer": {"enabled": True, "value": 1}
+}
+```
+</Accordion>
+</AccordionGroup>
+
+## Interpreting "Average Mean Amplitude"
+
+This might sound redundant, but it's precise:
+
+- **Per-epoch amplitude**: Peak-to-peak voltage within each epoch
+- **Mean amplitude**: Average of peak-to-peak amplitudes across all epochs *for one channel*
+- **Average mean amplitude**: The average across all channels of their mean amplitudes
+
+This nested averaging gives you a single number representing typical amplitude in your dataset, useful for quick quality assessment.
+
+**Rule of thumb**:
+- Adult resting EEG: ~50-100 µV
+- Adult task-related: ~30-80 µV
+- Child/infant: ~80-150 µV
+
+If your "average mean amplitude" is far outside these ranges, investigate recording parameters (gain, high-pass filter, reference).
+
+## Technical Details
+
+<Accordion title="How amplitude is computed" icon="calculator">
+The coach uses MNE's built-in peak-to-peak amplitude calculation:
+
+```python
+# For each epoch and channel
+amplitude = np.ptp(epoch_data, axis=-1)  # Peak-to-peak over time
+```
+
+This is the same calculation used by `mne.Epochs` for rejection, ensuring consistency between coaching feedback and actual rejection.
+</Accordion>
+
+<Accordion title="Why two stages (preview vs validation)?" icon="list-check">
+**Preview mode** runs on *all* epochs before rejection. This shows you what *would* happen with your current settings, giving you a chance to adjust.
+
+**Validation mode** runs on *kept* epochs after rejection. This confirms your final data quality and documents what actually happened.
+
+The two-stage approach prevents the common mistake of rejecting data, then wondering if the rejection was appropriate.
+</Accordion>
+
+<Accordion title="Customizing coaching output" icon="sliders">
+The coaching is built into `create_regular_epochs()` and runs automatically. If you want to suppress it (e.g., for batch processing):
+
+```python
+# Not currently configurable, but you can redirect stdout
+import sys
+import io
+
+# Suppress during batch processing
+old_stdout = sys.stdout
+sys.stdout = io.StringIO()
+self.create_regular_epochs()
+sys.stdout = old_stdout
+```
+
+Or simply ignore the output—it's informational and doesn't affect processing.
+</Accordion>
+
+## Best Practices
+
+**1. Always review preview output during development**
+
+Don't blindly accept rejection rates. Check the coaching feedback to understand *why* epochs are being rejected.
+
+**2. Document threshold decisions**
+
+Add comments to your config explaining threshold choices:
+
+```python
+config = {
+    "epoch_settings": {
+        "enabled": True,
+        "value": {
+            "tmin": -0.2,
+            "tmax": 0.8,
+            "reject": {
+                "eeg": 200e-6  # Relaxed threshold for infant data
+                               # (coach suggested 180-220 µV based on preview)
+            }
+        }
+    }
+}
+```
+
+**3. Use coaching to set data-driven thresholds**
+
+Instead of using literature defaults (e.g., "everyone uses 100 µV"), let coaching inform your choice based on actual amplitude distributions.
+
+**4. Mark bad channels before final processing**
+
+Run a quality check pass first:
+1. Process with default thresholds
+2. Note problematic channels from coaching
+3. Add to bad channels config
+4. Reprocess for final analysis
+
+**5. Save coaching output for QA documentation**
+
+The preview/validation reports document your quality control decisions. Consider saving them:
+
+```python
+# During processing, capture stdout to file
+# (coaching output automatically includes timestamp and file info)
+```
+
+## Comparison with Other Approaches
+
+<Tabs>
+<Tab title="Amplitude Coaching (AutoCleanEEG)">
+**Automatic, interpretable, actionable**
+
+```python
+# Just call the method
+self.create_regular_epochs()
+
+# Get immediate feedback:
+# - What's happening with my thresholds?
+# - Which channels are problematic?
+# - Should I adjust settings?
+```
+
+**Pros**:
+- Zero extra code
+- Specific recommendations
+- Preview before committing to rejection
+
+**Best for**: Users who want to understand and optimize their QC process
+</Tab>
+
+<Tab title="Manual Inspection (Traditional)">
+**Write custom analysis code**
+
+```python
+# Extract epochs
+epochs = mne.Epochs(raw, events, event_id, reject=reject)
+
+# Manual analysis
+import matplotlib.pyplot as plt
+epochs.plot_drop_log()
+
+# Check amplitudes manually
+for ch in epochs.ch_names:
+    amp = np.ptp(epochs.get_data(picks=ch), axis=-1)
+    print(f"{ch}: {amp.mean():.2e} V")
+```
+
+**Pros**: Full control and customization
+
+**Cons**: Requires coding, time-consuming, easy to miss patterns
+
+**Best for**: Advanced users with specific analysis needs
+</Tab>
+
+<Tab title="AutoReject (Automated)">
+**Data-driven threshold learning**
+
+```python
+from autoreject import AutoReject
+ar = AutoReject()
+epochs_clean = ar.fit_transform(epochs)
+```
+
+**Pros**: Learns optimal thresholds automatically
+
+**Cons**:
+- Slower (cross-validation)
+- Less interpretable
+- No guidance on bad channels
+
+**Best for**: Users who want automated optimization without manual tuning
+</Tab>
+</Tabs>
+
+The amplitude coach fills a gap between manual inspection (tedious) and full automation (opaque). You get interpretable feedback that helps you make informed decisions quickly.
+
+## What's Next?
+
+After using amplitude quality coaching to optimize your epoch rejection:
+
+- **[Event discovery](/event-handling/event-discovery)**: Ensure you're epoching the right events
+- **[Processing blocks](/processing-blocks/autoreject/overview)**: Try AutoReject for automated threshold learning
+- **[Quality reports](/outputs/subject_reports)**: Review comprehensive QA outputs after processing
+
+---
+
+**Key Takeaway**: Amplitude coaching transforms epoch rejection from guesswork into a guided, interpretable process. By showing you exactly what your thresholds are doing and why, it helps you balance data quality with data retention—getting the cleanest possible dataset without throwing away good data.
