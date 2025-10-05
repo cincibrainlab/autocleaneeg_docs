@@ -112,6 +112,7 @@
             "group": "Pipeline Steps",
             "pages": [
               "pipeline-steps/steps",
+              "pipeline-steps/reference-electrodes",
               "pipeline-steps/ica",
               "pipeline-steps/icvision"
             ]
