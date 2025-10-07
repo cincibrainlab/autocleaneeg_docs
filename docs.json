@@ -81,7 +81,8 @@
             "pages": [
               "pipeline-steps/steps",
               "pipeline-steps/ica",
-              "pipeline-steps/icvision"
+              "pipeline-steps/icvision",
+              "pipeline-steps/run-segment-rejection-peer-review"
             ]
           },
           {
