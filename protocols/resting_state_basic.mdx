@@ -1,0 +1,84 @@
+---
+title: "Resting State – Basic"
+description: "Template task for resting-state EEG preprocessing."
+---
+
+<Note>
+This protocol mirrors the default `RestingState_Basic` task from the AutoCleanEEG pipeline.
+</Note>
+
+<Tabs>
+<Tab title="Config">
+```python
+config = {
+    "move_flagged_files": False,
+    "resample_step": {"enabled": True, "value": 250},
+    "filtering": {
+        "enabled": True,
+        "value": {
+            "l_freq": 1,
+            "h_freq": 100,
+            "notch_freqs": [60, 120],
+            "notch_widths": 5,
+        },
+    },
+    "drop_outerlayer": {"enabled": False, "value": []},
+    "eog_step": {
+        "enabled": False,
+        "value": [1, 32, 8, 14, 17, 21, 25, 125, 126, 127, 128],
+    },
+    "trim_step": {"enabled": True, "value": 4},
+    "crop_step": {"enabled": False, "value": {"start": 0, "end": 60}},
+    "reference_step": {"enabled": True, "value": "average"},
+    "montage": {"enabled": True, "value": "GSN-HydroCel-129"},
+    "ICA": {
+        "enabled": True,
+        "value": {
+            "method": "infomax",
+            "n_components": None,
+            "fit_params": {"extended": True},
+            "temp_highpass_for_ica": 1.0,
+        },
+    },
+    "component_rejection": {
+        "enabled": True,
+        "method": "icvision",
+        "value": {
+            "ic_flags_to_reject": ["muscle", "heart", "eog", "ch_noise", "line_noise"],
+            "ic_rejection_threshold": 0.3,
+        },
+    },
+    "epoch_settings": {
+        "enabled": True,
+        "value": {"tmin": -1, "tmax": 1},
+        "event_id": None,
+        "remove_baseline": {"enabled": False, "window": [None, 0]},
+        "threshold_rejection": {"enabled": False, "volt_threshold": {"eeg": 0.000125}},
+    },
+}
+```
+</Tab>
+<Tab title="Pipeline Steps">
+<Steps>
+<Step title="Import raw data" />
+<Step title="Resample data" />
+<Step title="Filter data" />
+<Step title="Drop outer layer" />
+<Step title="Assign EOG channels" />
+<Step title="Trim edges" />
+<Step title="Crop duration" />
+<Step title="Clean bad channels" />
+<Step title="Re-reference" />
+<Step title="Annotate noisy epochs" />
+<Step title="Annotate uncorrelated epochs" />
+<Step title="Detect dense oscillatory artifacts" />
+<Step title="Run ICA" />
+<Step title="Classify ICA components" />
+<Step title="Create regular epochs" />
+<Step title="Detect outlier epochs" />
+<Step title="GFP clean epochs" />
+<Step title="Generate reports" />
+</Steps>
+</Tab>
+</Tabs>
+

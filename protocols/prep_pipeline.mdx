@@ -1,0 +1,24 @@
+---
+title: "PREP Pipeline"
+description: "Preprocessing Pipeline for EEG referencing and line-noise removal."
+---
+
+<Tabs>
+<Tab title="Overview">
+<Note>
+The PREP pipeline (Bigdely-Shamlo et al., 2015) provides standardized steps for
+line-noise removal and robust average referencing prior to analysis.
+</Note>
+</Tab>
+<Tab title="Steps">
+<Steps>
+<Step title="Remove line noise with notch or CleanLine" />
+<Step title="High-pass filter at 1 Hz" />
+<Step title="Detect bad channels via deviation, correlation, and noisiness criteria" />
+<Step title="Interpolate bad channels" />
+<Step title="Compute robust average reference" />
+<Step title="Return cleaned, referenced dataset" />
+</Steps>
+</Tab>
+</Tabs>
+
